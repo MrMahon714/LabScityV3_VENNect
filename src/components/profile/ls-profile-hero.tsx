@@ -12,7 +12,7 @@ import {
   Loader,
   UnstyledButton,
 } from "@mantine/core";
-import { IconBuildings, IconCamera, IconClock, IconMapPin, IconMessageCircle, IconPencil, IconPlus, IconSchool, IconUserPlus } from "@tabler/icons-react";
+import { IconBuildings, IconCamera, IconClock, IconFileText, IconMapPin, IconMessageCircle, IconPencil, IconPlus, IconSchool, IconUserPlus } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import { LSEditProfileModal } from "./ls-edit-profile-modal";
 import { useDisclosure } from "@mantine/hooks";
@@ -22,6 +22,7 @@ import { useUserFollowers, useUserFollowing } from "./use-profile";
 import classes from './ls-profile-hero.module.css'
 import { LSAddSkillsModal } from "./ls-add-skills-modal";
 import { LSAddTagsModal } from "./ls-add-tags-modal";
+import LSExtractResumeModal from "./ls-extract-resume-modal";
 
 const PROFILE_BANNER_HEIGHT = 150;
 
@@ -107,6 +108,7 @@ export default function LSProfileHero({
 
   const [skillsModalOpened, { open: openSkillsModal, close: closeSkillsModal }] = useDisclosure(false);
   const [researchAreasModalOpened, { open: openResearchAreasModal, close: closeResearchAreasModal }] = useDisclosure(false);
+  const [resumeModalOpened, { open: openResumeModal, close: closeResumeModal }] = useDisclosure(false);
   
   const lastList = useRef<"followers" | "following">("followers");
   if (listModal) lastList.current = listModal;
@@ -282,21 +284,32 @@ export default function LSProfileHero({
               avatar
             )}
           </Box>
-
           {isOwnProfile ? (
             <>
-              {/* Edit Profile Button */}
+            <Stack gap="xs" align="stretch">
               <Button
                 variant="outline"
                 onClick={openEditModal}
                 leftSection={<IconPencil size='1rem'/>}
               >
                 Edit Profile
-              </Button>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={openResumeModal}
+                  leftSection={<IconFileText size='1rem'/>}
+                >
+                  Extract Resume
+                </Button>
+              </Stack>
               <LSEditProfileModal
                 opened={editModalOpened}
                 onClose={closeEditModal}
                 userId={profile.user_id}
+              />
+              <LSExtractResumeModal
+                opened={resumeModalOpened}
+                onClose={closeResumeModal}
               />
             </>
             ) : (
