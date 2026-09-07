@@ -5,7 +5,13 @@ export async function POST(request: Request) {
         const formData = await request.formData();
         const file = formData.get('file') as File | null;
 
-        if (!file || file.type !== 'application/pdf') {
+        //Check if file exists and ends with .pdf or has the pdf content-type
+        const isPdf = file && (
+            file.type === 'application/pdf' ||
+            file.name.toLowerCase().endsWith('.pdf')
+        );
+
+        if (!file || !isPdf) {
             return NextResponse.json(
                 { error: 'Please upload a valid PDF file.' },
                 { status: 400 }
@@ -15,7 +21,9 @@ export async function POST(request: Request) {
         //Read PDF binary stream directly via Node Buffer
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        const rawContent = buffer.toString('utf-8');
+
+        //Use 'binary' encoding to prevent invalid byte string crashes
+        const rawContent = buffer.toString('binary');
 
         //Extract dynamic capital words/acronyms (filtering out PDF keywords)
         const extractedWords = Array.from(
