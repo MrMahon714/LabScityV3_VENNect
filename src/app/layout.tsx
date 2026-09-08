@@ -1,15 +1,16 @@
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/tiptap/styles.css";
-import '@mantine/dates/styles.css';
+import "@mantine/dates/styles.css";
 
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { AuthProvider } from "@/components/auth/auth-provider";
-import '@mantine/carousel/styles.css';
+import "@mantine/carousel/styles.css";
+import { Analytics } from "@vercel/analytics/next";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { cssVariablesResolver, theme } from "@/lib/constants/theme";
 
@@ -48,6 +49,7 @@ export default function RootLayout({
               <ReactQueryDevtools initialIsOpen={false} position="right" />
               <Notifications />
               {children}
+              <Analytics />
             </MantineProvider>
           </AuthProvider>
         </QueryProvider>
