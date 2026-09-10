@@ -16,6 +16,7 @@ import { OpenAlexWork, ParsedOpenAlexWork } from "../types/publication";
 import { MAX_FEATURED_PUBLICATIONS } from "../constants/publications";
 import { parseOpenAlexWork } from "../utils/openalex";
 import { syncOpenAlexTopics } from "./openalex";
+import { generateTopicsForUnprocessedPublications } from "./generate-publication-topics";
 
 export async function addPublicationByDoi(
   doi: string
@@ -78,6 +79,10 @@ export async function addPublicationByDoi(
       await syncOpenAlexTopics(profile.orcid, authData.user.id);
     }
 
+    generateTopicsForUnprocessedPublications(1).catch((err) =>
+      console.error("Background topic generation failed:", err)
+    );
+
     return createPubResult;
   } catch(err) {
     if (err instanceof z.ZodError) {
@@ -117,6 +122,10 @@ export async function bulkInsertPublications(
         error: error.message
       };
     }
+
+    generateTopicsForUnprocessedPublications(parsedPubs.length).catch((err) => 
+      console.error("Background topic generation failed:", err) 
+    );
 
     return {
       success: true,

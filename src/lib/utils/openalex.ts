@@ -54,6 +54,26 @@ export function resolveOpenAlexTypeDesignation(raw: string): OpenAlexTypeDesigna
   return OPENALEX_TYPE_DESIGNATIONS[typeDesignation];
 }
 
+// Reconstruct abstract for topics generation with Google Gemini
+export function reconstructAbstract(
+  invertedIndex: Record<string, number[]> | null
+): string | null {
+  if (!invertedIndex) return null;
+
+  const maxPosition = Math.max(
+    ...Object.values(invertedIndex).flat()
+  );
+  const words = new Array(maxPosition + 1).fill('');
+
+  for (const [word, positions] of Object.entries(invertedIndex)) {
+    for (const pos of positions) {
+      words[pos] = word;
+    }
+  }
+
+  return words.join(' ').trim() || null;
+}
+
 export function parseOpenAlexWork(work: OpenAlexWork): ParsedOpenAlexWork {
   const type = OPENALEX_TYPE_MAP[work.type ?? ''] ?? 'other';
 
@@ -73,6 +93,7 @@ export function parseOpenAlexWork(work: OpenAlexWork): ParsedOpenAlexWork {
     publicationDate: work.publication_date,
     isOA: work.open_access?.is_oa ?? false,
     pdfUrl: pdfUrl,
+    abstract: reconstructAbstract(work.abstract_inverted_index),
     openAlexTopicIds: (work.topics ?? []).map((t) =>
       t.id.replace("https://openalex.org/", "")
     ),

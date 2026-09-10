@@ -17,6 +17,7 @@ export interface OpenAlexWork {
   open_access: { is_oa: boolean, oa_url: string | null } | null;
   locations: { pdf_url: string | null }[];
   topics: {id: string; display_name: string; score: number}[];
+  abstract_inverted_index: Record<string, number[]> | null;
 }
 
 export interface ParsedOpenAlexWork<
@@ -32,6 +33,7 @@ export interface ParsedOpenAlexWork<
   isOA: boolean;
   pdfUrl: string | null;
   openAlexTopicIds: string[];
+  abstract: string | null;
 }
 
 export type InfinitePublications = {
