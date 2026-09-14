@@ -17,6 +17,7 @@ import { MAX_FEATURED_PUBLICATIONS } from "../constants/publications";
 import { parseOpenAlexWork } from "../utils/openalex";
 import { syncOpenAlexTopics } from "./openalex";
 import { generateTopicsForUnprocessedPublications } from "./generate-publication-topics";
+import { generateProfileEmbeddings } from "./generate-embeddings";
 
 export async function addPublicationByDoi(
   doi: string
@@ -79,9 +80,9 @@ export async function addPublicationByDoi(
       await syncOpenAlexTopics(profile.orcid, authData.user.id);
     }
 
-    generateTopicsForUnprocessedPublications(1).catch((err) =>
-      console.error("Background topic generation failed:", err)
-    );
+    generateTopicsForUnprocessedPublications(1, supabase)
+      .then(() => generateProfileEmbeddings(authData.user.id, supabase))
+      .catch((err) => console.error("Background post-import processing failed:", err));
 
     return createPubResult;
   } catch(err) {
@@ -123,9 +124,9 @@ export async function bulkInsertPublications(
       };
     }
 
-    generateTopicsForUnprocessedPublications(parsedPubs.length).catch((err) => 
-      console.error("Background topic generation failed:", err) 
-    );
+    generateTopicsForUnprocessedPublications(parsedPubs.length, supabase)
+      .then(() => generateProfileEmbeddings(authData.user.id, supabase))
+      .catch((err) => console.error("Background post-import processing failed:", err));
 
     return {
       success: true,

@@ -17,6 +17,7 @@ import {
   UpdateDeclaredTagsValues,
   updateDeclaredTagsSchema,
 } from "@/lib/validations/profile";
+import { generateProfileEmbeddings } from "@/lib/actions/generate-embeddings";
 
 const profilePictureBucket = "profile_pictures";
 const profileHeaderBucket = "profile_header";
@@ -401,6 +402,10 @@ export async function updateProfileAction(
       return { success: false, error: updateUsersError.message };
     }
 
+    generateProfileEmbeddings(userId, supabase).catch((err) =>
+      console.error("Background embedding generation failed:", err)
+    );
+
     return { success: true };
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -433,6 +438,10 @@ export async function updateProfileSkills(
     });
     if (error) return { success: false, error: error.message };
 
+    generateProfileEmbeddings(authData.user.id, supabase).catch((err) =>
+      console.error("Background embedding generation failed:", err)
+    );
+
     return { success: true };
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -460,6 +469,10 @@ export async function updateDeclaredTagsAction(
       p_custom_names: validated.tags.filter((t) => t.id === null).map((t) => t.name),
     });
     if (error) return { success: false, error: error.message };
+
+    generateProfileEmbeddings(authData.user.id, supabase).catch((err) =>
+      console.error("Background embedding generation failed:", err)
+    );
 
     return { success: true };
   } catch (err) {
