@@ -22,6 +22,8 @@ import { useUserFollowers, useUserFollowing } from "./use-profile";
 import classes from './ls-profile-hero.module.css'
 import { LSAddSkillsModal } from "./ls-add-skills-modal";
 import { LSAddTagsModal } from "./ls-add-tags-modal";
+import { LSCollaborationIntentModal } from "./ls-collab-modal";
+import { LSGrantsModal } from "./ls-grants-modal";
 
 const PROFILE_BANNER_HEIGHT = 150;
 
@@ -107,6 +109,9 @@ export default function LSProfileHero({
 
   const [skillsModalOpened, { open: openSkillsModal, close: closeSkillsModal }] = useDisclosure(false);
   const [researchAreasModalOpened, { open: openResearchAreasModal, close: closeResearchAreasModal }] = useDisclosure(false);
+
+  const [grantsModalOpened, { open: openGrantsModal, close: closeGrantsModal }] = useDisclosure(false);
+  const [collabModalOpened, { open: openCollabModal, close: closeCollabModal }] = useDisclosure(false);
   
   const lastList = useRef<"followers" | "following">("followers");
   if (listModal) lastList.current = listModal;
@@ -540,7 +545,58 @@ export default function LSProfileHero({
             </Stack>
           </Stack>
         }
-      </Stack>
+              {/* Grants & Funding */}
+        <Stack gap='xs'>
+          <Text fz='xs' c='dimmed' fw='bold'>GRANTS & FUNDING</Text>
+          <Stack gap='4'>
+            {/*<Text size='xs' c='dimmed'>
+              List grants and funding you have received or contributed to.
+            </Text>*/}
+            {isOwnProfile && (
+              <>
+              <Button
+                variant='outline'
+                rightSection={<IconPencil size='1rem'/>}
+                onClick={openGrantsModal}
+                c='dimmed'
+                bd='1px dashed dimmed'
+                bdrs='100'
+                size='xs'
+                w='fit-content'
+              >
+                Edit Grants/Funding
+              </Button>
+              <LSGrantsModal opened={grantsModalOpened} onClose={closeGrantsModal} /> </>
+            )}
+          </Stack>
+        </Stack>
+
+        {/* Collaboration Intent */}
+        <Stack gap='xs'>
+          <Text fz='xs' c='dimmed' fw='bold'>COLLABORATION INTENT</Text>
+          <Stack gap='4'>
+            {/*<Text size='xs' c='dimmed'>
+              Describe what you are currently working on and what kind of collaborator you are looking for.
+            </Text>*/}
+            {isOwnProfile && (
+              <>
+              <Button
+                variant='outline'
+                rightSection={<IconPencil size='1rem'/>}
+                onClick={openCollabModal}
+                c='dimmed'
+                bd='1px dashed dimmed'
+                bdrs='100'
+                size='xs'
+                w='fit-content'
+              >
+                Edit Collaboration Intent
+              </Button>
+              <LSCollaborationIntentModal opened={collabModalOpened} onClose={closeCollabModal} /> </>
+            )}
+            </Stack>
+          </Stack>
+        </Stack>
     </Card >
   );
 };

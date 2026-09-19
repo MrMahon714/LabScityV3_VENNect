@@ -22,6 +22,7 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { useUpdateProfileSkills, useUserProfile } from "./use-profile";
 import { IconSparkles, IconSparklesFilled, IconTool } from "@tabler/icons-react";
 import { MAX_PROFILE_SKILLS } from "@/lib/constants/profile";
+import { FileButton } from "@mantine/core";
 
 export interface LSAddSkillsModalProps {
   opened: boolean;
@@ -64,15 +65,33 @@ export function LSAddSkillsModal({ opened, onClose, userId }: LSAddSkillsModalPr
       <Modal.Body>
         <Stack gap="lg">
           <LSSkillsInput value={skills} onChange={setSkills} />
-          <Group justify="flex-end">
-            <Button variant="default" onClick={onClose}>Cancel</Button>
-            <Button
-              onClick={() => updateSkills.mutate({ skills })}
-              loading={updateSkills.isPending}
-            >
-              Save
-            </Button>
-          </Group>
+                        <Group justify="space-between">
+              <FileButton
+                onChange={(file) => console.log("Resume uploaded for Skills:", file)}
+                accept=".pdf,.doc,.docx,.txt"
+              >
+                {(props) => (
+                  <Button
+                    {...props}
+                    variant="subtle"
+                    size="sm"
+                    leftSection={<IconSparkles size="0.9rem" />}
+                  >
+                    Generate Skills From File
+                  </Button>
+                )}
+              </FileButton>
+              
+              <Group>
+                <Button variant="default" onClick={onClose}>Cancel</Button>
+                <Button
+                  onClick={() => updateSkills.mutate({ skills })}
+                  loading={updateSkills.isPending}
+                >
+                  Save
+                </Button>
+              </Group>
+            </Group>
         </Stack>
       </Modal.Body>
     </Modal.Content>
