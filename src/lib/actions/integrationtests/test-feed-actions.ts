@@ -15,9 +15,9 @@ async function testFeedActions() {
 	console.log("Starting feed actions integration tests...\n");
 
 	// Check if environment variables are set
-	if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+	if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
 		console.error("❌ Error: Missing environment variables!");
-		console.error("Please ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set.");
+		console.error("Please ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY are set.");
 		return;
 	}
 
@@ -30,7 +30,7 @@ async function testFeedActions() {
 	// Create Supabase client with anon key (for authenticated user operations)
 	const supabase = createClient(
 		process.env.NEXT_PUBLIC_SUPABASE_URL,
-		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+		process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 	);
 
 	// Sign in with test user
