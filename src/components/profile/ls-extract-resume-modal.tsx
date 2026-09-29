@@ -38,18 +38,18 @@ export default function LSExtractResumeModal({
       <Modal.Content bdrs="lg">
         <Modal.Header bg="navy.7" p="1rem 1.25rem">
           <Modal.Title c="white" fw="700" fz="lg">
-            Extract Resume
+            Extract CV
           </Modal.Title>
           <Modal.CloseButton c="white" />
         </Modal.Header>
 
         <Stack p="1.25rem" gap="1rem" align="center">
           <Text fz="sm" c="navy.7" ta="center">
-            Extract information from the resume to your profile.
+            Extract information from the CV to your profile.
           </Text>
 
           <Text fz="sm" fw="600" c="navy.7">
-            Upload Resume
+            Upload CV
           </Text>
 
           <Box

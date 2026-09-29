@@ -17,6 +17,7 @@ import { useRef, useState } from "react";
 import { LSEditProfileModal } from "./ls-edit-profile-modal";
 import { useDisclosure } from "@mantine/hooks";
 import type { User } from "@/lib/types/feed";
+import LSExtractResumeModal from "./ls-extract-resume-modal";
 import LSProfileListModal from "./ls-profile-list-modal";
 import { useUserFollowers, useUserFollowing } from "./use-profile";
 import classes from './ls-profile-hero.module.css'
@@ -109,6 +110,8 @@ export default function LSProfileHero({
 
   const [skillsModalOpened, { open: openSkillsModal, close: closeSkillsModal }] = useDisclosure(false);
   const [researchAreasModalOpened, { open: openResearchAreasModal, close: closeResearchAreasModal }] = useDisclosure(false);
+
+  const [resumeModalOpened, { open: openResumeModal, close: closeResumeModal }] = useDisclosure(false);
 
   const [grantsModalOpened, { open: openGrantsModal, close: closeGrantsModal }] = useDisclosure(false);
   const [collabModalOpened, { open: openCollabModal, close: closeCollabModal }] = useDisclosure(false);
@@ -302,7 +305,7 @@ export default function LSProfileHero({
                   onClick={openResumeModal}
                   leftSection={<IconFileText size='1rem'/>}
                 >
-                  Extract Resume
+                  Extract CV
                 </Button>
               </Stack>
               <LSEditProfileModal

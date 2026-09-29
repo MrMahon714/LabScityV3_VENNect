@@ -6,49 +6,15 @@ import {
   Card,
   Grid,
   Group,
-  Loader,
   Modal,
-  MultiSelect,
-  Select,
   SimpleGrid,
   Stack,
   TagsInput,
   Text,
 } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-/* ---------------------------------------------------------------------------
-TODO(backend): PLACEHOLDER DATA — DELETE THIS ENTIRE BLOCK WHEN WIRING UP.
-
-Everything between these markers is invented frontend-only data; nothing here comes from the database.
-
- Replacement plan:
- - EXPERTISE_OPTIONS / GRANT_OPTIONS -> replace each <Select data={...}>
- - PLACEHOLDER_RESULTS -> replace with the response from the search call in handleFindCollaborators(). 
- ------------------------------------------------------------------------- */
-
-const EXPERTISE_OPTIONS = [
-  "Quantum Computing",
-  "Machine Learning",
-  "Computational Biology",
-  "Climate Modeling",
-  "Bioinformatics",
-  "Materials Science",
-  "Neuroscience",
-  "Systematics and Taxonomy",
-  "Public Health",
-  "Robotics",
-];
-
-const GRANT_OPTIONS = [
-  "NSF Grant 12345",
-  "NSF Grant 67890",
-  "NIH R01",
-  "NIH R21",
-  "DOE Office of Science",
-  "NASA ROSES",
-];
+/*PLACEHOLDER DATA*/
 
 const PLACEHOLDER_RESULTS = [
   {
@@ -56,23 +22,13 @@ const PLACEHOLDER_RESULTS = [
     name: "Sarah Chen",
     title: "Assistant Professor",
     institution: "UC Berkeley",
+    matchPercentage: 87,
     reason:
       "Matches skills [Deep Learning, Data Analysis] and has published on related keywords.",
-  },
-  {
-    id: "placeholder-2",
-    name: "Dr. David Lee",
-    title: "Lead Researcher",
-    institution: "MIT",
-    reason:
-      "Lead on a relevant grant [NSF Grant 67890] and expertise in [Quantum Computing].",
   },
 ];
 
 //END OF PLACEHOLDER DATA
-
-//Same source as the profile Add Skills modal. 
-type SkillOption = { id: number; name: string };
 
 export default function CollabMatchingModal({
   opened,
@@ -82,42 +38,15 @@ export default function CollabMatchingModal({
   onClose: () => void;
 }) {
 
-  const [skillSearch, setSkillSearch] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const [skillLabels, setSkillLabels] = useState<Record<string, string>>({});
-  const [expertise, setExpertise] = useState<string | null>(null);
-  const [grant, setGrant] = useState<string | null>(null);
+  const [expertise, setExpertise] = useState<string[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
   const [products, setProducts] = useState<string[]>([]);
 
-//Fetch skills from the backend as the user types
-  const { data: skillOptions = [], isLoading: skillsLoading } = useQuery({
-    queryKey: ["skill-search", skillSearch],
-    queryFn: async () => {
-      const res = await fetch(
-        `/api/skills/search?q=${encodeURIComponent(skillSearch)}`,
-      );
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error ?? "Skills search failed");
-      return json.data as SkillOption[];
-    },
-    staleTime: 60 * 60 * 1000, 
-    enabled: opened, 
-  });
-
-  const skillData = [
-    ...skillOptions.map((s) => ({ value: String(s.id), label: s.name })),
-    ...selectedSkills
-      .filter((v) => !skillOptions.some((s) => String(s.id) === v))
-      .map((v) => ({ value: v, label: skillLabels[v] ?? v })),
-  ];
-
-  //Replace the console.log with the real search request 
   const handleFindCollaborators = () => {
     const filters = {
-      skillIds: selectedSkills.map(Number),
+      skills: selectedSkills,
       expertise,
-      grant,
       keywords,
       products,
     };
@@ -150,56 +79,23 @@ export default function CollabMatchingModal({
         </Modal.Header>
 
         <Stack p="1.5rem" gap="1rem">
-          {/*Skills (live data) ; Expertise and Grants (placeholder data) */}
           <Grid gutter="md">
-            <Grid.Col span={{ base: 12, sm: 5 }}>
-              <MultiSelect
+            <Grid.Col span={{ base: 12, sm: 6 }}>
+              <TagsInput
                 label="Skills"
-                placeholder={selectedSkills.length === 0 ? "Search skills..." : ""}
-                data={skillData}
+                placeholder={selectedSkills.length === 0 ? "Type and press Enter" : ""}
                 value={selectedSkills}
-                onChange={(values) => {
-                  setSelectedSkills(values);
-                  setSkillLabels((current) => {
-                    const next = { ...current };
-                    for (const v of values) {
-                      const match = skillOptions.find((s) => String(s.id) === v);
-                      if (match) next[v] = match.name;
-                    }
-                    return next;
-                  });
-                }}
-                searchable
-                searchValue={skillSearch}
-                onSearchChange={setSkillSearch}
-                rightSection={skillsLoading ? <Loader size={14} /> : undefined}
-                nothingFoundMessage="No skills found"
+                onChange={setSelectedSkills}
                 radius="md"
               />
             </Grid.Col>
 
-            <Grid.Col span={{ base: 12, sm: 3.5 }}>
-              <Select
+            <Grid.Col span={{ base: 12, sm: 6 }}>
+              <TagsInput
                 label="Expertise"
-                placeholder="Select expertise"
-                data={EXPERTISE_OPTIONS}
+                placeholder={expertise.length === 0 ? "Type and press Enter" : ""}
                 value={expertise}
                 onChange={setExpertise}
-                searchable
-                clearable
-                radius="md"
-              />
-            </Grid.Col>
-
-            <Grid.Col span={{ base: 12, sm: 3.5 }}>
-              <Select
-                label="Grants"
-                placeholder="Select a grant"
-                data={GRANT_OPTIONS}
-                value={grant}
-                onChange={setGrant}
-                searchable
-                clearable
                 radius="md"
               />
             </Grid.Col>
@@ -218,7 +114,7 @@ export default function CollabMatchingModal({
 
             <Grid.Col span={{ base: 12, sm: 6 }}>
               <TagsInput
-                label="Products"
+                label="Research Products (data sets)"
                 placeholder={products.length === 0 ? "Type and press Enter" : ""}
                 value={products}
                 onChange={setProducts}
@@ -249,10 +145,34 @@ export default function CollabMatchingModal({
                   bdrs="0.75rem"
                   p="1rem"
                   c="navy.7"
+                  pos="relative"
+                  shadow="none"
                 >
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "1rem",
+                      left: "1rem",
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--mantine-color-blue-0)",
+                      border: "2px solid var(--mantine-color-blue-3)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      zIndex: 2,
+                      boxShadow: "none",
+                    }}
+                  >
+                    <Text fw="600" fz="0.875rem" c="navy.7">
+                      {person.matchPercentage}%
+                    </Text>
+                  </div>
+
                   <Group gap="0.875rem" wrap="nowrap" align="flex-start" mb="0.75rem">
                     <Avatar size="48" radius="xl" bg="gray.2" />
-                    <Stack gap="2" miw={0}>
+                    <Stack gap="2" miw={0} style={{ flex: 1 }}>
                       <Text fw="600" fz="0.875rem" lh="1.25rem">
                         {person.name}
                       </Text>
