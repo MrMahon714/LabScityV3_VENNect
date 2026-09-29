@@ -17,6 +17,7 @@ import { PubFilters } from "@/lib/types/publication";
 import { Publication } from "@/lib/types/data";
 import { useUserProfile } from "../use-profile";
 import { OPENALEX_WORK_TYPE_LABELS } from "@/lib/constants/openalex";
+import LSScholarLinker from "./ls-scholar-link-modal";
 
 export default function LSPublicationsList({
   userId,
@@ -223,8 +224,9 @@ export default function LSPublicationsList({
             </Button>
           </Group>
           <Group wrap='nowrap'>
+            <LSScholarLinker userId={userId} />
             <LSOrcidLinker userId={userId} autoOpen={autoOpenOrcid}/>
-            <OrcidInfo size='2rem' />
+            {/*<OrcidInfo size='2rem' />*/}
           </Group>
           </>
         }

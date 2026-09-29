@@ -23,6 +23,8 @@ import {
 import { useDebouncedValue } from "@mantine/hooks";
 import { useLocationSearch, useSkillSearch } from "./use-profile-search";
 import { User } from "@/lib/types/feed";
+import { IconSparkles } from "@tabler/icons-react";
+import { FileButton } from "@mantine/core";
 
 interface EditProfileFormValues {
   firstName: string;
@@ -202,13 +204,31 @@ export function LSEditProfileModal({ opened, onClose, userId }: LSEditProfileMod
             />
           </Group>
 
-          <Textarea
-            label="About"
-            placeholder="Tell others about yourself..."
-            description="Max 256 characters"
-            key={form.key("about")}
-            {...form.getInputProps("about")}
-          />
+                      <Stack gap="4">
+            <Textarea
+              label="About"
+              placeholder="Tell others about yourself..."
+              description="Max 256 characters"
+              key={form.key("about")}
+              {...form.getInputProps("about")}
+            />
+            <FileButton
+              onChange={(file) => console.log("Resume uploaded for About Me:", file)}
+              accept=".pdf,.doc,.docx,.txt"
+            >
+              {(props: any) => (
+                <Button
+                  {...props}
+                  variant="subtle"
+                  size="xs"
+                  w="fit-content"
+                  leftSection={<IconSparkles size="0.9rem" />}
+                >
+                  Generate About Me From File
+                </Button>
+              )}
+            </FileButton>
+          </Stack>
 
           <TextInput
             label="Institution / Workplace"
