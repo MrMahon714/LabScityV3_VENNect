@@ -50,3 +50,6 @@ next-env.d.ts
 
 #test files for server actions
 src/app/api/test/
+
+# Visual Studio local folder
+.vs/
