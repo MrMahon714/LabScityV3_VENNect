@@ -191,3 +191,59 @@ export function useUpdateDeclaredTags(userId: string, onSuccess?: () => void) {
       }),
   });
 }
+
+export function useExtractResume() {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await fetch("/api/profile/extract-resume", {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || json.success === false) {
+        throw new Error(json.error ?? "Failed to extract resume");
+      }
+      return json;
+    },
+    onError: (err) =>
+      notifications.show({
+        title: "Could not extract resume",
+        message: err instanceof Error ? err.message : "Something went wrong",
+        color: "red",
+      }),
+  });
+}
+
+export function useConfirmExtractedData(userId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { skills: string[]; researchAreas: string[] }) => {
+      const skillsRes = await updateProfileSkills({
+        skills: data.skills.map((name) => ({ id: null, name })),
+      });
+      if (!skillsRes.success) throw new Error(skillsRes.error ?? "Failed to update skills");
+
+      const tagsRes = await updateDeclaredTagsAction({
+        tags: data.researchAreas.map((name) => ({ id: null, name })),
+      });
+      if (!tagsRes.success) throw new Error(tagsRes.error ?? "Failed to update research areas");
+
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: profileKeys.user(userId) });
+      notifications.show({
+        title: "Resume extracted successfully",
+        message: "Skills and research areas have been updated",
+        color: "green",
+      });
+    },
+    onError: (err) =>
+      notifications.show({
+        title: "Could not update profile",
+        message: err instanceof Error ? err.message : "Something went wrong",
+        color: "red",
+      }),
+  });
+}

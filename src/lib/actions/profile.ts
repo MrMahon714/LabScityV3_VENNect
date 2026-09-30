@@ -760,3 +760,31 @@ export async function createUserReport(
     return { success: false, error: "Failed to submit report" };
   }
 }
+
+export async function extractResumeAction(formData: FormData) {
+  try {
+    const response = await fetch('/api/profile/extract-resume', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      return { 
+        success: false, 
+        error: json.error ?? 'Failed to extract resume' 
+      };
+    }
+
+    return { 
+      success: true, 
+      data: json 
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to extract resume'
+    };
+  }
+}
