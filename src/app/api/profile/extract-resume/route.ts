@@ -38,7 +38,7 @@ export async function POST(request: Request) {
                             },
                         },
                         {
-                            text: 'Extract the research areas and technical skills from this resume.',
+                            text: 'Extract ALL research areas and technical skills listed in this resume. Ensure you extract EVERY skill without truncating or capping the list at 20 items. Crucially, DO NOT skip single-character programming languages or tools (e.g., "C", "R").',
                         },
                     ],
                 },
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
                         skills: {
                             type: Type.ARRAY,
                             items: { type: Type.STRING },
-                            description: 'Technical skills, programming languages, tools, frameworks, and software listed in the resume.',
+                            description: 'Complete list of all technical skills, single-character languages (e.g., C, R), tools, frameworks, and software listed in the resume without artificial limits.',
                         },
                     },
                     required: ['researchAreas', 'skills'],
