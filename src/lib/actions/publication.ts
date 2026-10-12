@@ -5,6 +5,7 @@ import { createClient } from "@/supabase/server";
 import {
     createPublicationSchema,
     doiSchema,
+    orcidSchema,
     parsedOpenAlexWorkSchema,
     updatePublicationSchema,
     type CreatePublicationValues,
@@ -18,6 +19,7 @@ import { parseOpenAlexWork } from "../utils/openalex";
 import { syncOpenAlexTopics } from "./openalex";
 import { generateTopicsForUnprocessedPublications } from "./generate-publication-topics";
 import { generateProfileEmbeddings } from "./generate-embeddings";
+import { importOrcidKeywordsForUser } from "../utils/orcid-keywords";
 
 export async function addPublicationByDoi(
   doi: string
@@ -99,7 +101,8 @@ export interface BulkInsertPublicationsResponse {
 }
 
 export async function bulkInsertPublications(
-  publications: ParsedOpenAlexWork[]
+  publications: ParsedOpenAlexWork[],
+  orcid?: string
 ): Promise<DataResponse<BulkInsertPublicationsResponse>> {
   try {
     const supabase = await createClient(); 
@@ -122,6 +125,14 @@ export async function bulkInsertPublications(
         success: false,
         error: error.message
       };
+    }
+
+    // Public ORCID keywords go to profile.orcid_keywords (hidden, matching only).
+    // Runs BEFORE the embedding chain below, so the regenerated offers embedding
+    // already includes them. Never throws.
+    const parsedOrcid = orcid ? orcidSchema.safeParse(orcid) : null;
+    if (parsedOrcid?.success) {
+      await importOrcidKeywordsForUser(supabase, authData.user.id, parsedOrcid.data);
     }
 
     generateTopicsForUnprocessedPublications(parsedPubs.length, supabase)

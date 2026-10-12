@@ -82,6 +82,23 @@ export async function buildOffersText(userId: string, supabase: any): Promise<st
     parts.push(`Publication Topics: ${uniqueTopics.join(", ")}`);
   }
 
+  // Keywords the researcher wrote on their ORCID profile. Hidden from the UI; they only
+  // shape the vector, so a searcher typing a keyword can match people who declared it.
+  // Separate query on purpose: if the orcid_keywords column is missing (migration not
+  // applied yet), only this part is skipped and the bio above still counts.
+  const { data: orcidRow, error: orcidError } = await supabase
+    .from("profile")
+    .select("orcid_keywords")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (orcidError) {
+    console.warn("Could not read orcid_keywords:", orcidError.message);
+  }
+  const orcidKeywords: string[] = orcidRow?.orcid_keywords ?? [];
+  if (orcidKeywords.length) {
+    parts.push(`Keywords: ${orcidKeywords.join(", ")}`);
+  }
+
   return parts.join("\n");
 }
 

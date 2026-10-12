@@ -105,9 +105,10 @@ export default function LSOrcidLinker({
   });
 
   const handleImportPublications = () => {
-    bulkInsertPublications.mutate(
-      publications!.filter((w) => selected.has(w.doi!))
-    )
+    bulkInsertPublications.mutate({
+      publications: publications!.filter((w) => selected.has(w.doi!)),
+      orcid: orcid ?? undefined,
+    })
   };
 
   const chunkedPubs = publications ? chunk(publications, 20) : [];
