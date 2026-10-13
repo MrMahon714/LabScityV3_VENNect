@@ -1,0 +1,1 @@
+ALTER TABLE authors ADD COLUMN google_scholar_id text;
