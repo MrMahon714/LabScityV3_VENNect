@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { generateEmbedding } from "@/lib/actions/generate-embeddings";
+import { EXPLAINED_RESULTS } from "@/lib/constants/matching";
+import type { GetCollaboratorsResult } from "@/lib/types/collab";
+import { explainMatches } from "@/lib/utils/match-explanation";
 import { buildFilterSearchText } from "@/lib/utils/match-filters";
 import { matchFiltersSchema } from "@/lib/validations/matching";
 import { createClient } from "@/supabase/server";
@@ -33,7 +36,6 @@ export async function POST(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -66,7 +68,7 @@ export async function POST(request: NextRequest) {
   }
   const filters = parsed.data;
 
-  // Soft filters: skills, expertise and keywords become one search embedding
+  // Soft filters: skills, expertise and keywords
   const searchText = buildFilterSearchText(filters);
   let filterEmbedding: number[] | null = null;
   if (searchText) {
@@ -90,5 +92,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data ?? []);
+  const results = ((data ?? []) as GetCollaboratorsResult[]).slice(
+    0,
+    EXPLAINED_RESULTS,
+  );
+  const explanations = await explainMatches(
+    supabase,
+    user.id,
+    results,
+    filters,
+  );
+
+  return NextResponse.json(
+    results.map((result) => ({
+      ...result,
+      match_explanation: explanations.get(result.profile_user_id) ?? null,
+    })),
+  );
 }

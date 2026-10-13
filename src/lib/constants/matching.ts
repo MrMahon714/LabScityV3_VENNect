@@ -35,3 +35,4 @@ export const RECENT_PUBLICATION_YEARS = [1, 3, 5] as const;
 
 export const MAX_FILTER_CHIPS = 20;
 export const MAX_FILTER_TEXT_LENGTH = 60;
+export const EXPLAINED_RESULTS = 10;
