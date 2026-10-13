@@ -80,8 +80,8 @@ const MessageBubble = memo(function MessageBubble({
           p="sm"
           px="md"
           radius="xl"
-          bg={isMe ? "#1F3A5F" : "#FFFFFF"}
-          c={isMe ? "#F8FAFC" : "#123257"}
+          bg={isMe ? "var(--ls-brand)" : "var(--ls-surface)"}
+          c={isMe ? "#F8FAFC" : "var(--ls-text-strong)"}
           withBorder={!isMe}
           shadow="xs"
           style={{ opacity: isSending ? 0.7 : 1 }}
@@ -374,10 +374,9 @@ export default function ChatPage() {
     <Stack
       h="100%"
       gap={0}
-      bg="gray.0"
       style={{
         overflow: "hidden",
-        background: "linear-gradient(180deg, #F8FAFC 0%, #EEF3F9 100%)",
+        background: "var(--ls-chat-bg)",
       }}
     >
       {/* HEADER */}
@@ -385,18 +384,18 @@ export default function ChatPage() {
         p={isMobile ? "sm" : "lg"}
         radius={0}
         withBorder
-        bg="white"
+        bg="var(--ls-surface)"
         style={{
           zIndex: 10,
           flexShrink: 0,
           position: "relative",
-          borderBottomColor: "#E5E7EB",
+          borderBottomColor: "var(--ls-border)",
         }}
       >
         <Group justify="space-between" align="center" gap="md">
           <Box>
             <Group gap="xs" align="center">
-              <Title order={3} c="#123257" style={{ margin: 0 }}>
+              <Title order={3} c="var(--ls-text-strong)" style={{ margin: 0 }}>
                 {chatTitle || `Chat #${chat_id}`}
               </Title>
               <Indicator
@@ -405,7 +404,7 @@ export default function ChatPage() {
                 processing
               />
             </Group>
-            <Text size="sm" c="#64748B">
+            <Text size="sm" c="var(--ls-text-muted)">
               {isConnected ? "Live conversation" : "Reconnecting..."}
             </Text>
           </Box>
@@ -415,7 +414,7 @@ export default function ChatPage() {
             radius="xl"
             size="lg"
             onClick={() => setInfoModalOpen(true)}
-            style={{ background: "#EFF6FF", color: "#1D4ED8" }}
+            style={{ background: "var(--ls-tint-bg)", color: "var(--ls-tint-text)" }}
           >
             <IconInfoCircle size="1.2rem" />
           </ActionIcon>
@@ -427,7 +426,7 @@ export default function ChatPage() {
         opened={infoModalOpen}
         onClose={() => setInfoModalOpen(false)}
         title={
-          <Title order={4} c="navy.7">
+          <Title order={4} c="var(--ls-text-strong)">
             {chatTitle || `Chat #${chat_id}`}
           </Title>
         }
@@ -435,7 +434,7 @@ export default function ChatPage() {
       >
         <Stack gap="md">
           {messages.length > 0 && (
-            <Text size="sm" c="navy.7">
+            <Text size="sm" c="var(--ls-text-strong)">
               <Text span fw={600}>
                 Conversation started:{" "}
               </Text>
@@ -448,7 +447,7 @@ export default function ChatPage() {
           )}
 
           <Box>
-            <Text size="sm" fw={600} c="navy.7" mb={6}>
+            <Text size="sm" fw={600} c="var(--ls-text-strong)" mb={6}>
               Members
             </Text>
             {participantsData?.success && participantsData.data ? (
@@ -484,7 +483,7 @@ export default function ChatPage() {
           </Box>
 
           <Box>
-            <Text size="sm" fw={600} c="navy.7" mb={6}>
+            <Text size="sm" fw={600} c="var(--ls-text-strong)" mb={6}>
               Update Chat Name
             </Text>
             <Group gap="xs">
@@ -554,7 +553,7 @@ export default function ChatPage() {
               radius="xl"
               size="xs"
               loading={isLoadingMore}
-              style={{ background: "#EFF6FF", color: "#1D4ED8" }}
+              style={{ background: "var(--ls-tint-bg)", color: "var(--ls-tint-text)" }}
               onClick={loadMore}
             >
               Load older messages
@@ -564,7 +563,7 @@ export default function ChatPage() {
 
           {messages.length === 0 && (
             <Center h={200}>
-              <Text c="#64748B" size="sm">
+              <Text c="var(--ls-text-muted)" size="sm">
                 No messages yet. Say hello!
               </Text>
             </Center>
@@ -598,8 +597,8 @@ export default function ChatPage() {
         p={isMobile ? "sm" : "lg"}
         withBorder
         radius={0}
-        bg="white"
-        style={{ flexShrink: 0, borderTopColor: "#E5E7EB" }}
+        bg="var(--ls-surface)"
+        style={{ flexShrink: 0, borderTopColor: "var(--ls-border)" }}
       >
         <Group align="flex-end">
           <TextInput
@@ -611,16 +610,14 @@ export default function ChatPage() {
             radius="xl"
             size="md"
             disabled={!isConnected}
-            styles={{ input: { borderColor: "#E5E7EB", minHeight: 46 } }}
+            styles={{ input: { borderColor: "var(--ls-border)", minHeight: 46 } }}
           />
           <ActionIcon
             size="xl"
             variant="filled"
-            color="blue"
             radius="xl"
             onClick={handleSend}
             disabled={!inputText.trim() || !isConnected}
-            style={{ background: "#1F3A5F" }}
           >
             <IconSend size="1.1rem" />
           </ActionIcon>

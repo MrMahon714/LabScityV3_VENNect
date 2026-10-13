@@ -45,10 +45,10 @@ export function LSGroupCard({
       radius="xl"
       p="lg"
       h="100%"
-      bg="white"
+      bg="var(--ls-surface)"
       styles={{
         root: {
-          borderColor: "#E5E7EB",
+          borderColor: "var(--ls-border)",
           boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
           transition: "box-shadow 160ms ease, transform 160ms ease",
           "&:hover": {
@@ -65,7 +65,7 @@ export function LSGroupCard({
               size={48}
               radius="xl"
               color="blue"
-              bg={group.avatar_url ? undefined : "#1F3A5F"}
+              bg={group.avatar_url ? undefined : "var(--ls-brand)"}
               src={group.avatar_url ?? undefined}
             >
               {cardInitials(group.name)}
@@ -73,7 +73,7 @@ export function LSGroupCard({
             <Text
               fw={700}
               size="lg"
-              c="#123257"
+              c="var(--ls-text-strong)"
               lineClamp={2}
               style={{ flex: 1 }}
             >
@@ -81,7 +81,7 @@ export function LSGroupCard({
             </Text>
           </Group>
           {desc ? (
-            <Text size="sm" c="#64748B" lineClamp={4} lh={1.6}>
+            <Text size="sm" c="var(--ls-text-muted)" lineClamp={4} lh={1.6}>
               {desc}
             </Text>
           ) : null}
@@ -93,9 +93,9 @@ export function LSGroupCard({
                   size="sm"
                   variant="light"
                   style={{
-                    background: "#EEF2FF",
-                    color: "#2563EB",
-                    border: "1px solid #DBEAFE",
+                    background: "var(--ls-tint-bg-2)",
+                    color: "var(--ls-tint-text)",
+                    border: "1px solid var(--ls-tint-border)",
                   }}
                 >
                   {t}
@@ -107,10 +107,8 @@ export function LSGroupCard({
         <Group gap="xs" wrap="nowrap" mt="auto">
           {isMember ? (
             <Button
-              variant="light"
               fullWidth
               radius="xl"
-              style={{ background: "#EFF6FF", color: "#1D4ED8" }}
               onClick={() => onView(group.group_id)}
             >
               View
@@ -120,7 +118,7 @@ export function LSGroupCard({
               fullWidth
               radius="xl"
               loading={isJoining}
-              style={{ background: "#1F3A5F" }}
+              style={{ background: "var(--ls-brand)" }}
               onClick={() => onJoin(group.group_id)}
             >
               Join

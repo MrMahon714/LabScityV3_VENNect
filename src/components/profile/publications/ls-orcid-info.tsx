@@ -18,7 +18,7 @@ export default function OrcidInfo({
         bd='1px solid navy.2'
         styles={{
           arrow: {
-            border: '1px solid var(--mantine-color-navy-2)'
+            border: '1px solid var(--ls-border)'
           }
         }}
       >

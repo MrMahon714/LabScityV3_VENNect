@@ -8,6 +8,6 @@
 }
 
 .followBtn:hover {
-    background: var(--mantine-color-navy-6) !important;
-    color: var(--mantine-color-gray-2) !important;
+    background: var(--ls-accent) !important;
+    color: #fff !important;
 }

@@ -244,7 +244,7 @@ export function HomeFeed(props: HomeFeedProps) {
           ) : null}
 
           {!isFeedLoading && !isFeedError && posts.length === 0 ? (
-            <Card radius="md" shadow="xs" padding="lg" withBorder bg="white">
+            <Card radius="md" shadow="xs" padding="lg" withBorder bg="var(--ls-surface)">
               <Text fw={800} c="gray.8">
                 Your home feed is empty
               </Text>
@@ -703,7 +703,7 @@ export function CreatePostCard({
                 {initials(currentUserName)}
               </Avatar>
               <Box>
-                <Text size="sm" fw={800} c="navy.7">
+                <Text size="sm" fw={800} c="var(--ls-text-strong)">
                   {
                     type === 'home' ? "What are you working on" :
                     type === 'group' ? "Share an update with the group" :
@@ -744,10 +744,10 @@ export function CreatePostCard({
             align="center"
             wrap="wrap"
             pt="sm"
-            style={{ borderTop: "1px solid #F3F4F6" }}
+            style={{ borderTop: "1px solid var(--ls-border)" }}
           >
             <Group gap="xs" wrap="wrap">
-              <Text size="xs" fw={800} c="#94A3B8" tt="uppercase">
+              <Text size="xs" fw={800} c="var(--ls-text-muted)" tt="uppercase">
                 Show
               </Text>
               {activeFeedTags.map((tag) => (
@@ -855,14 +855,14 @@ export function CreatePostCard({
               />
 
               <Stack gap={6}>
-                <Text size="sm" fw={600} c="#334155">
+                <Text size="sm" fw={600} c="var(--ls-text-body)">
                   Tags
                 </Text>
                 <PillsInput
                   radius="md"
                   styles={{
                     input: {
-                      borderColor: "#E5E7EB",
+                      borderColor: "var(--ls-border)",
                     },
                   }}
                 >
@@ -922,7 +922,7 @@ export function CreatePostCard({
 
               <Stack gap={6}>
                 <Group justify="space-between" wrap="wrap" gap="xs">
-                  <Text component='label' size="sm" fw={600} c="#334155">
+                  <Text component='label' size="sm" fw={600} c="var(--ls-text-body)">
                     Body <Text component='span' size='sm' c='red'>*</Text>
                   </Text>
                   <Group gap="xs">
@@ -959,7 +959,7 @@ export function CreatePostCard({
                               style={{
                                 borderRadius: 999,
                                 backgroundColor: activeColorOption.value,
-                                border: "1px solid #CBD5E1",
+                                border: "1px solid var(--ls-border)",
                               }}
                             />
                           }
@@ -982,7 +982,7 @@ export function CreatePostCard({
                                 style={{
                                   borderRadius: 999,
                                   backgroundColor: option.value,
-                                  border: "1px solid #CBD5E1",
+                                  border: "1px solid var(--ls-border)",
                                 }}
                               />
                             }
@@ -999,17 +999,17 @@ export function CreatePostCard({
                   editor={editor}
                   styles={{
                     root: {
-                      borderColor: "#E5E7EB",
+                      borderColor: "var(--ls-border)",
                       borderRadius: 16,
                       overflow: "hidden",
                     },
                     toolbar: {
-                      borderColor: "#E5E7EB",
+                      borderColor: "var(--ls-border)",
                     },
                     content: {
                       minHeight: 180,
-                      borderColor: "#E5E7EB",
-                      backgroundColor: "#FFFFFF",
+                      borderColor: "var(--ls-border)",
+                      backgroundColor: "var(--ls-surface)",
                       color: DEFAULT_EDITOR_TEXT_COLOR,
                       "& .ProseMirror": {
                         color: DEFAULT_EDITOR_TEXT_COLOR,
@@ -1081,7 +1081,7 @@ export function CreatePostCard({
                     style={{
                       borderRadius: 16,
                       overflow: "hidden",
-                      border: "1px solid #E5E7EB",
+                      border: "1px solid var(--ls-border)",
                       aspectRatio: "16 / 9",
                       position: "relative",
                     }}
@@ -1149,7 +1149,7 @@ export function FeedPostCard({
       radius="md"
       shadow='xs'
       withBorder
-      bg="white"
+      bg="var(--ls-surface)"
       p="lg"
     >
       <Stack gap="md">
@@ -1160,9 +1160,9 @@ export function FeedPostCard({
                 radius="xl"
                 variant="light"
                 style={{
-                  background: "#EEF2FF",
-                  color: "#1D4ED8",
-                  border: "1px solid #C7D2FE",
+                  background: "var(--ls-tint-bg-2)",
+                  color: "var(--ls-tint-text)",
+                  border: "1px solid var(--ls-tint-border)",
                 }}
               >
                 Your Post
@@ -1178,9 +1178,9 @@ export function FeedPostCard({
                   tag === "Article" ? <IconFileText size={10} /> : undefined
                 }
                 style={{
-                  background: tag === "Article" ? "#EFF6FF" : "#EEF2FF",
-                  color: "#2563EB",
-                  border: "1px solid #BFDBFE",
+                  background: tag === "Article" ? "var(--ls-tint-bg)" : "var(--ls-tint-bg-2)",
+                  color: "var(--ls-tint-text)",
+                  border: "1px solid var(--ls-tint-border)",
                 }}
               >
                 {tag}
@@ -1220,7 +1220,7 @@ export function FeedPostCard({
               href={`/posts/${post.id}`}
               fw={700}
               fz={17}
-              c="#111827"
+              c="var(--ls-text-strong)"
               style={{
                 lineHeight: 1.4,
                 overflowWrap: "anywhere",
@@ -1232,7 +1232,7 @@ export function FeedPostCard({
           </Box>
           <Text
             size="sm"
-            c="#475569"
+            c="var(--ls-text-body)"
             lh={1.6}
             lineClamp={3}
             style={{
@@ -1272,13 +1272,13 @@ export function FeedPostCard({
               >
                 <Text 
                   span
-                  c="#1F2937"
+                  c="var(--ls-text-strong)"
                   fw={600}
                 >
                   {post.userName}
                 </Text>
               </Anchor>
-              <Text span c="#64748B" fw={400}>
+              <Text span c="var(--ls-text-muted)" fw={400}>
                 {" "}
                 · {post.timeAgo}
               </Text>
@@ -1291,7 +1291,7 @@ export function FeedPostCard({
               />
             ) : null}
           </Group>
-          <Text size="sm" c="#2563EB">
+          <Text size="sm" c="var(--ls-tint-text)">
             {copied ? "Link copied" : ""}
           </Text>
         </Group>
@@ -1313,7 +1313,7 @@ export function FeedPostCard({
               src={post.mediaUrl}
               alt="Post attachment"
               bdrs="lg"
-              bg='navy.0'
+              bg="var(--ls-navy-tint-0)"
               fill
               mah={600}
               style={{ objectFit: "contain" }}
@@ -1321,7 +1321,7 @@ export function FeedPostCard({
           </Box>
         ) : null}
 
-        <Divider color="#E5E7EB" />
+        <Divider color="var(--ls-border)" />
 
         <Group justify="space-between" align="center" wrap="wrap">
           <Group gap="lg">
@@ -1379,7 +1379,6 @@ export function FeedPostCard({
               href={`/posts/${post.id}`}
               radius="md"
               rightSection={<IconChevronRight size={14} />}
-              bg='navy.7'
             >
               View
             </Button>
@@ -1425,7 +1424,7 @@ export function FeedPostCard({
               styles={{
                 input: {
                   borderRadius: 14,
-                  borderColor: "#E5E7EB",
+                  borderColor: "var(--ls-border)",
                 },
               }}
             />
@@ -1687,7 +1686,7 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card radius="md" shadow="xs" padding="md" withBorder bg="white">
+    <Card radius="md" shadow="xs" padding="md" withBorder bg="var(--ls-surface)">
       <Group justify="space-between" mb="sm">
         <Group gap="xs">
           <ThemeIcon variant="light" color={accent} radius="md" size="sm">

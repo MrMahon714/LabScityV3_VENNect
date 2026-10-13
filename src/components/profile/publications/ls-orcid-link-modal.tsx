@@ -189,7 +189,7 @@ export default function LSOrcidLinker({
               <Stack gap='xs'>
                 <form onSubmit={handleOrcidSubmit} style={{ flex: 1 }}>
                   <Stack>
-                    <Card bg='navy.1' shadow='none' bd='none' bdrs={0}>
+                    <Card bg="var(--ls-navy-tint)" shadow='none' bd='none' bdrs={0}>
                       <Group wrap='nowrap'>
                         <Text c='' fz='sm' flex='1'>
                           Enter your ORCID iD to import publications via {" "}
@@ -260,7 +260,7 @@ export default function LSOrcidLinker({
                         <Stack>
                           <Text size="sm" c="dimmed">
                             {publications.length} publications found ·{" "}
-                            <Text span c="navy.7">
+                            <Text span c="var(--ls-text-strong)">
                               {selected.size} selected
                             </Text>
                           </Text>
@@ -269,7 +269,7 @@ export default function LSOrcidLinker({
                             indeterminate={someChecked}
                             label='Select all'
                             onChange={(e) => toggleSelectAll(e.currentTarget.checked)}
-                            color='navy.6'
+                            color="var(--ls-accent)"
                             radius='sm'
                           />
                           <Chip.Group multiple>
@@ -286,7 +286,7 @@ export default function LSOrcidLinker({
                                         key={type}
                                         checked={allOfGroup}
                                         onChange={() => toggleGroup(type)}
-                                        color='navy.6'
+                                        color="var(--ls-accent)"
                                         size='xs'
                                       >
                                         {OPENALEX_WORK_TYPE_LABELS[type]} ({selectedInGroup}/{dois.length})

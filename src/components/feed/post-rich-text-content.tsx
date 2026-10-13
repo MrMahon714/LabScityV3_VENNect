@@ -32,7 +32,7 @@ export function PostRichTextContent({
     content: html,
     editorProps: {
       attributes: {
-        style: "color: #475569;",
+        style: "color: var(--ls-text-body);",
       },
     },
   });
@@ -65,7 +65,7 @@ export function PostRichTextContent({
           content: {
             border: "none",
             padding: 0,
-            color: "#475569",
+            color: "var(--ls-text-body)",
             overflowWrap: "anywhere",
             wordBreak: "break-word",
             whiteSpace: "pre-wrap",

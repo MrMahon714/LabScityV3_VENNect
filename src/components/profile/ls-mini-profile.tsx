@@ -34,7 +34,7 @@ export default function LSMiniProfile({
         {initials}
       </Avatar>
       <Stack gap={0} style={{ minWidth: 0 }}>
-        <Text c="navy.7" size="md" fw={600} lineClamp={1}>
+        <Text c="var(--ls-text-strong)" size="md" fw={600} lineClamp={1}>
           {posterName}
         </Text>
         {

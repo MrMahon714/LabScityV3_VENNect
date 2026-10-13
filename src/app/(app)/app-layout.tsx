@@ -13,7 +13,7 @@ const LSAppLayout = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Flex direction="column" w="100%" bg='navy.0'>
+    <Flex direction="column" w="100%" bg="var(--ls-app-bg)">
       <LSAppTopBar userId={userId} isModerator={isModerator} />
       <Box maw="100%" style={{ overflowX: "clip" }}>
         {children}

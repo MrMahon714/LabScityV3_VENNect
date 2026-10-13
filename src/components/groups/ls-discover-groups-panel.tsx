@@ -123,18 +123,18 @@ export function LSDiscoverGroupsPanel({
         radius="xl"
         p="lg"
         withBorder
-        bg="white"
+        bg="var(--ls-surface)"
         style={{
-          borderColor: "#E5E7EB",
+          borderColor: "var(--ls-border)",
           boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
         }}
       >
         <Stack gap="md">
           <Box>
-            <Title order={4} c="#123257">
+            <Title order={4} c="var(--ls-text-strong)">
               Find a group
             </Title>
-            <Text size="sm" c="#64748B">
+            <Text size="sm" c="var(--ls-text-muted)">
               Search by name, description, or narrow things down with topic
               tags.
             </Text>
@@ -147,7 +147,7 @@ export function LSDiscoverGroupsPanel({
             radius="xl"
             styles={{
               input: {
-                borderColor: "#E5E7EB",
+                borderColor: "var(--ls-border)",
               },
             }}
           />
@@ -161,7 +161,7 @@ export function LSDiscoverGroupsPanel({
             radius="xl"
             styles={{
               input: {
-                borderColor: "#E5E7EB",
+                borderColor: "var(--ls-border)",
               },
             }}
           />
@@ -183,10 +183,10 @@ export function LSDiscoverGroupsPanel({
           radius="xl"
           p="lg"
           withBorder
-          bg="white"
-          style={{ borderColor: "#E5E7EB" }}
+          bg="var(--ls-surface)"
+          style={{ borderColor: "var(--ls-border)" }}
         >
-          <Text c="#64748B" size="sm">
+          <Text c="var(--ls-text-muted)" size="sm">
             No public groups match your filters. Try different keywords or
             topics.
           </Text>

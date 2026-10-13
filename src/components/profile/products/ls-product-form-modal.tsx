@@ -334,7 +334,7 @@ export default function LSProductFormModal({
                               leftSection={
                                 <IconUpload
                                   size='1rem'
-                                  color={uploadPreviewsBtnDisabled ? 'var(--mantine-color-gray-5)' : 'var(--mantine-color-navy-7)'}
+                                  color={uploadPreviewsBtnDisabled ? 'var(--mantine-color-gray-5)' : 'var(--ls-text-strong)'}
                                 />}
                               bg={uploadPreviewsBtnDisabled ? 'gray.2' : 'navy.1'}
                               c={uploadPreviewsBtnDisabled ? 'gray.5' : 'navy.7'}

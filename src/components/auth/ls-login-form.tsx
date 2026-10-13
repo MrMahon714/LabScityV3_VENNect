@@ -17,7 +17,7 @@ const inputStyles = {
   borderRadius: "0.5rem",
   backgroundColor: "var(--mantine-color-gray-0)",
   fontFamily: "var(--mantine-font-family)",
-  color: "var(--mantine-color-navy-7)",
+  color: "var(--ls-text-strong)",
 };
 
 export function LSLoginForm({
@@ -83,7 +83,7 @@ export function LSLoginForm({
     <Paper
       miw={400}
       maw={isMobile ? "90%" : "30%"} // limit box size on larger screen 
-      bg="navy.0"
+      bg="var(--ls-navy-tint-0)"
       p="2rem"
       style={{ borderRadius: "0.625rem" }}
     >
@@ -117,7 +117,7 @@ export function LSLoginForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Email</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Email</Text>
             <Controller
               name="email"
               control={form.control}
@@ -135,7 +135,7 @@ export function LSLoginForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Password</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Password</Text>
             <Controller
               name="password"
               control={form.control}
@@ -163,7 +163,7 @@ export function LSLoginForm({
               height: "2.5625rem",
               borderRadius: "0.46875rem",
               fontFamily: "var(--mantine-font-family)",
-              "--button-hover": "var(--mantine-color-navy-6)",
+              "--button-hover": "var(--ls-accent)",
             }}
           >
             Sign In

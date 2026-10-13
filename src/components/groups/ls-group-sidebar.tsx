@@ -47,10 +47,10 @@ export function LSGroupSidebar({
       >
         <Stack gap="md">
           <Box>
-            <Title order={3} c="#123257">
+            <Title order={3} c="var(--ls-text-strong)">
               Groups
             </Title>
-            <Text size="sm" c="#64748B">
+            <Text size="sm" c="var(--ls-text-muted)">
               Switch between your active research spaces and open a new one when
               you need it.
             </Text>
@@ -58,7 +58,6 @@ export function LSGroupSidebar({
           <Button
             leftSection={<IconPlus size={14} />}
             onClick={onNewGroupClick}
-            style={{ background: "#1F3A5F" }}
           >
             New Group
           </Button>
@@ -76,10 +75,10 @@ export function LSGroupSidebar({
               radius="xl"
               p="lg"
               withBorder
-              bg="white"
-              style={{ borderColor: "#E5E7EB" }}
+              bg="var(--ls-surface)"
+              style={{ borderColor: "var(--ls-border)" }}
             >
-              <Text size="sm" c="#64748B">
+              <Text size="sm" c="var(--ls-text-muted)">
                 You haven't joined any groups yet.
               </Text>
             </Card>
@@ -100,9 +99,9 @@ export function LSGroupSidebar({
                   bdrs='md'
                   style={{
                     border: active
-                      ? "1px solid #BFDBFE"
-                      : "1px solid #E5E7EB",
-                    background: active ? "#EFF6FF" : "#FFFFFF",
+                      ? "1px solid var(--ls-tint-border)"
+                      : "1px solid var(--ls-border)",
+                    background: active ? "var(--ls-tint-bg)" : "var(--ls-surface)",
                     boxShadow: active
                       ? "3px 3px 10px rgba(37,99,235,0.12)"
                       : "0 1px 4px rgba(0,0,0,0.04)",
@@ -114,12 +113,12 @@ export function LSGroupSidebar({
                     },
                   }}
                   label={
-                    <Text fw={700} c="#123257" truncate>
+                    <Text fw={700} c="var(--ls-text-strong)" truncate>
                       {group.name}
                     </Text>
                   }
                   description={
-                    <Text size="xs" c="#64748B">
+                    <Text size="xs" c="var(--ls-text-muted)">
                       {formatMembers(group.memberCount)}
                     </Text>
                   }

@@ -115,7 +115,7 @@ export default function LSProduct(
         borderTop: product.is_featured ? '1px solid var(--mantine-color-blue-3)' : '1px solid var(--mantine-color-gray-3)',
       }}
       shadow={product.is_featured ? '0 2px 12px 0 rgba(37, 99, 235, 0.08)' : 'xs'}
-      bg={product.is_featured ? '#F8FBFF' : undefined}
+      bg={product.is_featured ? 'var(--ls-surface-alt)' : undefined}
     >
       {/* Is Featured? top strip */}
       { product.is_featured && 
@@ -375,7 +375,7 @@ export default function LSProduct(
               <Menu position="top-end" shadow="md">
                 <Menu.Target>
                   <ActionIcon variant='subtle' size='lg'>
-                    <IconDots size='1.25rem' color='var(--mantine-color-navy-7)' />
+                    <IconDots size='1.25rem' color='var(--ls-text-strong)' />
                   </ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown>

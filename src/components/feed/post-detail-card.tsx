@@ -185,10 +185,10 @@ export function PostDetailCard({
       <Card
         radius="xl"
         withBorder
-        bg="white"
+        bg="var(--ls-surface)"
         p={{ base: "md", sm: "lg" }}
         style={{
-          borderColor: "#E5E7EB",
+          borderColor: "var(--ls-border)",
           boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
           overflow: "hidden",
         }}
@@ -227,9 +227,9 @@ export function PostDetailCard({
                   radius="xl"
                   variant="light"
                   style={{
-                    background: "#EEF2FF",
-                    color: "#1D4ED8",
-                    border: "1px solid #C7D2FE",
+                    background: "var(--ls-tint-bg-2)",
+                    color: "var(--ls-tint-text)",
+                    border: "1px solid var(--ls-tint-border)",
                   }}
                 >
                   Your Post
@@ -244,9 +244,9 @@ export function PostDetailCard({
                     tag === "Article" ? <IconFileText size={10} /> : undefined
                   }
                   style={{
-                    background: tag === "Article" ? "#EFF6FF" : "#EEF2FF",
-                    color: "#2563EB",
-                    border: "1px solid #BFDBFE",
+                    background: tag === "Article" ? "var(--ls-tint-bg)" : "var(--ls-tint-bg-2)",
+                    color: "var(--ls-tint-text)",
+                    border: "1px solid var(--ls-tint-border)",
                   }}
                 >
                   {tag}
@@ -291,7 +291,7 @@ export function PostDetailCard({
             <Text
               fw={700}
               fz={{ base: 22, sm: 28 }}
-              c="#111827"
+              c="var(--ls-text-strong)"
               style={{
                 lineHeight: 1.25,
                 overflowWrap: "anywhere",
@@ -301,13 +301,13 @@ export function PostDetailCard({
               {title}
             </Text>
             {parsedContent.bodyHtml ? (
-              <Box c="#475569">
+              <Box c="var(--ls-text-body)">
                 <PostRichTextContent html={parsedContent.bodyHtml} />
               </Box>
             ) : (
               <Text
                 size="md"
-                c="#475569"
+                c="var(--ls-text-body)"
                 lh={1.7}
                 style={{
                   whiteSpace: "pre-wrap",
@@ -332,16 +332,16 @@ export function PostDetailCard({
                     href={`/profile/${post.userId}`}
                     size="sm"
                     fw={700}
-                    c="#1F2937"
+                    c="var(--ls-text-strong)"
                     style={{ textDecoration: "none" }}
                   >
                     {post.userName}
                   </Text>
-                  <Text size="sm" c="#64748B">
+                  <Text size="sm" c="var(--ls-text-muted)">
                     {post.timeAgo}
                   </Text>
                 </Group>
-                <Text size="sm" c="#64748B" style={{ overflowWrap: "anywhere" }}>
+                <Text size="sm" c="var(--ls-text-muted)" style={{ overflowWrap: "anywhere" }}>
                   {post.scientificField}
                 </Text>
               </Box>
@@ -352,7 +352,7 @@ export function PostDetailCard({
                 />
               ) : null}
             </Group>
-            <Text size="sm" c="#2563EB">
+            <Text size="sm" c="var(--ls-tint-text)">
               {copied ? "Link copied" : ""}
             </Text>
           </Group>
@@ -362,10 +362,10 @@ export function PostDetailCard({
               style={{
                 overflow: "hidden",
                 borderRadius: 18,
-                border: "1px solid #E5E7EB",
+                border: "1px solid var(--ls-border)",
                 aspectRatio: "16 / 9",
                 position: "relative",
-                background: "#E2E8F0",
+                background: "var(--ls-border)",
               }}
             >
               <Image
@@ -377,7 +377,7 @@ export function PostDetailCard({
             </Box>
           ) : null}
 
-          <Divider color="#E5E7EB" />
+          <Divider color="var(--ls-border)" />
 
           <Group justify="space-between" align="center" wrap="wrap" gap="sm">
             <Group gap="lg">

@@ -59,7 +59,7 @@ export default function LSPublicationReviewItem({
       }}
     >
       <Group wrap="nowrap" align="flex-start" gap="sm">
-        <Checkbox.Indicator radius='sm' checked={selected} mt={2} color='navy.6' />
+        <Checkbox.Indicator radius='sm' checked={selected} mt={2} color="var(--ls-accent)" />
 
         <Stack gap={6} style={{ minWidth: 0, flex: 1 }}>
           {/* Type + title */}
@@ -78,7 +78,7 @@ export default function LSPublicationReviewItem({
             </Badge>
           </Group>
 
-          <Text fz="sm" fw="600" c="navy.7" lh="1.4rem" lineClamp={2}>
+          <Text fz="sm" fw="600" c="var(--ls-text-strong)" lh="1.4rem" lineClamp={2}>
             {pub.title}
           </Text>
 

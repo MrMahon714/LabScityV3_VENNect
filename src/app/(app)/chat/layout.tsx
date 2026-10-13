@@ -97,10 +97,10 @@ export default function ChatLayout({
       >
         <Stack gap="md">
           <Box>
-            <Title order={3} c="#123257">
+            <Title order={3} c="var(--ls-text-strong)">
               Chats
             </Title>
-            <Text size="sm" c="#64748B">
+            <Text size="sm" c="var(--ls-text-muted)">
               Your active conversations across researchers and groups.
             </Text>
           </Box>
@@ -128,10 +128,10 @@ export default function ChatLayout({
               radius="xl"
               p="lg"
               withBorder
-              bg="white"
-              style={{ borderColor: "#E5E7EB" }}
+              bg="var(--ls-surface)"
+              style={{ borderColor: "var(--ls-border)" }}
             >
-              <Text size="sm" c="#64748B">
+              <Text size="sm" c="var(--ls-text-muted)">
                 No chats yet. Start a conversation!
               </Text>
             </Card>
@@ -146,12 +146,12 @@ export default function ChatLayout({
                 style={{
                   border:
                     chat.conversation_id + "" === activeChatId
-                      ? "1px solid #BFDBFE"
-                      : "1px solid #E5E7EB",
+                      ? "1px solid var(--ls-tint-border)"
+                      : "1px solid var(--ls-border)",
                   background:
                     chat.conversation_id + "" === activeChatId
-                      ? "#EFF6FF"
-                      : "#FFFFFF",
+                      ? "var(--ls-tint-bg)"
+                      : "var(--ls-surface)",
                   borderRadius: 'var(--mantine-radius-md)',
                   boxShadow:
                     chat.conversation_id + "" === activeChatId
@@ -212,11 +212,9 @@ export default function ChatLayout({
           <Flex
             direction="column"
             h="calc(100dvh - 60px - 60px)"
-            bg="gray.0"
             style={{
               overflow: "hidden",
-              background:
-                "linear-gradient(180deg, #F8FAFC 0%, #EEF3F9 100%)",
+              background: "var(--ls-chat-bg)",
             }}
           >
             <Box p="xs" style={{ flexShrink: 0 }}>
@@ -225,7 +223,7 @@ export default function ChatLayout({
                 size="compact-sm"
                 leftSection={<IconMenu2 size={18} />}
                 onClick={() => setDrawerOpened(true)}
-                c="navy.7"
+                c="var(--ls-text-strong)"
               >
                 Chats
               </Button>
@@ -239,11 +237,9 @@ export default function ChatLayout({
       ) : (
         <Flex
           h="calc(100vh - 60px)"
-          bg="gray.0"
           style={{
             overflow: "hidden",
-            background:
-              "linear-gradient(180deg, #F8FAFC 0%, #EEF3F9 100%)",
+            background: "var(--ls-chat-bg)",
           }}
         >
           <Paper
@@ -251,9 +247,9 @@ export default function ChatLayout({
             miw={320}
             radius={0}
             h="100%"
-            bg="#F8FAFC"
+            bg="var(--ls-chat-rail-bg)"
             style={{
-              borderRight: "1px solid #E2E8F0",
+              borderRight: "1px solid var(--mantine-color-gray-3)",
             }}
           >
             {sidebarContent}
@@ -273,7 +269,7 @@ export default function ChatLayout({
           setSelectedUsers([]);
         }}
         title={
-          <Title order={4} c="navy.7">
+          <Title order={4} c="var(--ls-text-strong)">
             New Conversation
           </Title>
         }
@@ -286,7 +282,7 @@ export default function ChatLayout({
             onChange={(e) => setQuery(e.target.value)}
             radius="xl"
             size="md"
-            styles={{ input: { borderColor: "#E5E7EB" } }}
+            styles={{ input: { borderColor: "var(--ls-border)" } }}
           />
 
           {searching && (
@@ -306,7 +302,7 @@ export default function ChatLayout({
                   <NavLink
                     key={user.user_id}
                     label={
-                      <Text fw={600} c="navy.7">
+                      <Text fw={600} c="var(--ls-text-strong)">
                         {user.first_name} {user.last_name}
                       </Text>
                     }
@@ -315,7 +311,7 @@ export default function ChatLayout({
                         radius="xl"
                         size="md"
                         color="blue"
-                        bg="#1F3A5F"
+                        bg="var(--ls-brand)"
                         src={user.avatar_url}
                       />
                     }
@@ -353,7 +349,6 @@ export default function ChatLayout({
             radius="xl"
             loading={createChatMutation.isPending}
             disabled={selectedUsers.length === 0}
-            style={{ background: "#1F3A5F" }}
             onClick={() =>
               createChatMutation.mutate(
                 selectedUsers.map((u) => u.user_id),

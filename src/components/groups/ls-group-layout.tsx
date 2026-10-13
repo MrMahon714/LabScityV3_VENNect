@@ -172,7 +172,7 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
               p="xl"
               radius="md"
               withBorder
-              bg="white"
+              bg="var(--ls-surface)"
               shadow='xs'
             >
               <Group gap="md" align="flex-start">
@@ -180,17 +180,17 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
                   size={76}
                   radius="xl"
                   color="blue"
-                  bg={groupDetails.avatar_url ? undefined : "#1F3A5F"}
+                  bg={groupDetails.avatar_url ? undefined : "var(--ls-brand)"}
                   src={groupDetails.avatar_url ?? undefined}
                 >
                   {groupInitials}
                 </Avatar>
                 <Stack gap={4} style={{ flex: 1 }}>
-                  <Text size="xl" fw={700} c="#123257">
+                  <Text size="xl" fw={700} c="var(--ls-text-strong)">
                     {groupDetails.name}
                   </Text>
                   <Group gap={8} wrap="wrap">
-                    <Text size="sm" fw={600} c="#2563EB">
+                    <Text size="sm" fw={600} c="var(--ls-tint-text)">
                       {groupDetails.memberCount} members
                     </Text>
                     {groupDetails.topics?.slice(0, 4).map((topic) => (
@@ -198,12 +198,12 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
                         key={topic}
                         size="xs"
                         fw={700}
-                        c="#2563EB"
+                        c="var(--ls-tint-text)"
                         style={{
                           padding: "4px 10px",
                           borderRadius: 999,
-                          background: "#EEF2FF",
-                          border: "1px solid #DBEAFE",
+                          background: "var(--ls-tint-bg-2)",
+                          border: "1px solid var(--ls-tint-border)",
                         }}
                       >
                         {topic}
@@ -211,7 +211,7 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
                     ))}
                   </Group>
                   {groupDetails.description && (
-                    <Text c="#475569" lh={1.7}>
+                    <Text c="var(--ls-text-body)" lh={1.7}>
                       {groupDetails.description}
                     </Text>
                   )}
@@ -319,11 +319,11 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
           radius="xl"
           p="xl"
           withBorder
-          bg="white"
-          style={{ borderColor: "#E5E7EB" }}
+          bg="var(--ls-surface)"
+          style={{ borderColor: "var(--ls-border)" }}
         >
           <Stack align="center" gap="sm">
-            <Text c="#64748B" size="lg">
+            <Text c="var(--ls-text-muted)" size="lg">
             Group not found.
             </Text>
             <Button
@@ -340,9 +340,10 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
       <Center h="50%">
         <Paper
           p="xl"
-          radius='0'
+          radius="md"
           withBorder
-          bg="navy.3"
+          bg="var(--ls-empty-bg)"
+          style={{ borderColor: "var(--ls-border)" }}
           maw='420'
         >
           <Stack align="center" gap="sm">
@@ -351,10 +352,11 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
               radius="xl"
               variant="outline"
               color='navy.7'
+              style={{ color: "var(--ls-text-strong)", borderColor: "var(--ls-text-strong)" }}
             >
               <IconUsersGroup size={30} />
             </ThemeIcon>
-            <Text c="navy.7" size="xl" fw={700}>
+            <Text c="var(--ls-text-strong)" size="xl" fw={700}>
               Select a group
             </Text>
             <Text c="gray.7" size="sm" ta="center">
@@ -490,7 +492,7 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
                 size="compact-sm"
                 leftSection={<IconMenu2 size={18} />}
                 onClick={openDrawer}
-                c="navy.7"
+                c="var(--ls-text-strong)"
               >
                 Groups
               </Button>
@@ -512,7 +514,7 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
             style={{
               borderRight: '1px solid var(--mantine-color-gray-3)'
             }}
-            bg='navy.0'
+            bg="var(--ls-groups-rail-bg)"
           >
             {sidebarNode}
           </Paper>
@@ -522,7 +524,7 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
             py={24}
             px={{ base: "md", md: "xl", lg: 80 }}
             style={{ overflow: "auto" }}
-            bg='white'
+            bg="var(--ls-groups-content-bg)"
           >
             {contentNode}
           </Box>

@@ -15,7 +15,7 @@ const inputStyles = {
   borderRadius: "0.5rem",
   backgroundColor: "var(--mantine-color-gray-0)",
   fontFamily: "var(--mantine-font-family)",
-  color: "var(--mantine-color-navy-7)",
+  color: "var(--ls-text-strong)",
 };
 
 export default function ForgotPasswordPage() {
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
   return (
     <Paper
       maw={isMobile ? "90%" : "30%"}
-      bg="navy.0"
+      bg="var(--ls-navy-tint-0)"
       p="2rem"
       style={{ borderRadius: "0.625rem" }}
     >
@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
             />
           </Box>
 
-          <Text fz="lg" fw={600} c="navy.7">Enter your email to reset your password:</Text>
+          <Text fz="lg" fw={600} c="var(--ls-text-strong)">Enter your email to reset your password:</Text>
 
           {errorMessage && (
             <Alert color="red" title="Unable to Send Email" w="100%">
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Email</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Email</Text>
             <TextInput
               value={email}
               onChange={(event) => setEmail(event.currentTarget.value)}
@@ -111,7 +111,7 @@ export default function ForgotPasswordPage() {
               height: "2.5625rem",
               borderRadius: "0.46875rem",
               fontFamily: "var(--mantine-font-family)",
-              "--button-hover": "var(--mantine-color-navy-6)",
+              "--button-hover": "var(--ls-accent)",
             }}
           >
             Send Reset Link

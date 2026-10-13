@@ -76,7 +76,7 @@ export function LandingContent() {
           radius="lg"
           bg="navy.7"
           p={32}
-          c="gray.0"
+          c="white"
           flex={1}
           py={isMobile ? 32 : 64}
         >
@@ -112,7 +112,7 @@ export function LandingContent() {
               {" "}
               {/* NOTE: make sure wrap is on here so badges fit text */}
               {topContent.map((skill: any, i: any) => (
-                <Badge key={i} color="gray.0" variant="outline" p={16}>
+                <Badge key={i} color="white" variant="outline" p={16}>
                   {skill}
                 </Badge>
               ))}
@@ -125,7 +125,7 @@ export function LandingContent() {
           radius="lg"
           bg="gray.2"
           p={32}
-          c="navy.7"
+          c="var(--ls-text-strong)"
           flex={1}
           py={isMobile ? 32 : 64}
         >
@@ -137,7 +137,7 @@ export function LandingContent() {
 
             <Stack gap={4} w="320">
               {whoFor.map((subj, i) => (
-                <Button key={i} radius="xl" variant="light" c="navy.7">
+                <Button key={i} radius="xl" variant="light" c="var(--ls-text-strong)">
                   {subj}
                 </Button>
               ))}

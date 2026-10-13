@@ -144,7 +144,7 @@ export default function LSProfileHero({
       src={profilePicURL || undefined}
       size={80}
       color="navy.6"
-      bg={profilePicURL ? undefined : "navy.1"}
+      bg={profilePicURL ? undefined : "var(--ls-navy-tint)"}
       bd="2px solid white"
       style={{ position: "relative", zIndex: 2 }}
     >
@@ -342,7 +342,7 @@ export default function LSProfileHero({
 
         {/* Profile Name + Workplace/Occupation */}
         <Stack gap="4" mt={-15}>
-          <Text c="navy.7" fz={30} fw={700} lh='1'>{profileName}</Text>
+          <Text c="var(--ls-text-strong)" fz={30} fw={700} lh='1'>{profileName}</Text>
           {(occupation ?? workplace) ? (
             <Text c="navy.6" size="sm">
               {[occupation, workplace].filter(Boolean).join(", ")}
@@ -352,12 +352,12 @@ export default function LSProfileHero({
         
         <Group gap="xs">
           <UnstyledButton onClick={() => setListModal("followers")} className={classes.followCounts}>
-            <Text c="navy.7" size="sm">
+            <Text c="var(--ls-text-strong)" size="sm">
               <b>{followers.length}</b> Followers
             </Text>
           </UnstyledButton>
           <UnstyledButton onClick={() => setListModal("following")} className={classes.followCounts}>
-            <Text c="navy.7" size="sm">
+            <Text c="var(--ls-text-strong)" size="sm">
               <b>{following.length}</b> Following
             </Text>
           </UnstyledButton>
@@ -412,7 +412,7 @@ export default function LSProfileHero({
         </Stack>
 
         {profileAbout &&
-          <Text c="navy.7" fw='400' fz='sm' maw='800' my='6'>{profileAbout}</Text>
+          <Text c="var(--ls-text-strong)" fw='400' fz='sm' maw='800' my='6'>{profileAbout}</Text>
         }
 
         {
@@ -492,7 +492,7 @@ export default function LSProfileHero({
                     key={skill.id ?? `${skill.name}${i}`} 
                     bg='gray.2' 
                     bd='1px solid gray.4' 
-                    c='navy.7' 
+                    c="var(--ls-text-strong)" 
                     tt='none'
                     size='md'
                     fw='600'

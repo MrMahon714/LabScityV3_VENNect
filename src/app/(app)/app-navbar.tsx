@@ -54,7 +54,7 @@ export default function LSAppNavbar({
 
   return (
     <Flex
-      bg="navy.7"
+      bg="var(--ls-topbar)"
       pos="fixed"
       // stretch down screen if desktop ( side ); stretch across if mobile
       w={isMobile ? "100%" : desktopWidth}
