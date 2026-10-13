@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data, error } = await supabase.rpc("get_collaborators_final", {
+  const { data, error } = await supabase.rpc("get_collaborators_filtered", {
     current_user_id: currentUserId,
   });
 
