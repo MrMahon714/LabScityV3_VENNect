@@ -19,7 +19,6 @@ const pickedOrCustomChip = z.object({
  */
 export const matchFiltersSchema = z.object({
   skills: z.array(pickedOrCustomChip).max(MAX_FILTER_CHIPS).default([]),
-  skillsMustHave: z.boolean().default(false),
   expertise: z.array(pickedOrCustomChip).max(MAX_FILTER_CHIPS).default([]),
   publicationKeywords: z.array(chipText).max(MAX_FILTER_CHIPS).default([]),
   productTypes: z.array(z.enum(MATCHING_PRODUCT_TYPES)).default([]),
