@@ -607,6 +607,15 @@ export async function getUser(user_id: string, supabaseClient?: SupabaseClient):
       name: r.name,
     }));
 
+    const { data: careerRow, error: careerError } = await supabase
+      .from("profile")
+      .select("career_stage")
+      .eq("user_id", user_id)
+      .maybeSingle();
+    if (careerError) {
+      console.warn("Could not read career_stage:", careerError.message);
+    }
+
     return {
       success: true,
       data: {
@@ -621,7 +630,8 @@ export async function getUser(user_id: string, supabaseClient?: SupabaseClient):
         declared_tags,
         timezone: profileData?.timezone ?? null,
         lab_department: profileData?.lab_department ?? null,
-        location: profileData?.location ?? null
+        location: profileData?.location ?? null,
+        career_stage: careerRow?.career_stage ?? null,
       },
     }
 

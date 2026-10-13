@@ -382,6 +382,9 @@ export async function updateProfileAction(
       timezone: emptyToNull(validated.timezone),
       lab_department: emptyToNull(validated.labDepartment),
       location: emptyToNull(validated.location),
+      ...(validated.careerStage !== undefined && {
+        career_stage: validated.careerStage || null,
+      }),
     };
 
     const { error: profileError } = await supabase

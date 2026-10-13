@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CAREER_STAGES } from "../constants/matching";
 import { MAX_PROFILE_SKILLS, MAX_PROFILE_TAGS } from "../constants/profile";
 
 /**
@@ -49,6 +50,10 @@ export const updateProfileSchema = z.object({
     .max(120, { message: "Location must be at most 120 characters" })
     .optional()
     .or(z.literal("")),
+  careerStage: z
+    .union([z.enum(CAREER_STAGES), z.literal("")])
+    .nullable()
+    .optional(),
 });
 
 /** Inferred type from updateProfileSchema. Use for form values and updateProfileAction input. */
