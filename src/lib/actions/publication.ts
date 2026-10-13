@@ -63,6 +63,17 @@ export async function addPublicationByDoi(
 
     if(!createPubResult.success) return createPubResult;
 
+    if (parsed.abstract) {
+      const { error: abstractError } = await supabase
+        .from("publications")
+        .update({ abstract: parsed.abstract })
+        .eq("publication_id", createPubResult.data!.publication_id)
+        .is("abstract", null);
+      if (abstractError) {
+        console.warn("Failed to save abstract:", abstractError.message);
+      }
+    }
+
     if(parsed?.openAlexTopicIds && parsed.openAlexTopicIds.length > 0) {
       await linkPublicationTopics(
         createPubResult.data!.publication_id,
@@ -132,6 +143,15 @@ export async function bulkInsertPublications(
     // already includes them. Never throws.
     const parsedOrcid = orcid ? orcidSchema.safeParse(orcid) : null;
     if (parsedOrcid?.success) {
+      // Remember the ID so ORCID keywords can be refreshed later.
+      const { error: orcidError } = await supabase
+        .from("profile")
+        .update({ orcid: parsedOrcid.data })
+        .eq("user_id", authData.user.id);
+      if (orcidError) {
+        console.warn("Failed to save ORCID ID:", orcidError.message);
+      }
+
       await importOrcidKeywordsForUser(supabase, authData.user.id, parsedOrcid.data);
     }
 
