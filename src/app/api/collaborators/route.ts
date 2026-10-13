@@ -8,21 +8,19 @@ import { rankByMatchPercent } from "@/lib/utils/match-percent";
 import { matchFiltersSchema } from "@/lib/validations/matching";
 import { createClient } from "@/supabase/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const explicitUserId = request.nextUrl.searchParams.get("user_id");
-  const currentUserId = explicitUserId ?? user?.id;
-
-  if (!currentUserId) {
+  // Always the logged-in user
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { data, error } = await supabase.rpc("get_collaborators_filtered", {
-    current_user_id: currentUserId,
+    current_user_id: user.id,
   });
 
   if (error) {
