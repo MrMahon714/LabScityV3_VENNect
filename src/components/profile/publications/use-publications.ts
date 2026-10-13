@@ -79,8 +79,8 @@ export function useBulkInsertPublications({
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (publications: ParsedOpenAlexWork[]) => {
-      const res = await bulkInsertPublications(publications);
+    mutationFn: async ({ publications, orcid }: { publications: ParsedOpenAlexWork[]; orcid?: string }) => {
+      const res = await bulkInsertPublications(publications, orcid);
       if(!res.success) throw new Error(res.error);
       return res.data;
     },
