@@ -1,3 +1,4 @@
+import type { MatchTier } from "@/lib/types/collab";
 import type { ProductType } from "./product";
 
 // Career stage options
@@ -36,3 +37,11 @@ export const RECENT_PUBLICATION_YEARS = [1, 3, 5] as const;
 export const MAX_FILTER_CHIPS = 20;
 export const MAX_FILTER_TEXT_LENGTH = 60;
 export const EXPLAINED_RESULTS = 10;
+export const MATCH_PERCENT_ANCHORS: Record<
+  MatchTier,
+  { floor: number; ceiling: number }
+> = {
+  bidirectional: { floor: 0.6, ceiling: 0.85 },
+  offers_only: { floor: 0.6, ceiling: 0.85 },
+  legacy: { floor: 0.5, ceiling: 0.9 },
+};

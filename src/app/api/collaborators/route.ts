@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { generateEmbedding } from "@/lib/actions/generate-embeddings";
 import { EXPLAINED_RESULTS } from "@/lib/constants/matching";
-import type { GetCollaboratorsResult } from "@/lib/types/collab";
+import type { RawCollaboratorMatch } from "@/lib/types/collab";
 import { explainMatches } from "@/lib/utils/match-explanation";
 import { buildFilterSearchText } from "@/lib/utils/match-filters";
+import { rankByMatchPercent } from "@/lib/utils/match-percent";
 import { matchFiltersSchema } from "@/lib/validations/matching";
 import { createClient } from "@/supabase/server";
 
@@ -28,7 +29,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data ?? []);
+  return NextResponse.json(
+    rankByMatchPercent((data ?? []) as RawCollaboratorMatch[]),
+  );
 }
 
 export async function POST(request: NextRequest) {
@@ -92,10 +95,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const results = ((data ?? []) as GetCollaboratorsResult[]).slice(
-    0,
-    EXPLAINED_RESULTS,
-  );
+  const results = rankByMatchPercent(
+    (data ?? []) as RawCollaboratorMatch[],
+  ).slice(0, EXPLAINED_RESULTS);
+
   const explanations = await explainMatches(
     supabase,
     user.id,
