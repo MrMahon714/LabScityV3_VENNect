@@ -33,6 +33,7 @@ import {
   ExpertiseFilter,
   SkillsFilter,
 } from "./searchable-chip-select";
+import { LocationFilter } from "./location-filter";
 
 //Filter options
 const PRODUCT_TYPE_OPTIONS = MATCHING_PRODUCT_TYPES.map((type) => ({
@@ -69,6 +70,7 @@ export default function CollabMatchingModal({
   const [productKeywords, setProductKeywords] = useState<string[]>([]);
   const [recentYears, setRecentYears] = useState<MatchFilters["recentYears"]>(null);
   const [careerStages, setCareerStages] = useState<MatchFilters["careerStages"]>([]);
+  const [location, setLocation] = useState("");
 
   //sends the filters to POST /api/collaborators and stores the results
   const findCollaborators = useMutation({
@@ -97,6 +99,7 @@ export default function CollabMatchingModal({
       productKeywords,
       recentYears,
       careerStages,
+      location,
     });
   };
 
@@ -203,8 +206,10 @@ export default function CollabMatchingModal({
                 radius="md"
               />
             </Grid.Col>
-
-            {/* Location goes here */}
+            
+            <Grid.Col span={{ base: 12, sm: 6 }}>
+              <LocationFilter value={location} onChange={setLocation} />
+            </Grid.Col>
           </Grid>
 
           <Button

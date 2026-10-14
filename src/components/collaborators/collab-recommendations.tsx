@@ -49,7 +49,7 @@ export default function CollabRecommendations() {
       return data;
     },
     select: (collabs) => collabs.map((c, i) => ({
-      percentMatch: parseInt((c.cosine_similarity*100).toFixed(2)),
+      percentMatch: Math.round(c.match_percent),
       collabUserId: c.profile_user_id,
       firstName: c.first_name,
       lastName: c.last_name,
