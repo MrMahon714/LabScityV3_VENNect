@@ -73,6 +73,7 @@ export const parsedOpenAlexWorkSchema = z.object({
   pdfUrl: z
       .string()
       .nullable(),
+  abstract: z.string().nullable(),
   openAlexTopicIds: z
       .array(z.string())
       .nullable()
