@@ -26,8 +26,10 @@ import {
   Collapse,
   Center
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks"; 
 import { RichTextEditor } from "@mantine/tiptap";
 import {
+  IconArrowsMaximize,
   IconBookmark,
   IconBriefcase,
   IconChevronRight,
@@ -75,6 +77,7 @@ import { useGetUser } from "../data/use-data";
 import { createClient } from "@/supabase/client";
 import { FeedPostItem } from "@/lib/types/feed";
 import { useSetSavedPost } from "./use-feed";
+import CollabMatchingModal from "@/components/collaborators/collab-matching-modal";
 
 const DEFAULT_EDITOR_TEXT_COLOR = "#000000";
 const DEFAULT_EDITOR_FONT_SIZE = "16px";
@@ -1542,12 +1545,27 @@ export function RecommendedCollabsCard({ currentUserId }: { currentUserId: strin
   });
   
   const supabase = createClient();
+  const [matchingOpened, { open: openMatching, close: closeMatching }] =
+    useDisclosure(false);
 
   return (
-    <SectionCard
-      title="Recommended Collaborators"
-      icon={<IconUsers size={18} />}
-    >
+  <>
+      <CollabMatchingModal opened={matchingOpened} onClose={closeMatching} />
+      <SectionCard
+        title="Recommended Collaborators"
+        icon={<IconUsers size={18} />}
+        headerAction={
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            radius="md"
+            onClick={openMatching}
+            aria-label="Expand collaborator matching"
+          >
+            <IconArrowsMaximize size={14} />
+          </ActionIcon>
+        }
+      >
       <Stack gap={0}>
         {(collaboratorsQuery.data ?? []).length > 0 
         ? 
@@ -1608,6 +1626,7 @@ export function RecommendedCollabsCard({ currentUserId }: { currentUserId: strin
         ) : null}
       </Stack>
     </SectionCard>
+  </>
   )
 } 
 
@@ -1677,19 +1696,21 @@ function SectionCard({
   title,
   icon,
   actionLabel,
+  headerAction,
   accent = "navy",
   children,
 }: {
   title: string;
   icon: React.ReactNode;
   actionLabel?: string;
+  headerAction?: React.ReactNode;
   accent?: string;
   children: React.ReactNode;
 }) {
   return (
     <Card radius="md" shadow="xs" padding="md" withBorder bg="white">
-      <Group justify="space-between" mb="sm">
-        <Group gap="xs">
+      <Group justify="space-between" mb="sm" wrap="nowrap" align="flex-start">
+        <Group gap="xs" wrap="nowrap" miw={0}>
           <ThemeIcon variant="light" color={accent} radius="md" size="sm">
             {icon}
           </ThemeIcon>
@@ -1697,8 +1718,10 @@ function SectionCard({
             {title}
           </Text>
         </Group>
-        {actionLabel ? (
-          <Button
+        <Group gap="xs" wrap="nowrap">
+          {headerAction}
+          {actionLabel ? (
+            <Button
             variant="subtle"
             color="blue"
             size="compact-xs"
@@ -1707,9 +1730,10 @@ function SectionCard({
           >
             {actionLabel}
           </Button>
-        ) : null}
+         ) : null}
+       </Group>
       </Group>
-      {children}
+     {children}
     </Card>
   );
 }
