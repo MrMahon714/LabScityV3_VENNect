@@ -5,3 +5,8 @@ allowBuilds:
   protobufjs: true
   sharp: false
   unrs-resolver: false
+
+overrides:
+  prosemirror-view: "1.42.6"
+  source-map-js: "1.2.2"
+  
