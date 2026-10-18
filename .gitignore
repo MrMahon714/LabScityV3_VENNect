@@ -53,3 +53,6 @@ src/app/api/test/
 
 # Visual Studio local folder
 .vs/
+
+#real researchers’ names don’t get committed to the repo for real fake users
+seed-data/
