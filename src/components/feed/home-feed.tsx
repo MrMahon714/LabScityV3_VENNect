@@ -63,6 +63,7 @@ import type { ApiResponse } from "@/lib/types/api";
 import type { GetCollaboratorsResult } from "@/lib/types/collab";
 import type { Product, Publication } from "@/lib/types/data";
 import { getCroppedImageFile, type CropAreaPixels } from "@/lib/utils/post-image-crop";
+import { looksLikeArticleContent } from "@/lib/utils/article-detection";
 import {
   encodeStructuredPostContent,
   normalizePostTags,
@@ -1805,16 +1806,14 @@ function derivePostTags(post: {
   mediaUrl?: string | null;
 }) {
   const tags: string[] = [];
+  const parsedContent = parsePostContent(post.content);
   const normalizedContent = (post.content ?? '').toLowerCase();
   const normalizedField = (post.scientificField ?? '').trim().toLowerCase();
 
-  const looksLikeArticle =
-    normalizedContent.includes("doi.org/") ||
-    normalizedContent.includes("doi:") ||
-    normalizedContent.includes("published in") ||
-    normalizedContent.includes("journal") ||
-    normalizedContent.includes("full-text");
-
+  const looksLikeArticle = looksLikeArticleContent(
+    `${parsedContent.title} ${parsedContent.bodyText}`
+  );
+  
   if (looksLikeArticle) {
     tags.push("Article");
   }

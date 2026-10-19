@@ -10,6 +10,12 @@ on:
       - main
       - develop
 
+# contents: read is sufficient for current jobs (checkout, build, lint, deploy via VERCEL_TOKEN).
+# If the commented-out "Comment Preview URL on PR" step below is ever enabled,
+# add `pull-requests: write` here as well.
+permissions:
+  contents: read
+
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

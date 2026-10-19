@@ -1,3 +1,6 @@
+import { looksLikeArticleContent } from "@/lib/utils/article-detection";
+import { parsePostContent} from "@/lib/utils/post-content";
+
 export function initials(name: string) {
   return name
     .split(" ")
@@ -14,16 +17,14 @@ export function derivePostTagsFromDetail(post: {
   mediaUrl?: string | null;
 }) {
   const tags: string[] = [];
+  const parsedContent = parsePostContent(post.content);
   const normalizedContent = post.content.toLowerCase();
   const normalizedField = post.scientificField.trim().toLowerCase();
 
-  const looksLikeArticle =
-    normalizedContent.includes("doi.org/") ||
-    normalizedContent.includes("doi:") ||
-    normalizedContent.includes("published in") ||
-    normalizedContent.includes("journal") ||
-    normalizedContent.includes("full-text");
-
+  const looksLikeArticle = looksLikeArticleContent(
+    `${parsedContent.title} ${parsedContent.bodyText}`
+  );
+  
   if (looksLikeArticle) {
     tags.push("Article");
   }
