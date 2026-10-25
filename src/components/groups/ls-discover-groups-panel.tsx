@@ -103,7 +103,7 @@ export function LSDiscoverGroupsPanel({
       queryClient.invalidateQueries({ queryKey: groupKeys.all });
       notifications.show({
         title: "Joined group",
-        message: "You can open it from My groups.",
+        message: "You can open it from Your groups.",
         color: "green",
       });
       router.push(groupsPath({ tab: "mine", groupId }));
@@ -118,9 +118,9 @@ export function LSDiscoverGroupsPanel({
   });
 
   return (
-    <Stack gap="lg" w="100%" px={{ base: "md" }}>
+    <Stack gap="lg" w="100%">
       <Paper
-        radius="xl"
+        radius="md"
         p="lg"
         withBorder
         bg="var(--ls-surface)"
@@ -131,8 +131,8 @@ export function LSDiscoverGroupsPanel({
       >
         <Stack gap="md">
           <Box>
-            <Title order={4} c="var(--ls-text-strong)">
-              Find a group
+            <Title order={3} c="var(--ls-text-strong)">
+              Discover groups
             </Title>
             <Text size="sm" c="var(--ls-text-muted)">
               Search by name, description, or narrow things down with topic
@@ -154,7 +154,7 @@ export function LSDiscoverGroupsPanel({
           <TagsInput
             label="Filter by topics"
             placeholder="Type a topic and press Enter"
-            description="Groups must include all listed topics"
+            description="Matches part of a topic, ignoring capitalization. Groups must match every topic listed"
             value={topicInput}
             onChange={setTopicInput}
             maxTags={5}
@@ -180,7 +180,7 @@ export function LSDiscoverGroupsPanel({
         </Text>
       ) : discoverQuery.data?.length === 0 ? (
         <Paper
-          radius="xl"
+          radius="md"
           p="lg"
           withBorder
           bg="var(--ls-surface)"
@@ -192,7 +192,7 @@ export function LSDiscoverGroupsPanel({
           </Text>
         </Paper>
       ) : (
-        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+        <SimpleGrid cols={{ base: 1, sm: 2, xl: 3 }} spacing="md">
           {discoverQuery.data?.map((g) => (
             <LSGroupCard
               key={g.group_id}

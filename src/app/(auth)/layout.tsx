@@ -15,8 +15,8 @@ export default function AuthLayout({
       mih="100vh"
       align="center"
       justify="center"
-      bg="navy.7"
       py="xl"
+      style={{ background: "var(--ls-auth-bg)" }}
     >
       {children}
     </Flex>

@@ -140,16 +140,26 @@ export default function LSProfileHero({
     .join("");
 
   const avatar = (
-    <Avatar
-      src={profilePicURL || undefined}
-      size={80}
-      color="navy.6"
-      bg={profilePicURL ? undefined : "var(--ls-navy-tint)"}
-      bd="2px solid white"
-      style={{ position: "relative", zIndex: 2 }}
+    <Box
+      style={{
+        position: "relative",
+        zIndex: 2,
+        display: "inline-block",
+        lineHeight: 0,
+        borderRadius: "50%",
+        background: "var(--ls-surface)",
+      }}
     >
-      {avatarInitials}
-    </Avatar>
+      <Avatar
+        src={profilePicURL || undefined}
+        size={80}
+        color="navy.6"
+        bg={profilePicURL ? undefined : "var(--ls-navy-tint)"}
+        bd="2px solid var(--ls-surface)"
+      >
+        {avatarInitials}
+      </Avatar>
+    </Box>
   );
 
   const profileBanner = profileHeaderImageURL ? (

@@ -326,6 +326,110 @@ function formatQuery(query: string) {
   return formattedQuery;
 }
 
+const SHORT_QUERY_LENGTH = 3;
+
+function isShortSearch(query: string) {
+  const trimmed = query.trim();
+  return trimmed.length > 0 && trimmed.length < SHORT_QUERY_LENGTH;
+}
+
+function escapeLikeTerm(value: string) {
+  return value
+    .trim()
+    .replace(/[\\%_]/g, (char) => `\\${char}`)
+    .replace(/[,()]/g, " ");
+}
+
+async function prefixUserMatches(
+  supabase: SupabaseClient,
+  query: string,
+  limit: number,
+): Promise<User[]> {
+  const term = escapeLikeTerm(query);
+  if (!term) return [];
+
+  const { data } = await supabase
+    .from("users")
+    .select("user_id, first_name, last_name, email, profile_pic_path")
+    .or(`first_name.ilike.${term}%,last_name.ilike.${term}%`)
+    .limit(limit);
+
+  const rows = data ?? [];
+  if (rows.length === 0) return [];
+
+  const { data: profiles } = await supabase
+    .from("profile")
+    .select("user_id, occupation, workplace")
+    .in(
+      "user_id",
+      rows.map((row) => row.user_id),
+    );
+
+  const profileById = new Map(
+    (profiles ?? []).map((profile) => [profile.user_id, profile]),
+  );
+
+  return rows.map((row) => ({
+    user_id: row.user_id,
+    first_name: row.first_name,
+    last_name: row.last_name,
+    email: row.email,
+    profile_pic_path: row.profile_pic_path,
+    avatar_url: row.profile_pic_path
+      ? supabase.storage
+          .from("profile_pictures")
+          .getPublicUrl(row.profile_pic_path).data.publicUrl
+      : null,
+    occupation: profileById.get(row.user_id)?.occupation ?? null,
+    workplace: profileById.get(row.user_id)?.workplace ?? null,
+  })) as User[];
+}
+
+async function prefixContentMatches(
+  supabase: SupabaseClient,
+  query: string,
+  limit: number,
+): Promise<searchResult[]> {
+  const term = escapeLikeTerm(query);
+  if (!term) return [];
+
+  const users = await prefixUserMatches(supabase, query, limit);
+
+  const { data: groups } = await supabase
+    .from("groups")
+    .select("group_id, name, description")
+    .eq("privacy", "public")
+    .ilike("name", `%${term}%`)
+    .limit(limit);
+
+  return [
+    ...users.map((user) => ({
+      content_type: "user",
+      content: user.occupation || "Researcher",
+      category: "user",
+      id: user.user_id,
+      names: `${user.first_name} ${user.last_name}`.trim(),
+      tsv: "",
+    })),
+    ...(groups ?? []).map((group) => ({
+      content_type: "group",
+      content: group.description || "Group",
+      category: "group",
+      id: String(group.group_id),
+      names: group.name,
+      tsv: "",
+    })),
+  ];
+}
+
+function mergeSearchResults(primary: searchResult[], extra: searchResult[]) {
+  const seen = new Set(primary.map((row) => `${row.content_type}:${row.id}`));
+  return [
+    ...primary,
+    ...extra.filter((row) => !seen.has(`${row.content_type}:${row.id}`)),
+  ];
+}
+
 /**
  * Retrieves a list user generated content (Users, Posts, Articles, and Groups)
  *
@@ -352,7 +456,9 @@ export async function searchUserContent(input: SearchInput, supabaseClient?: Sup
 
     const { data, error: dbError } = await supabase.rpc('search_all_content', { search_query: formattedQuery }).limit(querylimit);
 
-    if (dbError) {
+    const isShortQuery = isShortSearch(input.query);
+
+    if (dbError && !isShortQuery) {
       console.error("Failed to retreive search results: ", dbError);
       return {
         success: false,
@@ -360,7 +466,13 @@ export async function searchUserContent(input: SearchInput, supabaseClient?: Sup
       };
     }
 
-    const validatedSearchResults = searchResultSchema.array().parse(data);
+    const rpcResults = dbError ? [] : searchResultSchema.array().parse(data);
+    const validatedSearchResults = isShortQuery
+      ? mergeSearchResults(
+          rpcResults,
+          await prefixContentMatches(supabase, input.query, querylimit),
+        )
+      : rpcResults;
 
     const postIds = validatedSearchResults
       .filter((row) => row.content_type?.toLowerCase() === "post")
@@ -434,10 +546,25 @@ export async function searchForUsers(input: SearchInput, supabaseClient?: Supaba
     const querylimit = input.limit || 10;
     const formattedQuery = formatQuery(input.query);
     const { data, error } = await supabase.rpc('search_users', { search_query: formattedQuery }).limit(querylimit)
-    if (error) {
+    const needsFallback = isShortSearch(input.query);
+    if (error && !needsFallback) {
       return { success: false, error: "Failed to search for users: " + error.message }
     }
-    return { success: true, data: data as User[] }
+
+    const rpcUsers = error ? [] : ((data as User[]) ?? []);
+    if (!needsFallback) {
+      return { success: true, data: rpcUsers }
+    }
+
+    const prefixUsers = await prefixUserMatches(supabase, input.query, querylimit);
+    const seen = new Set(rpcUsers.map((user) => user.user_id));
+    return {
+      success: true,
+      data: [
+        ...rpcUsers,
+        ...prefixUsers.filter((user) => !seen.has(user.user_id)),
+      ].slice(0, querylimit),
+    }
   } catch (error) {
     return { success: false, error: "An unexpected error occurred in searchForUsers: " + error }
   }

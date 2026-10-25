@@ -46,3 +46,24 @@
   from { transform: rotate(180deg); }
   to { transform: rotate(360deg); }
 }
+
+.ls-logo-for-dark {
+  display: none;
+}
+
+:root[data-mantine-color-scheme="dark"] .ls-logo-for-light {
+  display: none;
+}
+
+:root[data-mantine-color-scheme="dark"] .ls-logo-for-dark {
+  display: block;
+}
+
+:root[data-mantine-color-scheme="dark"] {
+  --tooltip-bg: #1a2656;
+  --tooltip-color: #ffffff;
+}
+
+:root[data-mantine-color-scheme="dark"] .mantine-Tooltip-tooltip {
+  border: 1px solid rgba(150, 185, 255, 0.35);
+}

@@ -55,7 +55,7 @@ export default function LSPublicationReviewItem({
         borderColor: selected
           ? "var(--mantine-color-navy-5)"
           : "var(--mantine-color-gray-3)",
-        background: selected ? "var(--mantine-color-blue-0)" : undefined,
+        background: selected ? "var(--ls-tint-bg)" : undefined,
       }}
     >
       <Group wrap="nowrap" align="flex-start" gap="sm">

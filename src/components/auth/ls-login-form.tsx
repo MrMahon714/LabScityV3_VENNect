@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { LSAuthLogo } from "@/components/auth/ls-auth-logo";
 import { loginSchema, type LoginValues } from "@/lib/validations/auth";
 import { useIsMobile } from "@/app/use-is-mobile";
 import { createClient } from "@/supabase/client";
@@ -15,7 +15,7 @@ const inputStyles = {
   height: "2rem",
   width: "100%",
   borderRadius: "0.5rem",
-  backgroundColor: "var(--mantine-color-gray-0)",
+  backgroundColor: "var(--ls-auth-input-bg)",
   fontFamily: "var(--mantine-font-family)",
   color: "var(--ls-text-strong)",
 };
@@ -83,9 +83,12 @@ export function LSLoginForm({
     <Paper
       miw={400}
       maw={isMobile ? "90%" : "30%"} // limit box size on larger screen 
-      bg="var(--ls-navy-tint-0)"
+      bg="var(--ls-auth-card-bg)"
       p="2rem"
-      style={{ borderRadius: "0.625rem" }}
+      style={{
+        borderRadius: "0.625rem",
+        border: "1px solid var(--ls-auth-card-border)",
+      }}
     >
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack gap="md" align="center">
@@ -93,9 +96,7 @@ export function LSLoginForm({
             h={100}
             style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <Image
-              src="/logo.png"
-              alt="LabScity Logo"
+            <LSAuthLogo
               width={320}
               height={108}
               priority
@@ -154,8 +155,6 @@ export function LSLoginForm({
           <Button
             type="submit"
             loading={form.formState.isSubmitting || signInSuccess}
-            bg="navy.7"
-            c="navy.0"
             fw={600}
             fz="md"
             style={{

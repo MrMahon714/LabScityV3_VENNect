@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { LSAuthLogo } from "@/components/auth/ls-auth-logo";
 import { Paper, Stack, Box, Text, TextInput, Anchor, Button, Alert } from "@mantine/core";
 import { useIsMobile } from "@/app/use-is-mobile";
 import { forgotPasswordAction } from "@/lib/actions/auth";
@@ -13,7 +13,7 @@ const inputStyles = {
   height: "2rem",
   width: "100%",
   borderRadius: "0.5rem",
-  backgroundColor: "var(--mantine-color-gray-0)",
+  backgroundColor: "var(--ls-auth-input-bg)",
   fontFamily: "var(--mantine-font-family)",
   color: "var(--ls-text-strong)",
 };
@@ -52,9 +52,12 @@ export default function ForgotPasswordPage() {
   return (
     <Paper
       maw={isMobile ? "90%" : "30%"}
-      bg="var(--ls-navy-tint-0)"
+      bg="var(--ls-auth-card-bg)"
       p="2rem"
-      style={{ borderRadius: "0.625rem" }}
+      style={{
+        borderRadius: "0.625rem",
+        border: "1px solid var(--ls-auth-card-border)",
+      }}
     >
       <form onSubmit={onSubmit}>
         <Stack gap="md" align="center">
@@ -62,9 +65,7 @@ export default function ForgotPasswordPage() {
             h={100}
             style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <Image
-              src="/logo.png"
-              alt="LabScity Logo"
+            <LSAuthLogo
               width={200}
               height={200}
               priority
@@ -102,8 +103,6 @@ export default function ForgotPasswordPage() {
           <Button
             type="submit"
             loading={isSubmitting}
-            bg="navy.7"
-            c="navy.0"
             fw={600}
             fz="md"
             style={{

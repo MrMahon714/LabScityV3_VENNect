@@ -40,6 +40,7 @@ import {
   IconPlus,
   IconQuote,
   IconShare3,
+  IconEdit,
   IconTrash,
   IconUsers,
   IconHeartFilled,
@@ -75,8 +76,13 @@ import { useGetUser } from "../data/use-data";
 import { createClient } from "@/supabase/client";
 import { FeedPostItem } from "@/lib/types/feed";
 import { useSetSavedPost } from "./use-feed";
+import { LSEditPostModal } from "./ls-edit-post-modal";
+import { useUpdatePost } from "@/lib/actions/use-post-actions";
+import { feedKeys, groupKeys } from "@/lib/query-keys";
 
-const DEFAULT_EDITOR_TEXT_COLOR = "#000000";
+/*auto means no text color is saved and the text follows the theme
+this is to stop text from looking bad on new themes*/
+const DEFAULT_EDITOR_TEXT_COLOR = "auto";
 const DEFAULT_EDITOR_FONT_SIZE = "16px";
 const EDITOR_FONT_SIZE_OPTIONS = [
   { label: "Small", value: "14px" },
@@ -85,7 +91,7 @@ const EDITOR_FONT_SIZE_OPTIONS = [
   { label: "Extra Large", value: "22px" },
 ] as const;
 const EDITOR_COLOR_OPTIONS = [
-  { label: "Black", value: "#000000" },
+  { label: "Auto", value: "auto" },
   { label: "Blue", value: "#1D4ED8" },
   { label: "Teal", value: "#0F766E" },
   { label: "Rose", value: "#BE123C" },
@@ -381,11 +387,11 @@ export function CreatePostCard({
     content: draftBodyHtml,
     editorProps: {
       attributes: {
-        style: `color: ${DEFAULT_EDITOR_TEXT_COLOR}; font-size: ${DEFAULT_EDITOR_FONT_SIZE};`,
+        style: `color: var(--ls-text-body); font-size: ${DEFAULT_EDITOR_FONT_SIZE};`,
       },
     },
     onCreate: ({ editor: currentEditor }) => {
-      currentEditor.chain().setColor(DEFAULT_EDITOR_TEXT_COLOR).run();
+      currentEditor.chain().unsetColor().run();
       currentEditor.chain().setFontSize(DEFAULT_EDITOR_FONT_SIZE).run();
       syncEditorControls(currentEditor);
     },
@@ -454,7 +460,7 @@ export function CreatePostCard({
     editor
       ?.chain()
       .clearContent()
-      .setColor(DEFAULT_EDITOR_TEXT_COLOR)
+      .unsetColor()
       .setFontSize(DEFAULT_EDITOR_FONT_SIZE)
       .run();
   }, [editor, isComposerOpen]);
@@ -475,7 +481,7 @@ export function CreatePostCard({
     setDraftBodyText(summary);
     setDraftBodyHtml(summary ? `<p>${escapeHtml(summary)}</p>` : "<p></p>");
     editor.commands.setContent(summary ? `<p>${escapeHtml(summary)}</p>` : "<p></p>");
-    editor.chain().setColor(DEFAULT_EDITOR_TEXT_COLOR).run();
+    editor.chain().unsetColor().run();
     editor.chain().setFontSize(DEFAULT_EDITOR_FONT_SIZE).run();
     syncEditorControls(editor);
   }, [importType, editor, selectedProduct]);
@@ -506,7 +512,7 @@ export function CreatePostCard({
     setDraftBodyText(summary);
     setDraftBodyHtml(summary ? `<p>${escapeHtml(summary)}</p>` : "<p></p>");
     editor.commands.setContent(summary ? `<p>${escapeHtml(summary)}</p>` : "<p></p>");
-    editor.chain().setColor(DEFAULT_EDITOR_TEXT_COLOR).run();
+    editor.chain().unsetColor().run();
     editor.chain().setFontSize(DEFAULT_EDITOR_FONT_SIZE).run();
     syncEditorControls(editor);
   }, [importType, editor, selectedPublication]);
@@ -559,7 +565,7 @@ export function CreatePostCard({
     editor
       ?.chain()
       .clearContent()
-      .setColor(DEFAULT_EDITOR_TEXT_COLOR)
+      .unsetColor()
       .setFontSize(DEFAULT_EDITOR_FONT_SIZE)
       .run();
   };
@@ -958,7 +964,10 @@ export function CreatePostCard({
                               h={12}
                               style={{
                                 borderRadius: 999,
-                                backgroundColor: activeColorOption.value,
+                                backgroundColor:
+                                  activeColorOption.value === DEFAULT_EDITOR_TEXT_COLOR
+                                    ? "var(--ls-text-body)"
+                                    : activeColorOption.value,
                                 border: "1px solid var(--ls-border)",
                               }}
                             />
@@ -973,7 +982,11 @@ export function CreatePostCard({
                             key={option.value}
                             onClick={() => {
                               setActiveTextColor(option.value);
-                              editor?.chain().focus().setColor(option.value).run();
+                              if (option.value === DEFAULT_EDITOR_TEXT_COLOR) {
+                                editor?.chain().focus().unsetColor().run();
+                              } else {
+                                editor?.chain().focus().setColor(option.value).run();
+                              }
                             }}
                             leftSection={
                               <Box
@@ -981,7 +994,10 @@ export function CreatePostCard({
                                 h={12}
                                 style={{
                                   borderRadius: 999,
-                                  backgroundColor: option.value,
+                                  backgroundColor:
+                                    option.value === DEFAULT_EDITOR_TEXT_COLOR
+                                      ? "var(--ls-text-body)"
+                                      : option.value,
                                   border: "1px solid var(--ls-border)",
                                 }}
                               />
@@ -1010,9 +1026,9 @@ export function CreatePostCard({
                       minHeight: 180,
                       borderColor: "var(--ls-border)",
                       backgroundColor: "var(--ls-surface)",
-                      color: DEFAULT_EDITOR_TEXT_COLOR,
+                      color: "var(--ls-text-body)",
                       "& .ProseMirror": {
-                        color: DEFAULT_EDITOR_TEXT_COLOR,
+                        color: "var(--ls-text-body)",
                         fontSize: DEFAULT_EDITOR_FONT_SIZE,
                       },
                     },
@@ -1127,6 +1143,10 @@ export function FeedPostCard({
   hideYourPostBadge?: boolean;
 }) {
   const isOwnPost = currentUserId != null && currentUserId === post.userId;
+  const [editOpen, setEditOpen] = useState(false);
+  const updatePostMutation = useUpdatePost(post.id, {
+    extraInvalidateKeys: [feedKeys.all, [...groupKeys.all, "feed"]],
+  });
   const [comment, setComment] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -1145,6 +1165,17 @@ export function FeedPostCard({
     parsedContent.kind === "publication" || inferredTags.includes("Article");
 
   return (
+    <>
+    <LSEditPostModal
+      opened={editOpen}
+      onClose={() => setEditOpen(false)}
+      rawContent={post.content}
+      isSaving={updatePostMutation.isPending}
+      onSave={async (content) => {
+        await updatePostMutation.mutateAsync({ content });
+        setEditOpen(false);
+      }}
+    />
     <Card
       radius="md"
       shadow='xs'
@@ -1201,6 +1232,12 @@ export function FeedPostCard({
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item
+                    leftSection={<IconEdit size={14} />}
+                    onClick={() => setEditOpen(true)}
+                  >
+                    Edit post
+                  </Menu.Item>
+                  <Menu.Item
                     color="red"
                     leftSection={<IconTrash size={14} />}
                     onClick={onDelete}
@@ -1250,7 +1287,6 @@ export function FeedPostCard({
             <Avatar 
               size={28} 
               src={post.avatarUrl ?? undefined} 
-              color="blue"
               component={Link}
               href={`/profile/${post.userId}`}
             >
@@ -1451,6 +1487,7 @@ export function FeedPostCard({
         ) : null}
       </Stack>
     </Card>
+    </>
   );
 }
 
@@ -1566,7 +1603,6 @@ export function RecommendedCollabsCard({ currentUserId }: { currentUserId: strin
                 component={Link} 
                 href={`/profile/${person.profile_user_id}`} 
                 radius="xl" 
-                color="blue"
                 src={data.publicUrl}
               >
                 {initials(`${person.first_name} ${person.last_name}`)}

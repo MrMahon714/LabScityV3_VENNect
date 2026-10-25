@@ -5,7 +5,7 @@ import { IconMessageCircle, IconMessages } from "@tabler/icons-react";
 export default async function ChatIndexPage() {
   return (
     <Center
-      h='50%'
+      h='100%'
       style={{
         background: "var(--ls-chat-bg)",
       }}
@@ -32,8 +32,8 @@ export default async function ChatIndexPage() {
             Select a conversation
           </Text>
           <Text size="sm" c="gray.7" ta="center">
-            Choose a chat from the sidebar to continue a discussion or start a
-            new one.
+            Pick a contact, a group, or an existing message from the sidebar, or
+            start a new message.
           </Text>
         </Stack>
       </Paper>

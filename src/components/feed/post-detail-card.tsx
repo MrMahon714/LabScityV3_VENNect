@@ -322,7 +322,7 @@ export function PostDetailCard({
 
           <Group justify="space-between" align="center" wrap="wrap" gap="sm">
             <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-              <Avatar size={44} radius="xl" src={post.avatarUrl ?? undefined} color="blue">
+              <Avatar size={44} radius="xl" src={post.avatarUrl ?? undefined}>
                 {initials(post.userName)}
               </Avatar>
               <Box style={{ minWidth: 0 }}>

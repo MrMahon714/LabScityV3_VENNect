@@ -1,53 +1,43 @@
 "use client";
 
 import {
-  Avatar,
   Box,
   Button,
   Center,
   Drawer,
   Flex,
   Group,
-  Menu,
   Modal,
   Paper,
   Stack,
   Text,
-  ThemeIcon,
 } from "@mantine/core";
-import {
-  IconEdit,
-  IconLogout,
-  IconMenu2,
-  IconMessageCircle,
-  IconSettings,
-  IconTrash,
-  IconUsers,
-  IconUsersGroup,
-} from "@tabler/icons-react";
+import { IconMenu2 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useIsMobile } from "@/app/use-is-mobile";
 import { useAuth } from "@/components/auth/use-auth";
-import LSMiniProfileList from "@/components/profile/ls-mini-profile-list";
 import { LSSpinner } from "@/components/ui/ls-spinner";
-import type { User } from "@/lib/types/feed";
 import { LSCreateGroupModal } from "./ls-create-group-modal";
 import { LSEditGroupModal } from "./ls-edit-group-modal";
-import { LSGroupFeed } from "./ls-group-feed";
+import { LSGroupPage } from "./ls-group-page";
+import { LSInviteUserModal } from "./ls-invite-user-modal";
 import type { LSGroupLayoutProps } from "./ls-group-layout.types";
 import { LSGroupSidebar } from "./ls-group-sidebar";
+import { LSGroupsOverview } from "./ls-groups-overview";
 import { LSManageMembersModal } from "./ls-manage-members-modal";
+import { useGroupActivity } from "./use-group-activity";
 import { useGroupLayout } from "./use-group-layout";
 
-/**
- * Top-level client component for the Groups page.
- * Desktop: sidebar (left) + content (right).
- * Mobile: content only + hamburger drawer for the sidebar.
- */
+/*client stuff for the Groups page
+Desktop: sidebar (left) + content (right)
+Mobile: content only + hamburger thing for the sidebar
+*/
 export function LSGroupLayout(props: LSGroupLayoutProps) {
   const {
     activeGroupId,
+    view = "mine",
+    discoverNode,
     autoOpenCreateGroup,
     createGroupAvatarUploadUrlAction,
     createGroupAction,
@@ -73,6 +63,7 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
   const autoOpenedCreateRef = useRef(false);
   const [leaveConfirmOpened, setLeaveConfirmOpened] = useState(false);
   const [deleteConfirmOpened, setDeleteConfirmOpened] = useState(false);
+  const [inviteOpened, setInviteOpened] = useState(false);
   const {
     groups,
     isGroupsLoading,
@@ -108,10 +99,19 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
     updateGroupAction,
   });
 
+  const { activityByGroup, markSeen, isLoading: isActivityLoading } =
+    useGroupActivity(groups);
+
   const currentMember = groupDetails?.members.find(
     (m) => m.user_id === user?.id,
   );
   const isAdmin = currentMember?.role === "Admin";
+
+  useEffect(() => {
+    if (view === "mine" && activeGroupId && groupDetails) {
+      markSeen(activeGroupId);
+    }
+  }, [view, activeGroupId, groupDetails, markSeen]);
 
   useEffect(() => {
     if (autoOpenCreateGroup && !autoOpenedCreateRef.current) {
@@ -137,178 +137,52 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
     setDeleteConfirmOpened(false);
   };
 
-  const memberProfiles: User[] = (groupDetails?.members ?? []).map((m) => ({
-    user_id: m.user_id,
-    first_name: m.first_name ?? "",
-    last_name: m.last_name ?? "",
-    email: "",
-    research_interests: [m.role],
-    avatar_url: m.avatar_url ?? null,
-  }));
-
   const sidebarNode = (
     <LSGroupSidebar
       groups={groups}
       activeGroupId={activeGroupId}
+      view={view}
+      activityByGroup={activityByGroup}
       onNewGroupClick={handleNewGroupClick}
+      onNavigate={closeDrawer}
       isLoading={isGroupsLoading}
     />
   );
 
-  const groupInitials =
-    groupDetails?.name
-      .split(" ")
-      .filter(Boolean)
-      .map((w) => w[0])
-      .slice(0, 2)
-      .join("") ?? "";
-
+  /*main column
+  discover,
+  then selected group,
+  then the new-activity overview
+   */
   const contentNode =
-    activeGroupId && groupDetails ? (
-      <Stack gap="md">
-        <Flex p={8} direction={{ base: "column", lg: "row" }} w="100%" gap="md">
-          <Box flex={5}>
-            <Paper
-              p="xl"
-              radius="md"
-              withBorder
-              bg="var(--ls-surface)"
-              shadow='xs'
-            >
-              <Group gap="md" align="flex-start">
-                <Avatar
-                  size={76}
-                  radius="xl"
-                  color="blue"
-                  bg={groupDetails.avatar_url ? undefined : "var(--ls-brand)"}
-                  src={groupDetails.avatar_url ?? undefined}
-                >
-                  {groupInitials}
-                </Avatar>
-                <Stack gap={4} style={{ flex: 1 }}>
-                  <Text size="xl" fw={700} c="var(--ls-text-strong)">
-                    {groupDetails.name}
-                  </Text>
-                  <Group gap={8} wrap="wrap">
-                    <Text size="sm" fw={600} c="var(--ls-tint-text)">
-                      {groupDetails.memberCount} members
-                    </Text>
-                    {groupDetails.topics?.slice(0, 4).map((topic) => (
-                      <Text
-                        key={topic}
-                        size="xs"
-                        fw={700}
-                        c="var(--ls-tint-text)"
-                        style={{
-                          padding: "4px 10px",
-                          borderRadius: 999,
-                          background: "var(--ls-tint-bg-2)",
-                          border: "1px solid var(--ls-tint-border)",
-                        }}
-                      >
-                        {topic}
-                      </Text>
-                    ))}
-                  </Group>
-                  {groupDetails.description && (
-                    <Text c="var(--ls-text-body)" lh={1.7}>
-                      {groupDetails.description}
-                    </Text>
-                  )}
-                </Stack>
-              </Group>
-            </Paper>
-          </Box>
-          <Box flex={3}>
-            <Stack gap="xs">
-              <LSMiniProfileList
-                widgetTitle={`Members - ${groupDetails.memberCount}`}
-                profiles={memberProfiles}
-              />
-              <Group>
-                {groupDetails.conversation_id && (
-                  <Button
-                    flex='1'
-                    variant="outline"
-                    leftSection={<IconMessageCircle size={16} />}
-                    onClick={() =>
-                      router.push(`/chat/${groupDetails.conversation_id}`)
-                    }
-                  >
-                    Group Chat
-                  </Button>
-                )}
-                {currentMember && (
-                  isAdmin ? (
-                    <Menu shadow="md" width={260} position="bottom-end">
-                      <Menu.Target>
-                        <Button
-                          flex='1'
-                          variant="outline"
-                          leftSection={<IconSettings size={16} />}
-                          aria-label="Group settings"
-                        >
-                          Settings
-                        </Button>
-                      </Menu.Target>
-                      <Menu.Dropdown>
-                        <Menu.Item
-                          leftSection={<IconEdit size={16} />}
-                          onClick={openEditGroup}
-                        >
-                          Edit group
-                        </Menu.Item>
-                        <Menu.Item
-                          leftSection={<IconUsers size={16} />}
-                          onClick={openManageMembers}
-                        >
-                          Manage members
-                        </Menu.Item>
-                        <Menu.Divider />
-                        <Menu.Item
-                          color="red"
-                          leftSection={<IconTrash size={16} />}
-                          onClick={() => setDeleteConfirmOpened(true)}
-                          disabled={deleteGroupMutation.isPending}
-                        >
-                          Delete group
-                        </Menu.Item>
-                      </Menu.Dropdown>
-                    </Menu>
-                  ) : (
-                    <Button
-                      flex='1'
-                      variant="light"
-                      color="red"
-                      fullWidth
-                      radius="xl"
-                      leftSection={<IconLogout size={16} />}
-                      onClick={() => setLeaveConfirmOpened(true)}
-                      loading={leaveMutation.isPending}
-                    >
-                      Leave
-                    </Button>
-                  )
-                )}
-              </Group>
-            </Stack>
-          </Box>
-        </Flex>
-
-        <Box px={8}>
-          <LSGroupFeed
-            groupId={activeGroupId}
-            currentUserId={user?.id ?? null}
-            createPostAction={createPostAction}
-            createPostImageUploadUrlAction={createPostImageUploadUrlAction}
-            createCommentAction={createCommentAction}
-            createReportAction={createReportAction}
-            likePostAction={likePostAction}
-            likeCommentAction={likeCommentAction}
-            updatePostAction={updatePostAction}
-          />
-        </Box>
-      </Stack>
+    view === "discover" ? (
+      discoverNode
+    ) : activeGroupId && groupDetails ? (
+      <LSGroupPage
+        key={groupDetails.group_id}
+        group={groupDetails}
+        isMember={Boolean(currentMember)}
+        isAdmin={isAdmin}
+        onOpenChat={() => router.push(`/chat/${groupDetails.conversation_id}`)}
+        onInvite={() => setInviteOpened(true)}
+        onEdit={openEditGroup}
+        onManageMembers={openManageMembers}
+        onDelete={() => setDeleteConfirmOpened(true)}
+        onLeave={() => setLeaveConfirmOpened(true)}
+        isLeaving={leaveMutation.isPending}
+        isDeleting={deleteGroupMutation.isPending}
+        feedProps={{
+          groupId: activeGroupId,
+          currentUserId: user?.id ?? null,
+          createPostAction,
+          createPostImageUploadUrlAction,
+          createCommentAction,
+          createReportAction,
+          likePostAction,
+          likeCommentAction,
+          updatePostAction,
+        }}
+      />
     ) : activeGroupId && isDetailsLoading ? (
       <Center h="100%">
         <LSSpinner />
@@ -324,7 +198,7 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
         >
           <Stack align="center" gap="sm">
             <Text c="var(--ls-text-muted)" size="lg">
-            Group not found.
+              Group not found.
             </Text>
             <Button
               variant="light"
@@ -337,35 +211,13 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
         </Paper>
       </Center>
     ) : (
-      <Center h="50%">
-        <Paper
-          p="xl"
-          radius="md"
-          withBorder
-          bg="var(--ls-empty-bg)"
-          style={{ borderColor: "var(--ls-border)" }}
-          maw='420'
-        >
-          <Stack align="center" gap="sm">
-            <ThemeIcon
-              size={64}
-              radius="xl"
-              variant="outline"
-              color='navy.7'
-              style={{ color: "var(--ls-text-strong)", borderColor: "var(--ls-text-strong)" }}
-            >
-              <IconUsersGroup size={30} />
-            </ThemeIcon>
-            <Text c="var(--ls-text-strong)" size="xl" fw={700}>
-              Select a group
-            </Text>
-            <Text c="gray.7" size="sm" ta="center">
-              Open one of your active groups from the sidebar to jump into its
-              posts, members, and chat.
-            </Text>
-          </Stack>
-        </Paper>
-      </Center>
+      <LSGroupsOverview
+        groups={groups}
+        activityByGroup={activityByGroup}
+        isLoading={isGroupsLoading || isActivityLoading}
+        onCreateGroup={handleNewGroupClick}
+        onOpenChat={(conversationId) => router.push(`/chat/${conversationId}`)}
+      />
     );
 
   return (
@@ -448,6 +300,17 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
 
       {/* Admin member management */}
       {activeGroupId && groupDetails && (
+        <LSInviteUserModal
+          opened={inviteOpened}
+          onClose={() => setInviteOpened(false)}
+          groupId={activeGroupId}
+          groupName={groupDetails.name}
+          members={groupDetails.members}
+          inviteUsersMutation={inviteUsersMutation}
+        />
+      )}
+
+      {activeGroupId && groupDetails && (
         <LSManageMembersModal
           opened={manageMembersOpened}
           onClose={closeManageMembers}
@@ -482,10 +345,7 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
             {sidebarNode}
           </Drawer>
 
-          <Stack
-            gap={0}
-            h="calc(100vh - 60px)"
-          >
+          <Stack gap={0} h="calc(100vh - 60px)">
             <Box p="xs">
               <Button
                 variant="subtle"
@@ -504,15 +364,15 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
           </Stack>
         </>
       ) : (
-        <Flex
-          h="calc(100vh - 60px)"
-        >
+        <Flex h="calc(100vh - 60px)">
           <Paper
-            w={320}
-            miw={320}
+            w={340}
+            miw={340}
+            h="100%"
             radius={0}
             style={{
-              borderRight: '1px solid var(--mantine-color-gray-3)'
+              borderRight: "1px solid var(--mantine-color-gray-3)",
+              overflow: "auto",
             }}
             bg="var(--ls-groups-rail-bg)"
           >
@@ -522,11 +382,13 @@ export function LSGroupLayout(props: LSGroupLayoutProps) {
           <Box
             flex={1}
             py={24}
-            px={{ base: "md", md: "xl", lg: 80 }}
+            px={{ base: "md", md: "xl" }}
             style={{ overflow: "auto" }}
             bg="var(--ls-groups-content-bg)"
           >
-            {contentNode}
+            <Box maw={1180} mx="auto">
+              {contentNode}
+            </Box>
           </Box>
         </Flex>
       )}

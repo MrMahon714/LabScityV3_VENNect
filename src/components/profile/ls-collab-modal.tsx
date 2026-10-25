@@ -28,7 +28,7 @@ export function LSCollaborationIntentModal({ opened, onClose }: LSCollaborationI
           <Group align="flex-start" justify="space-between" w="100%">
             <Modal.Title>
               <Group>
-                <Box bg="navy.3" bdrs="md" p="8">
+                <Box bg="var(--ls-icon-badge-bg)" c="var(--ls-icon-badge-color)" bdrs="md" p="8">
                   <IconUsers />
                 </Box>
                 <Stack gap="0">

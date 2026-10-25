@@ -1,6 +1,15 @@
 "use client";
 
-import { Avatar, Badge, Button, Card, Group, Stack, Text } from "@mantine/core";
+import {
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Card,
+  Group,
+  Stack,
+  Text,
+} from "@mantine/core";
 import type { GroupDiscoverItem } from "@/lib/types/groups";
 
 export interface LSGroupCardProps {
@@ -42,44 +51,44 @@ export function LSGroupCard({
     <Card
       withBorder
       shadow="xs"
-      radius="xl"
-      p="lg"
+      radius="md"
+      p={0}
       h="100%"
       bg="var(--ls-surface)"
-      styles={{
-        root: {
-          borderColor: "var(--ls-border)",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-          transition: "box-shadow 160ms ease, transform 160ms ease",
-          "&:hover": {
-            boxShadow: "0 16px 36px rgba(15,23,42,0.08)",
-            transform: "translateY(-2px)",
-          },
-        },
+      style={{
+        borderColor: "var(--ls-border)",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+        overflow: "hidden",
       }}
     >
-      <Stack gap="sm" justify="space-between" h="100%">
+      <Box
+        h={72}
+        style={{
+          background:
+            "linear-gradient(135deg, var(--ls-brand) 0%, var(--ls-accent) 100%)",
+        }}
+      />
+      <Stack gap="sm" justify="space-between" p="md" pt={0} style={{ flex: 1 }}>
         <Stack gap="xs">
-          <Group gap="sm" align="center" wrap="nowrap">
-            <Avatar
-              size={48}
-              radius="xl"
-              color="blue"
-              bg={group.avatar_url ? undefined : "var(--ls-brand)"}
-              src={group.avatar_url ?? undefined}
-            >
-              {cardInitials(group.name)}
-            </Avatar>
-            <Text
-              fw={700}
-              size="lg"
-              c="var(--ls-text-strong)"
-              lineClamp={2}
-              style={{ flex: 1 }}
-            >
+          <Avatar
+            size={64}
+            radius="md"
+            color="blue"
+            bg={group.avatar_url ? undefined : "var(--ls-brand)"}
+            src={group.avatar_url ?? undefined}
+            styles={{ root: { border: "3px solid var(--ls-surface)" } }}
+            style={{ marginTop: -32 }}
+          >
+            {cardInitials(group.name)}
+          </Avatar>
+          <Box>
+            <Text fw={700} size="lg" c="var(--ls-text-strong)" lineClamp={2}>
               {group.name}
             </Text>
-          </Group>
+            <Text size="xs" c="var(--ls-text-muted)">
+              {group.privacy === "public" ? "Public group" : "Private group"}
+            </Text>
+          </Box>
           {desc ? (
             <Text size="sm" c="var(--ls-text-muted)" lineClamp={4} lh={1.6}>
               {desc}
@@ -108,7 +117,7 @@ export function LSGroupCard({
           {isMember ? (
             <Button
               fullWidth
-              radius="xl"
+              radius="md"
               onClick={() => onView(group.group_id)}
             >
               View
@@ -116,9 +125,8 @@ export function LSGroupCard({
           ) : (
             <Button
               fullWidth
-              radius="xl"
+              radius="md"
               loading={isJoining}
-              style={{ background: "var(--ls-brand)" }}
               onClick={() => onJoin(group.group_id)}
             >
               Join

@@ -75,6 +75,10 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     "--ls-empty-bg":       "#CFE1F1",
     "--ls-accent":         "#2B6CA3",
     "--ls-topbar":         "#07386A",
+    "--ls-auth-bg":           "#07386A", // login/signup page background
+    "--ls-auth-card-bg":      "#EFF4F6", // login/signup card background
+    "--ls-auth-card-border":  "transparent", // login/signup card border
+    "--ls-auth-input-bg":     "var(--mantine-color-gray-0)", // login/signup input background
     "--ls-topbar-border":  "#D8E0E8", // topbar border
     "--ls-topbar-shadow":  "none", // topbar shadow
     "--ls-search-bg":      "#F8F9FA", // searchbar background
@@ -132,6 +136,10 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     "--ls-empty-bg":       "#0c1230",
     "--ls-accent":         "#2B6CA3",
     "--ls-topbar":         "rgba(17,27,70,0.92)", // topbar background
+    "--ls-auth-bg":           "#050917", // login/signup page background (same as dashboard)
+    "--ls-auth-card-bg":      "#0c1230", // login/signup card background
+    "--ls-auth-card-border":  "rgba(140,175,255,0.28)", // login/signup card border
+    "--ls-auth-input-bg":     "#161f4a", // login/signup input background
     "--ls-topbar-border":  "rgba(140,175,255,0.30)", // topbar border
     "--ls-topbar-shadow":  "0 6px 24px rgba(0,0,0,0.55)", // topbar shadow
     "--ls-search-bg":      "#1a2656", // searchbar background

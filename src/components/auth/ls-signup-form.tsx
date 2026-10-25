@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { LSAuthLogo } from "@/components/auth/ls-auth-logo";
 import { signupSchema, type SignupValues } from "@/lib/validations/auth";
 import type { signupAction } from "@/lib/actions/auth";
 import { useIsMobile } from "@/app/use-is-mobile";
@@ -16,7 +16,7 @@ const inputStyles = {
   height: "2rem",
   width: "100%",
   borderRadius: "0.5rem",
-  backgroundColor: "var(--mantine-color-gray-0)",
+  backgroundColor: "var(--ls-auth-input-bg)",
   fontFamily: "var(--mantine-font-family)",
   color: "var(--ls-text-strong)",
 };
@@ -76,9 +76,12 @@ export function LSSignupForm({
     <Paper
       miw={400}
       maw={isMobile ? "500px" : "700px"} // limit box size on larger screen 
-      bg="var(--ls-navy-tint-0)"
+      bg="var(--ls-auth-card-bg)"
       p="1rem 3rem"
-      style={{ borderRadius: "0.625rem" }}
+      style={{
+        borderRadius: "0.625rem",
+        border: "1px solid var(--ls-auth-card-border)",
+      }}
     >
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack gap="md" align="center">
@@ -86,9 +89,7 @@ export function LSSignupForm({
             h={100}
             style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <Image
-              src="/logo.png"
-              alt="LabScity Logo"
+            <LSAuthLogo
               width={320}
               height={108}
               priority
@@ -235,8 +236,6 @@ export function LSSignupForm({
           <Button
             type="submit"
             loading={form.formState.isSubmitting}
-            bg="navy.7"
-            c="navy.0"
             fw={600}
             fz="md"
             style={{

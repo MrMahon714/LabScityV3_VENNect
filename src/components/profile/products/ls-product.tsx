@@ -241,7 +241,7 @@ export default function LSProduct(
                   </Popover.Target>
                   <Popover.Dropdown
                     bdrs='md' 
-                    bd='1px solid navy.2'
+                    bd='1px solid var(--ls-border)'
                   >
                     <Stack gap='2'>
                       {

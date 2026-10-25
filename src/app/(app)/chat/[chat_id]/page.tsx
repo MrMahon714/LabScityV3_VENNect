@@ -2,38 +2,56 @@
 
 import {
   ActionIcon,
+  Avatar,
   Box,
   Button,
   Center,
+  Flex,
   Group,
   Indicator,
+  Menu,
   Loader,
   Modal,
   Paper,
   ScrollArea,
   Stack,
   Text,
+  Textarea,
   TextInput,
   Title,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconInfoCircle, IconSend } from "@tabler/icons-react";
+import {
+  IconDots,
+  IconInfoCircle,
+  IconPencil,
+  IconSend,
+  IconTrash,
+} from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { memo, useEffect, useRef, useState } from "react";
 import { useIsMobile } from "@/app/use-is-mobile";
 import {
+  LSChatDetailsPanel,
+  participantName,
+} from "@/components/chat/ls-chat-details-panel";
+import {
   useGetConversationParticipants,
   useGetOldMessages,
   useLeaveConversation,
-  useUpdateConversationName,
+  useMyGroupsList,
 } from "@/components/chat/use-chat";
 import {
+  deleteMessage,
+  editMessage,
   getChatsWithPreview,
   getOldMessages,
   markConversationAsRead,
 } from "@/lib/actions/chat";
 import { chatKeys } from "@/lib/query-keys";
+import { groupsPath } from "@/lib/utils/groups-url";
 import { createClient } from "@/supabase/client";
 
 interface Message {
@@ -49,12 +67,50 @@ const MessageBubble = memo(function MessageBubble({
   isMe,
   isSending,
   showTimestamp,
+  isGroupChat,
+  isFirstOfRun,
+  senderName,
+  senderAvatar,
+  canManage,
+  onEdit,
+  onRequestDelete,
 }: {
   msg: Message;
   isMe: boolean;
   isSending?: boolean;
   showTimestamp: boolean;
+  isGroupChat: boolean;
+  isFirstOfRun: boolean;
+  senderName: string;
+  senderAvatar: string | null;
+  canManage: boolean;
+  onEdit: (id: number, content: string) => Promise<boolean>;
+  onRequestDelete: (id: number) => void;
 }) {
+  const showSender = isGroupChat && !isMe;
+  const [hovered, setHovered] = useState(false);
+  const [menuOpened, setMenuOpened] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(msg.content);
+  const [saving, setSaving] = useState(false);
+
+  const startEditing = () => {
+    setDraft(msg.content);
+    setEditing(true);
+  };
+
+  const saveEdit = async () => {
+    const next = draft.trim();
+    if (!next || next === msg.content) {
+      setEditing(false);
+      return;
+    }
+    setSaving(true);
+    const ok = await onEdit(msg.id, next);
+    setSaving(false);
+    if (ok) setEditing(false);
+  };
+
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -70,12 +126,72 @@ const MessageBubble = memo(function MessageBubble({
   };
 
   return (
-    <Box style={{ maxWidth: "72%" }} ml={isMe ? "auto" : 0}>
+    <Box
+      style={{ maxWidth: "72%" }}
+      ml={isMe ? "auto" : 0}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {showSender && isFirstOfRun && (
+        <Text size="xs" fw={600} c="var(--ls-text-muted)" mb={2} ml={36}>
+          {senderName}
+        </Text>
+      )}
       <Group
         justify={isMe ? "flex-end" : "flex-start"}
         align="flex-end"
         gap="xs"
+        wrap="nowrap"
       >
+        {showSender && (
+          <Box w={28} miw={28}>
+            {isFirstOfRun && (
+              <Avatar size={28} radius="xl" src={senderAvatar ?? undefined}>
+                {(senderName || "?").slice(0, 1).toUpperCase()}
+              </Avatar>
+            )}
+          </Box>
+        )}
+        {isMe && canManage && !editing && (
+          <Menu
+            position="bottom-end"
+            shadow="md"
+            withinPortal
+            opened={menuOpened}
+            onChange={setMenuOpened}
+          >
+            <Menu.Target>
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="sm"
+                radius="xl"
+                aria-label="Message options"
+                style={{
+                  opacity: hovered || menuOpened ? 1 : 0.35,
+                  transition: "opacity 120ms ease",
+                }}
+              >
+                <IconDots size={16} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                leftSection={<IconPencil size={14} />}
+                onClick={startEditing}
+              >
+                Edit message
+              </Menu.Item>
+              <Menu.Item
+                color="red"
+                leftSection={<IconTrash size={14} />}
+                onClick={() => onRequestDelete(msg.id)}
+              >
+                Delete message
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        )}
         <Paper
           p="sm"
           px="md"
@@ -86,9 +202,56 @@ const MessageBubble = memo(function MessageBubble({
           shadow="xs"
           style={{ opacity: isSending ? 0.7 : 1 }}
         >
-          <Text size="sm" lh={1.6} style={{ whiteSpace: "pre-wrap" }}>
-            {msg.content}
-          </Text>
+          {editing ? (
+            <Stack gap={6} miw={220}>
+              <Textarea
+                autosize
+                minRows={1}
+                maxRows={6}
+                autoFocus
+                value={draft}
+                onChange={(e) => setDraft(e.currentTarget.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    saveEdit();
+                  }
+                  if (e.key === "Escape") setEditing(false);
+                }}
+                styles={{
+                  input: {
+                    background: "var(--ls-surface)",
+                    color: "var(--ls-text-strong)",
+                  },
+                }}
+              />
+              <Group gap={6} justify="flex-end">
+                <Button
+                  size="compact-xs"
+                  variant="subtle"
+                  color="gray"
+                  c="#F8FAFC"
+                  onClick={() => setEditing(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="compact-xs"
+                  variant="white"
+                  color="dark"
+                  loading={saving}
+                  disabled={!draft.trim()}
+                  onClick={saveEdit}
+                >
+                  Save
+                </Button>
+              </Group>
+            </Stack>
+          ) : (
+            <Text size="sm" lh={1.6} style={{ whiteSpace: "pre-wrap" }}>
+              {msg.content}
+            </Text>
+          )}
           {isSending && (
             <Text fz="10px" c={isMe ? "#CBD5E1" : "dimmed"} mt={4}>
               Sending...
@@ -102,7 +265,7 @@ const MessageBubble = memo(function MessageBubble({
           c="dimmed"
           ta={isMe ? "right" : "left"}
           mt={4}
-          ml={isMe ? 0 : "md"}
+          ml={isMe ? 0 : showSender ? 36 : "md"}
           mr={isMe ? "md" : 0}
         >
           {formatTime(msg.created_at)}
@@ -124,17 +287,19 @@ export default function ChatPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [optimisticIds, setOptimisticIds] = useState<Set<number>>(new Set());
   const [chatTitle, setChatTitle] = useState<string>("");
+  const [chatIsGroup, setChatIsGroup] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(true);
+  const isWide = useMediaQuery("(min-width: 75em)");
 
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const [infoModalOpen, setInfoModalOpen] = useState(false);
-  const [membersExpanded, setMembersExpanded] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const [chatName, setChatName] = useState("");
 
   const leaveConversationMutation = useLeaveConversation();
-  const updateConversationNameMutation = useUpdateConversationName();
 
   const queryClient = useQueryClient();
 
@@ -168,6 +333,49 @@ export default function ChatPage() {
     chat_id ? parseInt(chat_id) : 0,
   );
 
+  const { data: myGroups } = useMyGroupsList();
+  const linkedGroup = myGroups?.find(
+    (g) => chat_id && g.conversation_id === parseInt(chat_id),
+  );
+
+  const participants =
+    participantsData?.success && participantsData.data
+      ? participantsData.data
+      : [];
+  const participantById = new Map(participants.map((p) => [p.user_id, p]));
+  const isGroupChat =
+    chatIsGroup || participants.length > 2 || Boolean(linkedGroup);
+  const otherParticipant = participants.find((p) => p.user_id !== userId);
+  const showPanel = Boolean(isWide) && panelOpen;
+  const displayTitle =
+    linkedGroup?.name ??
+    (!isGroupChat && otherParticipant
+      ? participantName(otherParticipant)
+      : chatTitle);
+  const participantsLoading = participantsData === undefined;
+  const participantsFailed =
+    participantsData !== undefined && !participantsData.success;
+  const groupHref = linkedGroup
+    ? groupsPath({ tab: "mine", groupId: linkedGroup.group_id })
+    : null;
+
+  const handleLeave = () => {
+    leaveConversationMutation.mutate(parseInt(chat_id), {
+      onSuccess: (result) => {
+        if (result.success) {
+          setInfoModalOpen(false);
+          router.push("/chat");
+        } else {
+          notifications.show({
+            title: "Could not leave chat",
+            message: result.error ?? "Please try again",
+            color: "red",
+          });
+        }
+      },
+    });
+  };
+
   useEffect(() => {
     if (messagesResult?.success && messagesResult.data) {
       scrollReason.current = "init";
@@ -192,7 +400,8 @@ export default function ChatPage() {
         const activeChat = chatsData.find(
           (c) => c.conversation_id.toString() === chat_id,
         );
-        setChatTitle(activeChat?.name || `Chat #${chat_id}`);
+        setChatTitle(activeChat?.name || "");
+        setChatIsGroup(Boolean(activeChat?.is_group));
       } catch (error) {
         console.error("Error fetching chat title:", error);
       }
@@ -247,6 +456,32 @@ export default function ChatPage() {
           });
 
           scrollReason.current = "new_message";
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${chat_id}`,
+        },
+        (payload) => {
+          const updated = payload.new as Message;
+          setMessages((current) =>
+            current.map((m) =>
+              m.id === updated.id ? { ...m, content: updated.content } : m,
+            ),
+          );
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "messages" },
+        (payload) => {
+          const removedId = (payload.old as { id?: number }).id;
+          if (removedId === undefined) return;
+          setMessages((current) => current.filter((m) => m.id !== removedId));
         },
       )
       .subscribe((status) => {
@@ -312,6 +547,67 @@ export default function ChatPage() {
     setIsLoadingMore(false);
   };
 
+  /*IMPORTANT: EDITING/DELETION LOGIC*/
+  const handleEditMessage = async (id: number, content: string) => {
+    const previous = messages.find((m) => m.id === id);
+    if (!previous) return false;
+
+    setMessages((current) =>
+      current.map((m) => (m.id === id ? { ...m, content } : m)),
+    );
+
+    const result = await editMessage(id, content);
+    if (!result.success) {
+      setMessages((current) =>
+        current.map((m) =>
+          m.id === id ? { ...m, content: previous.content } : m,
+        ),
+      );
+      notifications.show({
+        title: "Could not edit message",
+        message: "Please try again",
+        color: "red",
+      });
+      return false;
+    }
+
+    queryClient.invalidateQueries({ queryKey: chatKeys.chatsWithPreview() });
+    return true;
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteTargetId === null) return;
+    const target = messages.find((m) => m.id === deleteTargetId);
+    if (!target) {
+      setDeleteTargetId(null);
+      return;
+    }
+
+    setIsDeleting(true);
+    setMessages((current) => current.filter((m) => m.id !== target.id));
+
+    const result = await deleteMessage(target.id);
+    setIsDeleting(false);
+    setDeleteTargetId(null);
+
+    if (!result.success) {
+      setMessages((current) =>
+        [...current, target].sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+        ),
+      );
+      notifications.show({
+        title: "Could not delete message",
+        message: result.error ?? "Please try again",
+        color: "red",
+      });
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: chatKeys.chatsWithPreview() });
+  };
+
   const handleSend = async () => {
     if (!inputText.trim() || !userId || !chat_id) return;
 
@@ -371,14 +667,14 @@ export default function ChatPage() {
     );
 
   return (
-    <Stack
+    <Flex
       h="100%"
-      gap={0}
       style={{
         overflow: "hidden",
         background: "var(--ls-chat-bg)",
       }}
     >
+    <Stack flex={1} miw={0} h="100%" gap={0} style={{ overflow: "hidden" }}>
       {/* HEADER */}
       <Paper
         p={isMobile ? "sm" : "lg"}
@@ -395,8 +691,17 @@ export default function ChatPage() {
         <Group justify="space-between" align="center" gap="md">
           <Box>
             <Group gap="xs" align="center">
+              {!isGroupChat && otherParticipant && (
+                <Avatar
+                  size={32}
+                  radius="xl"
+                  src={otherParticipant.avatar_url ?? undefined}
+                >
+                  {participantName(otherParticipant).slice(0, 1).toUpperCase()}
+                </Avatar>
+              )}
               <Title order={3} c="var(--ls-text-strong)" style={{ margin: 0 }}>
-                {chatTitle || `Chat #${chat_id}`}
+                {displayTitle || "Chat"}
               </Title>
               <Indicator
                 color={isConnected ? "green" : "yellow"}
@@ -413,7 +718,9 @@ export default function ChatPage() {
             color="blue"
             radius="xl"
             size="lg"
-            onClick={() => setInfoModalOpen(true)}
+            onClick={() =>
+              isWide ? setPanelOpen((open) => !open) : setInfoModalOpen(true)
+            }
             style={{ background: "var(--ls-tint-bg)", color: "var(--ls-tint-text)" }}
           >
             <IconInfoCircle size="1.2rem" />
@@ -427,115 +734,46 @@ export default function ChatPage() {
         onClose={() => setInfoModalOpen(false)}
         title={
           <Title order={4} c="var(--ls-text-strong)">
-            {chatTitle || `Chat #${chat_id}`}
+            {displayTitle || "Chat"}
           </Title>
         }
         centered
       >
+        <Box mx="-md" mb="-md" style={{ maxHeight: "70vh" }}>
+          <LSChatDetailsPanel
+            isGroupChat={isGroupChat}
+            title={displayTitle || "Chat"}
+            participants={participants}
+            currentUserId={userId}
+            groupHref={groupHref}
+            isLoading={participantsLoading}
+            loadFailed={participantsFailed}
+            onLeave={handleLeave}
+            isLeaving={leaveConversationMutation.isPending}
+          />
+        </Box>
+      </Modal>
+
+      <Modal
+        opened={deleteTargetId !== null}
+        onClose={() => setDeleteTargetId(null)}
+        title="Delete message?"
+        centered
+        size="sm"
+      >
         <Stack gap="md">
-          {messages.length > 0 && (
-            <Text size="sm" c="var(--ls-text-strong)">
-              <Text span fw={600}>
-                Conversation started:{" "}
-              </Text>
-              {new Date(messages[0].created_at).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </Text>
-          )}
-
-          <Box>
-            <Text size="sm" fw={600} c="var(--ls-text-strong)" mb={6}>
-              Members
-            </Text>
-            {participantsData?.success && participantsData.data ? (
-              <>
-                <Stack gap={4}>
-                  {participantsData.data
-                    .slice(0, membersExpanded ? undefined : 3)
-                    .map((participant) => (
-                      <Text key={participant.user_id} size="sm" c="dimmed">
-                        {participant.first_name} {participant.last_name} -{" "}
-                        {participant.email}
-                      </Text>
-                    ))}
-                </Stack>
-                {participantsData.data.length > 3 && (
-                  <Button
-                    variant="subtle"
-                    size="xs"
-                    onClick={() => setMembersExpanded(!membersExpanded)}
-                    mt={4}
-                  >
-                    {membersExpanded
-                      ? "Show less"
-                      : `Show ${participantsData.data.length - 3} more`}
-                  </Button>
-                )}
-              </>
-            ) : (
-              <Text size="sm" c="dimmed">
-                Unable to load members
-              </Text>
-            )}
-          </Box>
-
-          <Box>
-            <Text size="sm" fw={600} c="var(--ls-text-strong)" mb={6}>
-              Update Chat Name
-            </Text>
-            <Group gap="xs">
-              <TextInput
-                placeholder="Enter a new name..."
-                value={chatName}
-                onChange={(e) => setChatName(e.target.value)}
-                radius="xl"
-                size="sm"
-                style={{ flex: 1 }}
-              />
-              <Button
-                color="navy.7"
-                variant="filled"
-                radius="xl"
-                size="sm"
-                disabled={!chatName.trim()}
-                loading={updateConversationNameMutation.isPending}
-                onClick={() =>
-                  updateConversationNameMutation.mutate(
-                    { id: parseInt(chat_id), newName: chatName.trim() },
-                    {
-                      onSuccess: () => {
-                        setChatTitle(chatName.trim());
-                        setChatName("");
-                      },
-                    },
-                  )
-                }
-              >
-                Save
-              </Button>
-            </Group>
-          </Box>
-
-          <Button
-            fullWidth
-            color="red"
-            variant="light"
-            radius="xl"
-            loading={leaveConversationMutation.isPending}
-            onClick={() =>
-              leaveConversationMutation.mutate(parseInt(chat_id), {
-                onSuccess: () => {
-                  setInfoModalOpen(false);
-                  router.push("/chat");
-                },
-              })
-            }
-          >
-            Leave Chat
-          </Button>
+          <Text size="sm" c="var(--ls-text-muted)">
+            This removes the message for everyone in the chat. This can't be
+            undone.
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setDeleteTargetId(null)}>
+              Cancel
+            </Button>
+            <Button color="red" loading={isDeleting} onClick={handleConfirmDelete}>
+              Delete
+            </Button>
+          </Group>
         </Stack>
       </Modal>
 
@@ -579,6 +817,9 @@ export default function ChatPage() {
                 (1000 * 60)
               : Infinity;
             const showTimestamp = !prevMsg || timeDiff >= 2;
+            const isFirstOfRun =
+              !prevMsg || prevMsg.sender_id !== msg.sender_id || timeDiff >= 2;
+            const sender = participantById.get(msg.sender_id);
             return (
               <MessageBubble
                 key={msg.id}
@@ -586,6 +827,13 @@ export default function ChatPage() {
                 isMe={isMe}
                 isSending={isSending}
                 showTimestamp={showTimestamp}
+                isGroupChat={isGroupChat}
+                isFirstOfRun={isFirstOfRun}
+                senderName={sender ? participantName(sender) : "Unknown"}
+                senderAvatar={sender?.avatar_url ?? null}
+                canManage={isMe && !isSending}
+                onEdit={handleEditMessage}
+                onRequestDelete={setDeleteTargetId}
               />
             );
           })}
@@ -602,7 +850,7 @@ export default function ChatPage() {
       >
         <Group align="flex-end">
           <TextInput
-            placeholder="Type a message..."
+            placeholder={`Message ${displayTitle || "..."}`}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -624,5 +872,32 @@ export default function ChatPage() {
         </Group>
       </Paper>
     </Stack>
+
+    {showPanel && (
+      <Paper
+        w={320}
+        miw={320}
+        h="100%"
+        radius={0}
+        bg="var(--ls-chat-rail-bg)"
+        style={{
+          flexShrink: 0,
+          borderLeft: "1px solid var(--mantine-color-gray-3)",
+        }}
+      >
+        <LSChatDetailsPanel
+          isGroupChat={isGroupChat}
+          title={displayTitle || "Chat"}
+          participants={participants}
+          currentUserId={userId}
+          groupHref={groupHref}
+          isLoading={participantsLoading}
+          loadFailed={participantsFailed}
+          onLeave={handleLeave}
+          isLeaving={leaveConversationMutation.isPending}
+        />
+      </Paper>
+    )}
+    </Flex>
   );
 }
