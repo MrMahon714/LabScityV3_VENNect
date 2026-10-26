@@ -79,6 +79,7 @@ import { createClient } from "@/supabase/client";
 import { FeedPostItem } from "@/lib/types/feed";
 import { useSetSavedPost } from "./use-feed";
 import CollabMatchingModal from "@/components/collaborators/collab-matching-modal";
+import { derivePostTags as derivePostTagsFromDetail } from "@/lib/utils/article-detection";
 
 const DEFAULT_EDITOR_TEXT_COLOR = "#000000";
 const DEFAULT_EDITOR_FONT_SIZE = "16px";
@@ -169,14 +170,17 @@ export function HomeFeed(props: HomeFeedProps) {
     .map((post, index) => {
       const parsed = parsePostContent(post.content);
       const isPinned = pinnedPostIds.includes(post.id);
+      const isArticle = looksLikeArticleContent(`${parsed.title} ${parsed.bodyText}`);
       const postTags =
-        parsed.tags.length > 0
-          ? parsed.tags
-          : derivePostTags({
-              scientificField: post.scientificField,
-              content: parsed.bodyText,
-              mediaUrl: post.mediaUrl,
-            });
+        isArticle && !parsed.tags.includes("Article")
+          ? ["Article", ...parsed.tags]
+          : parsed.tags.length > 0
+            ? parsed.tags
+            : derivePostTagsFromDetail({
+                scientificField: post.scientificField,
+                content: parsed.bodyText,
+                mediaUrl: post.mediaUrl,
+              });
 
       return {
         index,
@@ -1137,14 +1141,17 @@ export function FeedPostCard({
   const parsedContent = parsePostContent(post.content);
   const title = parsedContent.title;
   const description = parsedContent.bodyText;
+  const isArticle = looksLikeArticleContent(`${parsedContent.title} ${parsedContent.bodyText}`);
   const inferredTags =
-    parsedContent.tags.length > 0
-      ? parsedContent.tags
-      : derivePostTags({
-          scientificField: post.scientificField,
-          content: parsedContent.bodyText,
-          mediaUrl: post.mediaUrl,
-        });
+    isArticle && !parsedContent.tags.includes("Article")
+      ? ["Article", ...parsedContent.tags]
+      : parsedContent.tags.length > 0
+        ? parsedContent.tags
+        : derivePostTagsFromDetail({
+            scientificField: post.scientificField,
+            content: parsedContent.bodyText,
+            mediaUrl: post.mediaUrl,
+          });
   const isCitable =
     parsedContent.kind === "publication" || inferredTags.includes("Article");
 
@@ -1798,38 +1805,4 @@ function escapeHtml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
-}
-
-function derivePostTags(post: {
-  scientificField: string;
-  content: string;
-  mediaUrl?: string | null;
-}) {
-  const tags: string[] = [];
-  const parsedContent = parsePostContent(post.content);
-  const normalizedContent = (post.content ?? '').toLowerCase();
-  const normalizedField = (post.scientificField ?? '').trim().toLowerCase();
-
-  const looksLikeArticle = looksLikeArticleContent(
-    `${parsedContent.title} ${parsedContent.bodyText}`
-  );
-  
-  if (looksLikeArticle) {
-    tags.push("Article");
-  }
-
-  if (post.mediaUrl && normalizedContent.includes("full-text")) {
-    tags.push("Full-text available");
-  }
-
-  if (
-    looksLikeArticle &&
-    normalizedField &&
-    normalizedField !== "general" &&
-    normalizedField !== "other"
-  ) {
-    tags.push(post.scientificField);
-  }
-
-  return tags;
 }

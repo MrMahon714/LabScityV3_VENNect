@@ -63,38 +63,6 @@ function resolveGroupAvatarUrl(
   return supabase.storage.from(groupAvatarBucket).getPublicUrl(s).data.publicUrl;
 }
 
-/** Direct insert when `join_public_group` RPC is not applicable (e.g. private group + invite). */
-async function insertDirectGroupMembership(
-  supabase: ServerSupabase,
-  groupId: number,
-  userId: string,
-): Promise<DataResponse<null>> {
-  const { error: memberError } = await supabase.from("group_members").insert({
-    group_id: groupId,
-    user_id: userId,
-    role: "Member",
-  });
-
-  if (memberError) {
-    return { success: false, error: memberError.message };
-  }
-
-  const { data: group } = await supabase
-    .from("groups")
-    .select("conversation_id")
-    .eq("group_id", groupId)
-    .single();
-
-  if (group?.conversation_id) {
-    await supabase.from("conversation_participants").insert({
-      conversation_id: group.conversation_id,
-      user_id: userId,
-    });
-  }
-
-  return { success: true, data: null };
-}
-
 /**
  * Fetch all groups the authenticated user is a member of, with member counts.
  *
@@ -614,15 +582,24 @@ export async function joinGroup(
     if (msg.includes("banned")) {
       return { success: false, error: rpcError.message };
     }
-    if (
-      msg.includes("private") ||
-      msg.includes("does not exist") ||
-      msg.includes("Group is private")
-    ) {
-      return insertDirectGroupMembership(supabase, groupId, userId);
-    }
 
-    return { success: false, error: rpcError.message };
+    if (
+       msg.includes("private") ||
+       msg.includes("does not exist") ||
+       msg.includes("Group is private")
+) {
+        const { error: acceptErr } = await supabase.rpc("accept_group_invite", {
+              target_group_id: groupId,
+  });
+
+        if (acceptErr) {
+           return { success: false, error: acceptErr.message };
+  }
+
+        return { success: true, data: null };
+}
+
+      return { success: false, error: rpcError.message };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
@@ -940,8 +917,25 @@ export async function inviteUsersToGroup(
     if (roleError) {
       return { success: false, error: roleError.message };
     }
-    if (roleRow?.role !== "Admin") {
-      return { success: false, error: "Only group admins can send invites" };
+
+    const { data: groupRow, error: groupLookupError } = await supabase
+          .from("groups")
+          .select("group_id, privacy")
+          .eq("group_id", parsed.groupId)
+          .maybeSingle();
+
+    if (groupLookupError || !groupRow) {
+       return { success: false, error: groupLookupError?.message ?? "Group not found" };
+}
+
+    const isMember = roleRow != null;
+    const isAdmin = roleRow?.role === "Admin";
+
+    if (!isMember) {
+       return { success: false, error: "Only group members can send invites" };
+    }
+    if (groupRow.privacy === "private" && !isAdmin) {
+       return { success: false, error: "Only group admins can invite to a private group" };
     }
 
     const { data: groupExists, error: groupError } = await supabase
@@ -949,13 +943,6 @@ export async function inviteUsersToGroup(
       .select("group_id")
       .eq("group_id", parsed.groupId)
       .maybeSingle();
-
-    if (groupError || !groupExists) {
-      return {
-        success: false,
-        error: groupError?.message ?? "Group not found",
-      };
-    }
 
     const inviterId = authData.user.id;
     const uniqueIds = [...new Set(parsed.userIds)].filter(

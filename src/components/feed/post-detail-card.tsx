@@ -35,6 +35,7 @@ import { useEffect, useState } from "react";
 import { PostRichTextContent } from "@/components/feed/post-rich-text-content";
 import { PostFollowButton } from "@/components/feed/post-follow-button";
 import { derivePostTagsFromDetail, initials } from "@/components/feed/post-detail-card.utils";
+import { looksLikeArticleContent } from "@/lib/utils/article-detection";
 import { parsePostContent } from "@/lib/utils/post-content";
 import { useSetSavedPost } from "./use-feed";
 
@@ -82,14 +83,17 @@ export function PostDetailCard({
   const [editOpen, editHandlers] = useDisclosure(false);
   const parsedContent = parsePostContent(post.content);
   const title = parsedContent.title;
+  const isArticle = looksLikeArticleContent(`${parsedContent.title} ${parsedContent.bodyText}`);
   const inferredTags =
-    parsedContent.tags.length > 0
-      ? parsedContent.tags
-      : derivePostTagsFromDetail({
-          scientificField: post.scientificField,
-          content: parsedContent.bodyText,
-          mediaUrl: post.mediaUrl,
-        });
+    isArticle && !parsedContent.tags.includes("Article")
+      ? ["Article", ...parsedContent.tags]
+      : parsedContent.tags.length > 0
+        ? parsedContent.tags
+        : derivePostTagsFromDetail({
+            scientificField: post.scientificField,
+            content: parsedContent.bodyText,
+            mediaUrl: post.mediaUrl,
+          });
   const isFeatured = parsedContent.isFeatured;
   const isCitable =
     parsedContent.kind === "publication" || inferredTags.includes("Article");

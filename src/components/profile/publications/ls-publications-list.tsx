@@ -182,7 +182,7 @@ export default function LSPublicationsList({
                         </Box>
                         <Stack gap='0'>
                           <Text fw='700'>Add Research via DOI</Text>
-                          <Text fz='xs' c='dimmed'>Fetch publiation metadata from OpenAlex</Text>
+                          <Text fz='xs' c='dimmed'>Fetch publication metadata from OpenAlex</Text>
                         </Stack>                 
                       </Group>
                     </Modal.Title>
