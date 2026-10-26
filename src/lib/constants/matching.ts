@@ -45,3 +45,5 @@ export const MATCH_PERCENT_ANCHORS: Record<
   offers_only: { floor: 0.6, ceiling: 0.85 },
   legacy: { floor: 0.5, ceiling: 0.9 },
 };
+
+export const MAX_SEARCH_HISTORY = 10;

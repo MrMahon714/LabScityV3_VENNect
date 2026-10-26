@@ -5,7 +5,11 @@ import type { RawCollaboratorMatch } from "@/lib/types/collab";
 import { explainMatches } from "@/lib/utils/match-explanation";
 import { buildFilterSearchText } from "@/lib/utils/match-filters";
 import { rankByMatchPercent } from "@/lib/utils/match-percent";
-import { matchFiltersSchema } from "@/lib/validations/matching";
+import { saveSearchToHistory } from "@/lib/utils/search-history";
+import {
+  hasActiveFilters,
+  matchFiltersSchema,
+} from "@/lib/validations/matching";
 import { createClient } from "@/supabase/server";
 
 export async function GET() {
@@ -107,6 +111,10 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (hasActiveFilters(filters)) {
+    await saveSearchToHistory(supabase, user.id, filters);
   }
 
   const results = rankByMatchPercent(
