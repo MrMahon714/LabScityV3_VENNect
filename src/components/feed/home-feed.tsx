@@ -78,6 +78,7 @@ import { createClient } from "@/supabase/client";
 import { FeedPostItem } from "@/lib/types/feed";
 import { useSetSavedPost } from "./use-feed";
 import CollabMatchingModal from "@/components/collaborators/collab-matching-modal";
+import { getMatchColor } from "@/lib/utils/match-badge";
 
 const DEFAULT_EDITOR_TEXT_COLOR = "#000000";
 const DEFAULT_EDITOR_FONT_SIZE = "16px";
@@ -1599,9 +1600,17 @@ export function RecommendedCollabsCard({ currentUserId }: { currentUserId: strin
                 <Text size="xs" c="dimmed" truncate>
                   {person.occupation || person.workplace || "Researcher"}
                 </Text>
-                {/* <Badge size="xs" color="green" variant="light" mt={4}>
-                  {Math.round(person.cosine_similarity * 100)}% match
-                </Badge> */}
+                
+                <Badge
+                  size="xs"
+                  variant="outline"
+                  color={getMatchColor(person.match_percent)}
+                  c="navy.7"
+                  mt={4}
+                >
+                  {Math.round(person.match_percent)}% match
+                </Badge>
+                
               </Box>
               <PostFollowButton
                 currentUserId={currentUserId ?? null}
