@@ -113,7 +113,7 @@ DECLARE
   cur_tag_vec extensions.vector;
   cur_decl_vec extensions.vector;
   cur_skill_vec extensions.vector;
-  filter_weight CONSTANT double precision := 0.4;
+  filter_weight CONSTANT double precision := 0.7;
   unknown_penalty CONSTANT double precision := 0.9;
 BEGIN
   -- Require an authenticated caller, and allow them to request only their own matches.
