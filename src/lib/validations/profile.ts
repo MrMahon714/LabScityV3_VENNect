@@ -104,7 +104,7 @@ export type CreateUserReportValues = z.infer<typeof createUserReportSchema>;
 export const skillValueSchema = z.object({
   // null means custom skill
   id: z.number().int().positive().nullable(),
-  name: z.string().trim().min(2).max(60)
+  name: z.string().trim().min(1).max(60)
 });
 
 export const updateSkillsSchema = z.object({

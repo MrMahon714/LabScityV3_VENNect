@@ -12,6 +12,8 @@ import {
 import { profileKeys } from "@/lib/query-keys";
 import { UpdateDeclaredTagsValues, UpdateSkillsValues } from "@/lib/validations/profile";
 import { notifications } from "@mantine/notifications";
+import { MAX_PROFILE_SKILLS, MAX_PROFILE_TAGS } from "@/lib/constants/profile";
+import { mergeWithExisting } from "@/components/profile/extract-resume-utils";
 
 // NOTE: Profile hooks now return the full React Query result objects
 // so server prefetch and client usage share the same data shape.
@@ -219,23 +221,66 @@ export function useConfirmExtractedData(userId: string) {
 
   return useMutation({
     mutationFn: async (data: { skills: string[]; researchAreas: string[] }) => {
-      const skillsRes = await updateProfileSkills({
-        skills: data.skills.map((name) => ({ id: null, name })),
-      });
-      if (!skillsRes.success) throw new Error(skillsRes.error ?? "Failed to update skills");
+      const profile = await getUser(userId);
+      if (!profile.success || !profile.data) {
+        throw new Error("Couldn't load your current profile. Please try again.");
+      }
 
-      const tagsRes = await updateDeclaredTagsAction({
-        tags: data.researchAreas.map((name) => ({ id: null, name })),
+      const skills = mergeWithExisting(profile.data.skills ?? [], data.skills, {
+        min: 1,
+        max: 60,
+        maxCount: MAX_PROFILE_SKILLS,
       });
-      if (!tagsRes.success) throw new Error(tagsRes.error ?? "Failed to update research areas");
+      const areas = mergeWithExisting(profile.data.declared_tags ?? [], data.researchAreas, {
+        min: 1,
+        max: 200,
+        maxCount: MAX_PROFILE_TAGS,
+      });
 
-      return { success: true };
+      const errors: string[] = [];
+
+      if (skills.added > 0) {
+        const skillsRes = await updateProfileSkills({ skills: skills.items });
+        if (!skillsRes.success) {
+          console.error("Skills save failed:", skillsRes.error);
+          errors.push(
+            skillsRes.error?.includes("Too many")
+              ? `Skills: the database still allows only 20 (you'd have ${skills.items.length}). This is fixed once the new migration is applied.`
+              : "Skills couldn't be saved.",
+          );
+          skills.added = 0;
+        }
+      }
+
+      if (areas.added > 0) {
+        const tagsRes = await updateDeclaredTagsAction({ tags: areas.items });
+        if (!tagsRes.success) {
+          console.error("Research areas save failed:", tagsRes.error);
+          errors.push(
+            tagsRes.error?.includes("at most")
+              ? `Research areas: the database still allows only 20 (you'd have ${areas.items.length}).`
+              : "Research areas couldn't be saved.",
+          );
+          areas.added = 0;
+        }
+      }
+
+      if (errors.length > 0 && skills.added === 0 && areas.added === 0) {
+        throw new Error(errors.join(" "));
+      }
+
+      return { skills, areas };
     },
-    onSuccess: () => {
+    onSuccess: ({ skills, areas }) => {
       queryClient.invalidateQueries({ queryKey: profileKeys.user(userId) });
+
+      const leftOut = skills.leftOut + areas.leftOut;
       notifications.show({
-        title: "Resume extracted successfully",
-        message: "Skills and research areas have been updated",
+        title: "Profile updated from your CV",
+        message:
+          `Added ${skills.added} skill${skills.added === 1 ? "" : "s"} and ` +
+          `${areas.added} research area${areas.added === 1 ? "" : "s"}.` +
+          (leftOut > 0 ? ` ${leftOut} item${leftOut === 1 ? " was" : "s were"} left out (profile limit reached).` : ""),
         color: "green",
       });
     },
