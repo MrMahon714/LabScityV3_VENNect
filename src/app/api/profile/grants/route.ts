@@ -74,3 +74,41 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
+//DELETE: Remove a specific grant by ID for the authenticated user
+export async function DELETE(request: Request) {
+    try {
+        const supabase = await createClient();
+
+        //Securely retrieve the authenticated user from session cookies
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        //Get the grant ID from the URL search params (e.g., /api/profile/grants?id=10)
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ error: 'Missing grant ID' }, { status: 400 });
+        }
+
+        //Delete the grant, ensuring it belongs to the logged-in user (RLS protection)
+        const { error } = await supabase
+            .from('grants')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', user.id);
+
+        if (error) {
+            console.error('Error deleting grant:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ success: true, message: 'Grant deleted successfully' });
+    } catch (err) {
+        console.error('Grants DELETE route error:', err);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
