@@ -74,6 +74,7 @@ import type {
 } from "@/lib/actions/profile";
 import LSPublicationsList from "./publications/ls-publications-list";
 import LSProductsList from "./products/ls-products-list";
+import LSGrantsList from "./grants/ls-grants-list";
 import { getLegacyPostText } from "@/lib/utils/post-content";
 import { FeedPostCard, RecommendedCollabsCard } from "../feed/home-feed";
 import StickyBox from "react-sticky-box";
@@ -87,7 +88,7 @@ type CreateProfilePictureUploadUrlAction = typeof createProfilePictureUploadUrl;
 type UpdateOwnProfilePictureAction = typeof updateOwnProfilePicture;
 type CreateProfileHeaderUploadUrlAction = typeof createProfileHeaderUploadUrl;
 type UpdateOwnProfileHeaderAction = typeof updateOwnProfileHeader;
-type ProfileTab = "posts" | "publications" | "products" | "bookmarks";
+type ProfileTab = "posts" | "publications" | "grants" | "products" | "bookmarks";
 type ProfileAction = "add-publication" | "add-product";
 
 /**
@@ -442,6 +443,7 @@ const LSProfileDesktopLayout = ({
               if (
                 value === "posts" ||
                 value === "publications" ||
+                value === "grants" ||
                 value === "products" ||
                 value === "bookmarks"
               ) {
@@ -476,6 +478,7 @@ const LSProfileDesktopLayout = ({
             <Tabs.List mb={20} justify="start" bg='gray.0'>
               <Tabs.Tab value="posts">Posts</Tabs.Tab>
               <Tabs.Tab value="publications">Publications</Tabs.Tab>
+              <Tabs.Tab value="grants">Grants</Tabs.Tab>
               <Tabs.Tab value="products">Research Products</Tabs.Tab>
               {
                 isOwnProfile &&
@@ -536,6 +539,10 @@ const LSProfileDesktopLayout = ({
                 userId={userId}
                 autoOpenOrcid={isOwnProfile && profileAction === "add-publication"}
               />
+            </Tabs.Panel>
+
+            <Tabs.Panel value='grants'>
+              <LSGrantsList userId={userId} />
             </Tabs.Panel>
 
             <Tabs.Panel value='products'>

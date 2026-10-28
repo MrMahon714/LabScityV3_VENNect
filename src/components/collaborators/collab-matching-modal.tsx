@@ -34,6 +34,7 @@ import {
   SkillsFilter,
 } from "./searchable-chip-select";
 import { LocationFilter } from "./location-filter";
+import { getMatchColor } from "@/lib/utils/match-badge";
 
 //Filter options
 const PRODUCT_TYPE_OPTIONS = MATCHING_PRODUCT_TYPES.map((type) => ({
@@ -266,7 +267,7 @@ export default function CollabMatchingModal({
                       height: "48px",
                       borderRadius: "50%",
                       backgroundColor: "var(--mantine-color-blue-0)",
-                      border: "2px solid var(--mantine-color-blue-3)",
+                      border: `2px solid var(--mantine-color-${getMatchColor(person.match_percent)}-6)`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",

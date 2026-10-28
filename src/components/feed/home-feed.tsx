@@ -84,6 +84,8 @@ import { derivePostTags as derivePostTagsFromDetail } from "@/lib/utils/article-
 import { LSEditPostModal } from "./ls-edit-post-modal";
 import { useUpdatePost } from "@/lib/actions/use-post-actions";
 import { feedKeys, groupKeys } from "@/lib/query-keys";
+import { getMatchColor } from "@/lib/utils/match-badge";
+
 
 /*auto means no text color is saved and the text follows the theme
 this is to stop text from looking bad on new themes*/
@@ -1642,9 +1644,17 @@ export function RecommendedCollabsCard({ currentUserId }: { currentUserId: strin
                 <Text size="xs" c="dimmed" truncate>
                   {person.occupation || person.workplace || "Researcher"}
                 </Text>
-                {/* <Badge size="xs" color="green" variant="light" mt={4}>
-                  {Math.round(person.cosine_similarity * 100)}% match
-                </Badge> */}
+                
+                <Badge
+                  size="xs"
+                  variant="outline"
+                  color={getMatchColor(person.match_percent)}
+                  c="navy.7"
+                  mt={4}
+                >
+                  {Math.round(person.match_percent)}% match
+                </Badge>
+                
               </Box>
               <PostFollowButton
                 currentUserId={currentUserId ?? null}
