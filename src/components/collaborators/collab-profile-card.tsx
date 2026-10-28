@@ -33,7 +33,7 @@ export default function CollabProfileCard(
       bd='1px solid gray.3'
       p='0'
       bdrs='0.75rem'
-      c='navy.7'
+      c="var(--ls-text-strong)"
     >
       <Group 
         p='1rem' 
@@ -129,7 +129,7 @@ export default function CollabProfileCard(
               p='6px 12px'
               leftSection={<IconMessageCircle size='0.875rem' stroke='2.2'/>}
               styles={{ section: { marginInlineEnd: '4px'} }}
-              c='navy.7'
+              c="var(--ls-text-strong)"
               bd='1px solid gray.3'
             >
               <Text fz='0.75rem' fw='500'>

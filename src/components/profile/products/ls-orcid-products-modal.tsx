@@ -155,7 +155,7 @@ export default function LSOrcidProductsModal({userId}: {userId: string}) {
             <Group align='flex-start' justify='space-between' w='100%'>
               <Modal.Title>
                 <Group>
-                  <Box bg='navy.3' bdrs='md' p='8'>
+                  <Box bg="var(--ls-icon-badge-bg)" c="var(--ls-icon-badge-color)" bdrs="md" p="8">
                     <IconBox />
                   </Box>
                   <Stack gap='0'>
@@ -174,7 +174,7 @@ export default function LSOrcidProductsModal({userId}: {userId: string}) {
               <Stack gap='xs'>
                 <form onSubmit={handleOrcidSubmit} style={{flex: 1}}>
                   <Stack >
-                    <Card bg='navy.1' shadow='none' bd='none' bdrs={0}>
+                    <Card bg="var(--ls-navy-tint)" shadow='none' bd='none' bdrs={0}>
                       <Group wrap='nowrap'>
                         <Text c='' fz='sm' flex='1'>
                           Enter your ORCID iD to find research products via {" "}
@@ -247,7 +247,7 @@ export default function LSOrcidProductsModal({userId}: {userId: string}) {
                 <Stack>
                   <Text size="sm" c="dimmed">
                     {products.length} research products found ·{" "}
-                    <Text span c="navy.7">
+                    <Text span c="var(--ls-text-strong)">
                       {selected.size} selected
                     </Text>
                   </Text>
@@ -256,7 +256,7 @@ export default function LSOrcidProductsModal({userId}: {userId: string}) {
                     indeterminate={someChecked} 
                     label='Select all'
                     onChange={(e) => toggleSelectAll(e.currentTarget.checked)}
-                    color='navy.6'
+                    color="var(--ls-accent)"
                     radius='sm'
                   />
                   <Chip.Group multiple>
@@ -273,7 +273,7 @@ export default function LSOrcidProductsModal({userId}: {userId: string}) {
                             key={type}
                             checked={allOfGroup}
                             onChange={() => toggleGroup(type)}
-                            color='navy.6'
+                            color="var(--ls-accent)"
                             size='xs'
                           >
                             {PRODUCT_TYPE_LABELS[type]} ({selectedInGroup}/{works.length})

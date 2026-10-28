@@ -212,7 +212,7 @@ export function useGroupLayout({
         title: count > 0 ? "Invites sent" : "No new invites",
         message:
           count > 0
-            ? `${count} friend${count === 1 ? "" : "s"} will get a notification.`
+            ? `${count} ${count === 1 ? "person" : "people"} will get a notification.`
             : "Everyone selected was already a member or already had a pending invite.",
         color: count > 0 ? "green" : "blue",
       });

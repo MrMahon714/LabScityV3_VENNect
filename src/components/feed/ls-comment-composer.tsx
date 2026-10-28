@@ -85,7 +85,7 @@ export function LSCommentComposer({
               labelProps={{ fw: "bold" }}
               placeholder={placeholder}
               error={errors.content?.message}
-              styles={{ label: { color: "var(--mantine-color-navy-7)" } }}
+              styles={{ label: { color: "var(--ls-text-strong)" } }}
               {...register("content")}
               onClick={noPropagate()}
               autoFocus={autoFocus}

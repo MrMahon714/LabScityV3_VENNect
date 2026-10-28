@@ -402,7 +402,7 @@ export function JobCard({
   const isOwner = Boolean(onDeleteClick);
 
   return (
-    <Card radius="md" shadow="xs" padding="lg" withBorder bg="white">
+    <Card radius="md" shadow="xs" padding="lg" withBorder bg="var(--ls-surface)">
       <Group align="flex-start" justify="space-between" gap="md" wrap="nowrap">
         <Box flex={1} miw={0}>
           <Group gap="xs" align="center">

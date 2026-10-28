@@ -8,13 +8,15 @@ import {
   addUsersToChat,
   createChat,
   editMessage,
+  findOrCreateDirectChat,
   getChatsWithPreview,
   getConversationParticipants,
   getOldMessages,
   leaveConversation,
   updateConversationName,
 } from "@/lib/actions/chat";
-import { chatKeys } from "@/lib/query-keys";
+import { getGroups } from "@/lib/actions/groups";
+import { chatKeys, groupKeys } from "@/lib/query-keys";
 
 /**
  * React Query hook for fetching paginated messages from a conversation.
@@ -228,6 +230,32 @@ export function useEditMessage() {
           queryKey: chatKeys.oldMessages(results.data.conversation_id),
         });
       }
+    },
+  });
+}
+
+/*opens/creates direct message and refreshes sidebar*/
+export function useFindOrCreateDirectChat() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => findOrCreateDirectChat(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chatKeys.chatsWithPreview() });
+    },
+  });
+}
+
+/*shows the groups you belong to. Shares its cache with the groups page*/
+export function useMyGroupsList() {
+  return useQuery({
+    queryKey: groupKeys.list(),
+    queryFn: async () => {
+      const result = await getGroups();
+      if (!result.success || !result.data) {
+        throw new Error(result.error ?? "Failed to fetch groups");
+      }
+      return result.data;
     },
   });
 }

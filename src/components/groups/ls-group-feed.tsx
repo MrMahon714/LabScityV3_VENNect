@@ -17,6 +17,7 @@ import { useSetSavedPost } from "../feed/use-feed";
 import { useState } from "react";
 import { FeedPostItem } from "@/lib/types/feed";
 import { PostFollowButton } from "../feed/post-follow-button";
+import { groupKeys } from "@/lib/query-keys";
 
 /**
  * Group-scoped feed: identical UI to HomeFeed but backed by useGroupFeed,
@@ -138,7 +139,9 @@ function GroupFeedPostCard({
   post: FeedPostItem;
   currentUserId: string | null;
 }) {
-  const actions = usePostActions(post.id);
+  const actions = usePostActions(post.id, {
+    extraInvalidateKeys: [[...groupKeys.all, "feed"]],
+  });
   const setSavedPost = useSetSavedPost(currentUserId ?? '');
 
   const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(

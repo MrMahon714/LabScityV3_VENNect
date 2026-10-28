@@ -42,6 +42,7 @@ import {
   IconPlus,
   IconQuote,
   IconShare3,
+  IconEdit,
   IconTrash,
   IconUsers,
   IconHeartFilled,
@@ -80,8 +81,13 @@ import { FeedPostItem } from "@/lib/types/feed";
 import { useSetSavedPost } from "./use-feed";
 import CollabMatchingModal from "@/components/collaborators/collab-matching-modal";
 import { derivePostTags as derivePostTagsFromDetail } from "@/lib/utils/article-detection";
+import { LSEditPostModal } from "./ls-edit-post-modal";
+import { useUpdatePost } from "@/lib/actions/use-post-actions";
+import { feedKeys, groupKeys } from "@/lib/query-keys";
 
-const DEFAULT_EDITOR_TEXT_COLOR = "#000000";
+/*auto means no text color is saved and the text follows the theme
+this is to stop text from looking bad on new themes*/
+const DEFAULT_EDITOR_TEXT_COLOR = "auto";
 const DEFAULT_EDITOR_FONT_SIZE = "16px";
 const EDITOR_FONT_SIZE_OPTIONS = [
   { label: "Small", value: "14px" },
@@ -90,7 +96,7 @@ const EDITOR_FONT_SIZE_OPTIONS = [
   { label: "Extra Large", value: "22px" },
 ] as const;
 const EDITOR_COLOR_OPTIONS = [
-  { label: "Black", value: "#000000" },
+  { label: "Auto", value: "auto" },
   { label: "Blue", value: "#1D4ED8" },
   { label: "Teal", value: "#0F766E" },
   { label: "Rose", value: "#BE123C" },
@@ -252,7 +258,7 @@ export function HomeFeed(props: HomeFeedProps) {
           ) : null}
 
           {!isFeedLoading && !isFeedError && posts.length === 0 ? (
-            <Card radius="md" shadow="xs" padding="lg" withBorder bg="white">
+            <Card radius="md" shadow="xs" padding="lg" withBorder bg="var(--ls-surface)">
               <Text fw={800} c="gray.8">
                 Your home feed is empty
               </Text>
@@ -389,11 +395,11 @@ export function CreatePostCard({
     content: draftBodyHtml,
     editorProps: {
       attributes: {
-        style: `color: ${DEFAULT_EDITOR_TEXT_COLOR}; font-size: ${DEFAULT_EDITOR_FONT_SIZE};`,
+        style: `color: var(--ls-text-body); font-size: ${DEFAULT_EDITOR_FONT_SIZE};`,
       },
     },
     onCreate: ({ editor: currentEditor }) => {
-      currentEditor.chain().setColor(DEFAULT_EDITOR_TEXT_COLOR).run();
+      currentEditor.chain().unsetColor().run();
       currentEditor.chain().setFontSize(DEFAULT_EDITOR_FONT_SIZE).run();
       syncEditorControls(currentEditor);
     },
@@ -462,7 +468,7 @@ export function CreatePostCard({
     editor
       ?.chain()
       .clearContent()
-      .setColor(DEFAULT_EDITOR_TEXT_COLOR)
+      .unsetColor()
       .setFontSize(DEFAULT_EDITOR_FONT_SIZE)
       .run();
   }, [editor, isComposerOpen]);
@@ -483,7 +489,7 @@ export function CreatePostCard({
     setDraftBodyText(summary);
     setDraftBodyHtml(summary ? `<p>${escapeHtml(summary)}</p>` : "<p></p>");
     editor.commands.setContent(summary ? `<p>${escapeHtml(summary)}</p>` : "<p></p>");
-    editor.chain().setColor(DEFAULT_EDITOR_TEXT_COLOR).run();
+    editor.chain().unsetColor().run();
     editor.chain().setFontSize(DEFAULT_EDITOR_FONT_SIZE).run();
     syncEditorControls(editor);
   }, [importType, editor, selectedProduct]);
@@ -514,7 +520,7 @@ export function CreatePostCard({
     setDraftBodyText(summary);
     setDraftBodyHtml(summary ? `<p>${escapeHtml(summary)}</p>` : "<p></p>");
     editor.commands.setContent(summary ? `<p>${escapeHtml(summary)}</p>` : "<p></p>");
-    editor.chain().setColor(DEFAULT_EDITOR_TEXT_COLOR).run();
+    editor.chain().unsetColor().run();
     editor.chain().setFontSize(DEFAULT_EDITOR_FONT_SIZE).run();
     syncEditorControls(editor);
   }, [importType, editor, selectedPublication]);
@@ -567,7 +573,7 @@ export function CreatePostCard({
     editor
       ?.chain()
       .clearContent()
-      .setColor(DEFAULT_EDITOR_TEXT_COLOR)
+      .unsetColor()
       .setFontSize(DEFAULT_EDITOR_FONT_SIZE)
       .run();
   };
@@ -711,7 +717,7 @@ export function CreatePostCard({
                 {initials(currentUserName)}
               </Avatar>
               <Box>
-                <Text size="sm" fw={800} c="navy.7">
+                <Text size="sm" fw={800} c="var(--ls-text-strong)">
                   {
                     type === 'home' ? "What are you working on" :
                     type === 'group' ? "Share an update with the group" :
@@ -752,10 +758,10 @@ export function CreatePostCard({
             align="center"
             wrap="wrap"
             pt="sm"
-            style={{ borderTop: "1px solid #F3F4F6" }}
+            style={{ borderTop: "1px solid var(--ls-border)" }}
           >
             <Group gap="xs" wrap="wrap">
-              <Text size="xs" fw={800} c="#94A3B8" tt="uppercase">
+              <Text size="xs" fw={800} c="var(--ls-text-muted)" tt="uppercase">
                 Show
               </Text>
               {activeFeedTags.map((tag) => (
@@ -863,14 +869,14 @@ export function CreatePostCard({
               />
 
               <Stack gap={6}>
-                <Text size="sm" fw={600} c="#334155">
+                <Text size="sm" fw={600} c="var(--ls-text-body)">
                   Tags
                 </Text>
                 <PillsInput
                   radius="md"
                   styles={{
                     input: {
-                      borderColor: "#E5E7EB",
+                      borderColor: "var(--ls-border)",
                     },
                   }}
                 >
@@ -930,7 +936,7 @@ export function CreatePostCard({
 
               <Stack gap={6}>
                 <Group justify="space-between" wrap="wrap" gap="xs">
-                  <Text component='label' size="sm" fw={600} c="#334155">
+                  <Text component='label' size="sm" fw={600} c="var(--ls-text-body)">
                     Body <Text component='span' size='sm' c='red'>*</Text>
                   </Text>
                   <Group gap="xs">
@@ -966,8 +972,11 @@ export function CreatePostCard({
                               h={12}
                               style={{
                                 borderRadius: 999,
-                                backgroundColor: activeColorOption.value,
-                                border: "1px solid #CBD5E1",
+                                backgroundColor:
+                                  activeColorOption.value === DEFAULT_EDITOR_TEXT_COLOR
+                                    ? "var(--ls-text-body)"
+                                    : activeColorOption.value,
+                                border: "1px solid var(--ls-border)",
                               }}
                             />
                           }
@@ -981,7 +990,11 @@ export function CreatePostCard({
                             key={option.value}
                             onClick={() => {
                               setActiveTextColor(option.value);
-                              editor?.chain().focus().setColor(option.value).run();
+                              if (option.value === DEFAULT_EDITOR_TEXT_COLOR) {
+                                editor?.chain().focus().unsetColor().run();
+                              } else {
+                                editor?.chain().focus().setColor(option.value).run();
+                              }
                             }}
                             leftSection={
                               <Box
@@ -989,8 +1002,11 @@ export function CreatePostCard({
                                 h={12}
                                 style={{
                                   borderRadius: 999,
-                                  backgroundColor: option.value,
-                                  border: "1px solid #CBD5E1",
+                                  backgroundColor:
+                                    option.value === DEFAULT_EDITOR_TEXT_COLOR
+                                      ? "var(--ls-text-body)"
+                                      : option.value,
+                                  border: "1px solid var(--ls-border)",
                                 }}
                               />
                             }
@@ -1007,20 +1023,20 @@ export function CreatePostCard({
                   editor={editor}
                   styles={{
                     root: {
-                      borderColor: "#E5E7EB",
+                      borderColor: "var(--ls-border)",
                       borderRadius: 16,
                       overflow: "hidden",
                     },
                     toolbar: {
-                      borderColor: "#E5E7EB",
+                      borderColor: "var(--ls-border)",
                     },
                     content: {
                       minHeight: 180,
-                      borderColor: "#E5E7EB",
-                      backgroundColor: "#FFFFFF",
-                      color: DEFAULT_EDITOR_TEXT_COLOR,
+                      borderColor: "var(--ls-border)",
+                      backgroundColor: "var(--ls-surface)",
+                      color: "var(--ls-text-body)",
                       "& .ProseMirror": {
-                        color: DEFAULT_EDITOR_TEXT_COLOR,
+                        color: "var(--ls-text-body)",
                         fontSize: DEFAULT_EDITOR_FONT_SIZE,
                       },
                     },
@@ -1089,7 +1105,7 @@ export function CreatePostCard({
                     style={{
                       borderRadius: 16,
                       overflow: "hidden",
-                      border: "1px solid #E5E7EB",
+                      border: "1px solid var(--ls-border)",
                       aspectRatio: "16 / 9",
                       position: "relative",
                     }}
@@ -1135,6 +1151,10 @@ export function FeedPostCard({
   hideYourPostBadge?: boolean;
 }) {
   const isOwnPost = currentUserId != null && currentUserId === post.userId;
+  const [editOpen, setEditOpen] = useState(false);
+  const updatePostMutation = useUpdatePost(post.id, {
+    extraInvalidateKeys: [feedKeys.all, [...groupKeys.all, "feed"]],
+  });
   const [comment, setComment] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -1156,11 +1176,22 @@ export function FeedPostCard({
     parsedContent.kind === "publication" || inferredTags.includes("Article");
 
   return (
+    <>
+    <LSEditPostModal
+      opened={editOpen}
+      onClose={() => setEditOpen(false)}
+      rawContent={post.content}
+      isSaving={updatePostMutation.isPending}
+      onSave={async (content) => {
+        await updatePostMutation.mutateAsync({ content });
+        setEditOpen(false);
+      }}
+    />
     <Card
       radius="md"
       shadow='xs'
       withBorder
-      bg="white"
+      bg="var(--ls-surface)"
       p="lg"
     >
       <Stack gap="md">
@@ -1171,9 +1202,9 @@ export function FeedPostCard({
                 radius="xl"
                 variant="light"
                 style={{
-                  background: "#EEF2FF",
-                  color: "#1D4ED8",
-                  border: "1px solid #C7D2FE",
+                  background: "var(--ls-tint-bg-2)",
+                  color: "var(--ls-tint-text)",
+                  border: "1px solid var(--ls-tint-border)",
                 }}
               >
                 Your Post
@@ -1189,9 +1220,9 @@ export function FeedPostCard({
                   tag === "Article" ? <IconFileText size={10} /> : undefined
                 }
                 style={{
-                  background: tag === "Article" ? "#EFF6FF" : "#EEF2FF",
-                  color: "#2563EB",
-                  border: "1px solid #BFDBFE",
+                  background: tag === "Article" ? "var(--ls-tint-bg)" : "var(--ls-tint-bg-2)",
+                  color: "var(--ls-tint-text)",
+                  border: "1px solid var(--ls-tint-border)",
                 }}
               >
                 {tag}
@@ -1212,6 +1243,12 @@ export function FeedPostCard({
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item
+                    leftSection={<IconEdit size={14} />}
+                    onClick={() => setEditOpen(true)}
+                  >
+                    Edit post
+                  </Menu.Item>
+                  <Menu.Item
                     color="red"
                     leftSection={<IconTrash size={14} />}
                     onClick={onDelete}
@@ -1231,7 +1268,7 @@ export function FeedPostCard({
               href={`/posts/${post.id}`}
               fw={700}
               fz={17}
-              c="#111827"
+              c="var(--ls-text-strong)"
               style={{
                 lineHeight: 1.4,
                 overflowWrap: "anywhere",
@@ -1243,7 +1280,7 @@ export function FeedPostCard({
           </Box>
           <Text
             size="sm"
-            c="#475569"
+            c="var(--ls-text-body)"
             lh={1.6}
             lineClamp={3}
             style={{
@@ -1261,7 +1298,6 @@ export function FeedPostCard({
             <Avatar 
               size={28} 
               src={post.avatarUrl ?? undefined} 
-              color="blue"
               component={Link}
               href={`/profile/${post.userId}`}
             >
@@ -1283,13 +1319,13 @@ export function FeedPostCard({
               >
                 <Text 
                   span
-                  c="#1F2937"
+                  c="var(--ls-text-strong)"
                   fw={600}
                 >
                   {post.userName}
                 </Text>
               </Anchor>
-              <Text span c="#64748B" fw={400}>
+              <Text span c="var(--ls-text-muted)" fw={400}>
                 {" "}
                 · {post.timeAgo}
               </Text>
@@ -1302,7 +1338,7 @@ export function FeedPostCard({
               />
             ) : null}
           </Group>
-          <Text size="sm" c="#2563EB">
+          <Text size="sm" c="var(--ls-tint-text)">
             {copied ? "Link copied" : ""}
           </Text>
         </Group>
@@ -1324,7 +1360,7 @@ export function FeedPostCard({
               src={post.mediaUrl}
               alt="Post attachment"
               bdrs="lg"
-              bg='navy.0'
+              bg="var(--ls-navy-tint-0)"
               fill
               mah={600}
               style={{ objectFit: "contain" }}
@@ -1332,7 +1368,7 @@ export function FeedPostCard({
           </Box>
         ) : null}
 
-        <Divider color="#E5E7EB" />
+        <Divider color="var(--ls-border)" />
 
         <Group justify="space-between" align="center" wrap="wrap">
           <Group gap="lg">
@@ -1390,7 +1426,6 @@ export function FeedPostCard({
               href={`/posts/${post.id}`}
               radius="md"
               rightSection={<IconChevronRight size={14} />}
-              bg='navy.7'
             >
               View
             </Button>
@@ -1436,7 +1471,7 @@ export function FeedPostCard({
               styles={{
                 input: {
                   borderRadius: 14,
-                  borderColor: "#E5E7EB",
+                  borderColor: "var(--ls-border)",
                 },
               }}
             />
@@ -1463,6 +1498,7 @@ export function FeedPostCard({
         ) : null}
       </Stack>
     </Card>
+    </>
   );
 }
 
@@ -1593,7 +1629,6 @@ export function RecommendedCollabsCard({ currentUserId }: { currentUserId: strin
                 component={Link} 
                 href={`/profile/${person.profile_user_id}`} 
                 radius="xl" 
-                color="blue"
                 src={data.publicUrl}
               >
                 {initials(`${person.first_name} ${person.last_name}`)}
@@ -1716,9 +1751,9 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card radius="md" shadow="xs" padding="md" withBorder bg="white">
-      <Group justify="space-between" mb="sm" wrap="nowrap" align="flex-start">
-        <Group gap="xs" wrap="nowrap" miw={0}>
+    <Card radius="md" shadow="xs" padding="md" withBorder bg="var(--ls-surface)">
+      <Group justify="space-between" mb="sm">
+        <Group gap="xs">
           <ThemeIcon variant="light" color={accent} radius="md" size="sm">
             {icon}
           </ThemeIcon>

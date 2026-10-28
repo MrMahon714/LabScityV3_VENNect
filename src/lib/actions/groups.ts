@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { DataResponse } from "@/lib/types/data";
 import type {
   GetGroupsResult,
+  GroupActivityItem,
   GroupDiscoverItem,
   GroupListItem,
   GroupWithMembers,
@@ -414,19 +415,32 @@ export async function searchPublicGroups(
       q = q.or(`name.ilike.${pattern},description.ilike.${pattern}`);
     }
 
-    if (parsed.topicTags.length > 0) {
-      q = q.contains("topics", parsed.topicTags);
-    }
+    /**
+     * Topic filters ignore capitalization and match part of a topic; a group has
+     * to match every filter.
+     */
+    const wantedTopics = parsed.topicTags.map((tag) => tag.toLowerCase());
 
     const { data: rows, error } = await q
       .order("last_activity_at", { ascending: false })
-      .limit(parsed.limit);
+      .limit(wantedTopics.length > 0 ? 200 : parsed.limit);
 
     if (error) {
       return { success: false, error: error.message };
     }
 
-    const result: GroupDiscoverItem[] = (rows ?? []).map((g) => ({
+    const matchingRows = (rows ?? [])
+      .filter((g) => {
+        const topics = Array.isArray(g.topics)
+          ? (g.topics as string[]).map((t) => String(t).toLowerCase())
+          : [];
+        return wantedTopics.every((wanted) =>
+          topics.some((topic) => topic.includes(wanted)),
+        );
+      })
+      .slice(0, parsed.limit);
+
+    const result: GroupDiscoverItem[] = matchingRows.map((g) => ({
       group_id: g.group_id,
       name: g.name,
       description: g.description ?? "",
@@ -581,6 +595,26 @@ export async function joinGroup(
     }
     if (msg.includes("banned")) {
       return { success: false, error: rpcError.message };
+    }
+    const privateGroupError =
+      "This group is private. You need an invitation from a group admin to join.";
+    if (msg.includes("private") || msg.includes("Group is private")) {
+      return { success: false, error: privateGroupError };
+    }
+    if (msg.includes("does not exist")) {
+      const { data: target } = await supabase
+        .from("groups")
+        .select("privacy")
+        .eq("group_id", groupId)
+        .maybeSingle();
+
+      if (target?.privacy === "public") {
+        return insertDirectGroupMembership(supabase, groupId, userId);
+      }
+      return {
+        success: false,
+        error: target ? privateGroupError : "Group not found",
+      };
     }
 
     if (
@@ -890,7 +924,7 @@ export async function updateGroup(
 }
 
 /**
- * Sends invites via `invite_user_to_group` RPC (admin + not already member).
+ * Sends invites via `invite_user_to_group` RPC (any member + not already invited).
  * `handle_group_invite` trigger inserts `notifications` — do not duplicate here.
  * Re-opening a **declined** invite uses `UPDATE` only (no second notification).
  */
@@ -940,9 +974,27 @@ export async function inviteUsersToGroup(
 
     const { data: groupExists, error: groupError } = await supabase
       .from("groups")
-      .select("group_id")
+      .select("group_id, privacy")
       .eq("group_id", parsed.groupId)
       .maybeSingle();
+
+    if (groupError || !groupExists) {
+      return {
+        success: false,
+        error: groupError?.message ?? "Group not found",
+      };
+    }
+
+    /**
+     * Private groups are invite-only and only admins can send those invites.
+     * In public groups any member can invite.
+     */
+    if (groupExists.privacy === "private" && roleRow.role !== "Admin") {
+      return {
+        success: false,
+        error: "Only group admins can invite people to a private group",
+      };
+    }
 
     const inviterId = authData.user.id;
     const uniqueIds = [...new Set(parsed.userIds)].filter(
@@ -1236,5 +1288,86 @@ export async function deleteGroup(
       };
     }
     return { success: false, error: "Failed to delete group" };
+  }
+}
+
+const ACTIVITY_DEFAULT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * For each group you belong to, counts posts by other members created after
+ * you last opened that group (or in the past 7 days if you never have).
+ */
+export async function getGroupsActivity(
+  lastSeenByGroup: Record<string, string>,
+): Promise<DataResponse<GroupActivityItem[]>> {
+  try {
+    const supabase = await createClient();
+    const { data: authData } = await supabase.auth.getUser();
+
+    if (!authData.user) {
+      return { success: false, error: "Authentication required" };
+    }
+
+    const me = authData.user.id;
+
+    const { data: memberships, error: membershipError } = await supabase
+      .from("group_members")
+      .select("group_id")
+      .eq("user_id", me);
+
+    if (membershipError) {
+      return { success: false, error: membershipError.message };
+    }
+
+    const defaultSince = new Date(
+      Date.now() - ACTIVITY_DEFAULT_WINDOW_MS,
+    ).toISOString();
+
+    const items = await Promise.all(
+      (memberships ?? []).map(async ({ group_id }): Promise<GroupActivityItem> => {
+        const rawSince = lastSeenByGroup[String(group_id)];
+        const since =
+          rawSince && !Number.isNaN(Date.parse(rawSince))
+            ? rawSince
+            : defaultSince;
+
+        const { data: posts, count } = await supabase
+          .from("posts")
+          .select("post_id, user_id, text, created_at", { count: "exact" })
+          .eq("group_id", group_id)
+          .eq("taken_down", false)
+          .neq("user_id", me)
+          .gt("created_at", since)
+          .order("created_at", { ascending: false })
+          .limit(1);
+
+        const latest = posts?.[0];
+        if (!latest) {
+          return { group_id, newPostCount: 0, latestPost: null };
+        }
+
+        const { data: author } = await supabase
+          .from("users")
+          .select("first_name, last_name")
+          .eq("user_id", latest.user_id)
+          .maybeSingle();
+
+        return {
+          group_id,
+          newPostCount: count ?? 1,
+          latestPost: {
+            text: latest.text ?? "",
+            created_at: latest.created_at,
+            author_name:
+              `${author?.first_name ?? ""} ${author?.last_name ?? ""}`.trim() ||
+              "A member",
+          },
+        };
+      }),
+    );
+
+    return { success: true, data: items };
+  } catch {
+    return { success: false, error: "Failed to load group activity" };
   }
 }

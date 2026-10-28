@@ -24,5 +24,5 @@
 
 .title {
   font-weight: 700;
-  color: var(--mantine-color-navy-7);
+  color: var(--ls-text-strong);
 }

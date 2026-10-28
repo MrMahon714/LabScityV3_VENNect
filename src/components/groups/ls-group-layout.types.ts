@@ -39,6 +39,8 @@ export type UpdatePostAction = typeof updatePost;
 
 export interface LSGroupLayoutProps {
   activeGroupId?: number;
+  view?: "mine" | "discover";
+  discoverNode?: React.ReactNode;
   autoOpenCreateGroup?: boolean;
   createGroupAvatarUploadUrlAction: CreateGroupAvatarUploadUrlAction;
   createGroupAction: CreateGroupAction;
