@@ -601,22 +601,7 @@ export async function joinGroup(
     if (msg.includes("private") || msg.includes("Group is private")) {
       return { success: false, error: privateGroupError };
     }
-    if (msg.includes("does not exist")) {
-      const { data: target } = await supabase
-        .from("groups")
-        .select("privacy")
-        .eq("group_id", groupId)
-        .maybeSingle();
-
-      if (target?.privacy === "public") {
-        return insertDirectGroupMembership(supabase, groupId, userId);
-      }
-      return {
-        success: false,
-        error: target ? privateGroupError : "Group not found",
-      };
-    }
-
+    
     if (
        msg.includes("private") ||
        msg.includes("does not exist") ||
