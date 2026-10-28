@@ -35,6 +35,7 @@ import { useEffect, useState } from "react";
 import { PostRichTextContent } from "@/components/feed/post-rich-text-content";
 import { PostFollowButton } from "@/components/feed/post-follow-button";
 import { derivePostTagsFromDetail, initials } from "@/components/feed/post-detail-card.utils";
+import { looksLikeArticleContent } from "@/lib/utils/article-detection";
 import { parsePostContent } from "@/lib/utils/post-content";
 import { useSetSavedPost } from "./use-feed";
 
@@ -82,14 +83,17 @@ export function PostDetailCard({
   const [editOpen, editHandlers] = useDisclosure(false);
   const parsedContent = parsePostContent(post.content);
   const title = parsedContent.title;
+  const isArticle = looksLikeArticleContent(`${parsedContent.title} ${parsedContent.bodyText}`);
   const inferredTags =
-    parsedContent.tags.length > 0
-      ? parsedContent.tags
-      : derivePostTagsFromDetail({
-          scientificField: post.scientificField,
-          content: parsedContent.bodyText,
-          mediaUrl: post.mediaUrl,
-        });
+    isArticle && !parsedContent.tags.includes("Article")
+      ? ["Article", ...parsedContent.tags]
+      : parsedContent.tags.length > 0
+        ? parsedContent.tags
+        : derivePostTagsFromDetail({
+            scientificField: post.scientificField,
+            content: parsedContent.bodyText,
+            mediaUrl: post.mediaUrl,
+          });
   const isFeatured = parsedContent.isFeatured;
   const isCitable =
     parsedContent.kind === "publication" || inferredTags.includes("Article");
@@ -185,10 +189,10 @@ export function PostDetailCard({
       <Card
         radius="xl"
         withBorder
-        bg="white"
+        bg="var(--ls-surface)"
         p={{ base: "md", sm: "lg" }}
         style={{
-          borderColor: "#E5E7EB",
+          borderColor: "var(--ls-border)",
           boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
           overflow: "hidden",
         }}
@@ -227,9 +231,9 @@ export function PostDetailCard({
                   radius="xl"
                   variant="light"
                   style={{
-                    background: "#EEF2FF",
-                    color: "#1D4ED8",
-                    border: "1px solid #C7D2FE",
+                    background: "var(--ls-tint-bg-2)",
+                    color: "var(--ls-tint-text)",
+                    border: "1px solid var(--ls-tint-border)",
                   }}
                 >
                   Your Post
@@ -244,9 +248,9 @@ export function PostDetailCard({
                     tag === "Article" ? <IconFileText size={10} /> : undefined
                   }
                   style={{
-                    background: tag === "Article" ? "#EFF6FF" : "#EEF2FF",
-                    color: "#2563EB",
-                    border: "1px solid #BFDBFE",
+                    background: tag === "Article" ? "var(--ls-tint-bg)" : "var(--ls-tint-bg-2)",
+                    color: "var(--ls-tint-text)",
+                    border: "1px solid var(--ls-tint-border)",
                   }}
                 >
                   {tag}
@@ -291,7 +295,7 @@ export function PostDetailCard({
             <Text
               fw={700}
               fz={{ base: 22, sm: 28 }}
-              c="#111827"
+              c="var(--ls-text-strong)"
               style={{
                 lineHeight: 1.25,
                 overflowWrap: "anywhere",
@@ -301,13 +305,13 @@ export function PostDetailCard({
               {title}
             </Text>
             {parsedContent.bodyHtml ? (
-              <Box c="#475569">
+              <Box c="var(--ls-text-body)">
                 <PostRichTextContent html={parsedContent.bodyHtml} />
               </Box>
             ) : (
               <Text
                 size="md"
-                c="#475569"
+                c="var(--ls-text-body)"
                 lh={1.7}
                 style={{
                   whiteSpace: "pre-wrap",
@@ -322,7 +326,7 @@ export function PostDetailCard({
 
           <Group justify="space-between" align="center" wrap="wrap" gap="sm">
             <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-              <Avatar size={44} radius="xl" src={post.avatarUrl ?? undefined} color="blue">
+              <Avatar size={44} radius="xl" src={post.avatarUrl ?? undefined}>
                 {initials(post.userName)}
               </Avatar>
               <Box style={{ minWidth: 0 }}>
@@ -332,16 +336,16 @@ export function PostDetailCard({
                     href={`/profile/${post.userId}`}
                     size="sm"
                     fw={700}
-                    c="#1F2937"
+                    c="var(--ls-text-strong)"
                     style={{ textDecoration: "none" }}
                   >
                     {post.userName}
                   </Text>
-                  <Text size="sm" c="#64748B">
+                  <Text size="sm" c="var(--ls-text-muted)">
                     {post.timeAgo}
                   </Text>
                 </Group>
-                <Text size="sm" c="#64748B" style={{ overflowWrap: "anywhere" }}>
+                <Text size="sm" c="var(--ls-text-muted)" style={{ overflowWrap: "anywhere" }}>
                   {post.scientificField}
                 </Text>
               </Box>
@@ -352,7 +356,7 @@ export function PostDetailCard({
                 />
               ) : null}
             </Group>
-            <Text size="sm" c="#2563EB">
+            <Text size="sm" c="var(--ls-tint-text)">
               {copied ? "Link copied" : ""}
             </Text>
           </Group>
@@ -362,10 +366,10 @@ export function PostDetailCard({
               style={{
                 overflow: "hidden",
                 borderRadius: 18,
-                border: "1px solid #E5E7EB",
+                border: "1px solid var(--ls-border)",
                 aspectRatio: "16 / 9",
                 position: "relative",
-                background: "#E2E8F0",
+                background: "var(--ls-border)",
               }}
             >
               <Image
@@ -377,7 +381,7 @@ export function PostDetailCard({
             </Box>
           ) : null}
 
-          <Divider color="#E5E7EB" />
+          <Divider color="var(--ls-border)" />
 
           <Group justify="space-between" align="center" wrap="wrap" gap="sm">
             <Group gap="lg">

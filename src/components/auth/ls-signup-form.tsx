@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { LSAuthLogo } from "@/components/auth/ls-auth-logo";
 import { signupSchema, type SignupValues } from "@/lib/validations/auth";
 import type { signupAction } from "@/lib/actions/auth";
 import { useIsMobile } from "@/app/use-is-mobile";
@@ -16,9 +16,9 @@ const inputStyles = {
   height: "2rem",
   width: "100%",
   borderRadius: "0.5rem",
-  backgroundColor: "var(--mantine-color-gray-0)",
+  backgroundColor: "var(--ls-auth-input-bg)",
   fontFamily: "var(--mantine-font-family)",
-  color: "var(--mantine-color-navy-7)",
+  color: "var(--ls-text-strong)",
 };
 
 export function LSSignupForm({
@@ -76,9 +76,12 @@ export function LSSignupForm({
     <Paper
       miw={400}
       maw={isMobile ? "500px" : "700px"} // limit box size on larger screen 
-      bg="navy.0"
+      bg="var(--ls-auth-card-bg)"
       p="1rem 3rem"
-      style={{ borderRadius: "0.625rem" }}
+      style={{
+        borderRadius: "0.625rem",
+        border: "1px solid var(--ls-auth-card-border)",
+      }}
     >
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack gap="md" align="center">
@@ -86,9 +89,7 @@ export function LSSignupForm({
             h={100}
             style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <Image
-              src="/logo.png"
-              alt="LabScity Logo"
+            <LSAuthLogo
               width={320}
               height={108}
               priority
@@ -110,7 +111,7 @@ export function LSSignupForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>First Name</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>First Name</Text>
             <Controller
               name="firstName"
               control={form.control}
@@ -128,7 +129,7 @@ export function LSSignupForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Last Name</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Last Name</Text>
             <Controller
               name="lastName"
               control={form.control}
@@ -147,7 +148,7 @@ export function LSSignupForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Email</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Email</Text>
             <Controller
               name="email"
               control={form.control}
@@ -165,7 +166,7 @@ export function LSSignupForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Occupation</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Occupation</Text>
             <Controller
               name="occupation"
               control={form.control}
@@ -183,7 +184,7 @@ export function LSSignupForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Workplace</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Workplace</Text>
             <Controller
               name="workplace"
               control={form.control}
@@ -201,7 +202,7 @@ export function LSSignupForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Password</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Password</Text>
             <Controller
               name="password"
               control={form.control}
@@ -219,7 +220,7 @@ export function LSSignupForm({
             maw="18.5rem"
             style={{ display: "flex", flexDirection: "column", gap: "0.1rem", alignItems: "flex-start" }}
           >
-            <Text fz="md" fw={600} c="navy.7" lh={1.5}>Confirm Password</Text>
+            <Text fz="md" fw={600} c="var(--ls-text-strong)" lh={1.5}>Confirm Password</Text>
             <Controller
               name="confirmPassword"
               control={form.control}
@@ -235,8 +236,6 @@ export function LSSignupForm({
           <Button
             type="submit"
             loading={form.formState.isSubmitting}
-            bg="navy.7"
-            c="navy.0"
             fw={600}
             fz="md"
             style={{
@@ -244,7 +243,7 @@ export function LSSignupForm({
               height: "2.5625rem",
               borderRadius: "0.46875rem",
               fontFamily: "var(--mantine-font-family)",
-              "--button-hover": "var(--mantine-color-navy-6)",
+              "--button-hover": "var(--ls-accent)",
             }}
           >
             Create Account

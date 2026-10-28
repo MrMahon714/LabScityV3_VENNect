@@ -15,10 +15,10 @@ export default function OrcidInfo({
       </Popover.Target>  
       <Popover.Dropdown 
         bdrs='md' 
-        bd='1px solid navy.2'
+        bd='1px solid var(--ls-border)'
         styles={{
           arrow: {
-            border: '1px solid var(--mantine-color-navy-2)'
+            border: '1px solid var(--ls-border)'
           }
         }}
       >

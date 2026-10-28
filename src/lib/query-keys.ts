@@ -57,6 +57,8 @@ export const groupKeys = {
     [...groupKeys.all, "discover", query, topicTagsKey, limit] as const,
   /** Active public groups for home / discovery highlights (by `last_activity_at`). */
   popular: (limit: number) => [...groupKeys.all, "popular", limit] as const,
+  activity: (groupIdsKey: string, lastSeenKey: string) =>
+    [...groupKeys.all, "activity", groupIdsKey, lastSeenKey] as const,
 };
 
 export const publicationKeys = {

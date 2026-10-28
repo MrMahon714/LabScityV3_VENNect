@@ -1,5 +1,5 @@
 .viewBtn:hover {
-    background: var(--mantine-color-navy-6) !important;
+    background: var(--ls-accent) !important;
 }
 .featuredViewBtn:hover {
     background: var(--mantine-color-blue-6) !important;

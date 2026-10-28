@@ -54,7 +54,7 @@ export default function LSMiniProfileList({
   return (
     <Card shadow="xs" padding="lg" radius="md">
       <Center mb={8}>
-        <Text c="navy.7" fw={600} size="xl">
+        <Text c="var(--ls-text-strong)" fw={600} size="xl">
           {widgetTitle}
         </Text>
       </Center>

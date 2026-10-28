@@ -617,7 +617,7 @@ export function JobComposerPage({
                 <RichTextEditor
                   editor={descriptionEditor}
                   styles={{
-                    root: { borderColor: "#E5E7EB", borderRadius: 8 },
+                    root: { borderColor: "var(--ls-border)", borderRadius: 8 },
                     content: { minHeight: 160 },
                   }}
                 >
@@ -760,7 +760,7 @@ export function JobComposerPage({
           <Stack w={310} gap="md" visibleFrom="lg" pos="sticky" top={80}>
             <Card radius="md" shadow="xs" padding="md" withBorder>
               <Group gap="xs" mb="sm">
-                <IconEye size={17} color="var(--mantine-color-navy-7)" />
+                <IconEye size={17} color="var(--ls-text-strong)" />
                 <Text size="sm" fw={800}>
                   Live Preview
                 </Text>
@@ -998,14 +998,14 @@ function FormSection({
   children: React.ReactNode;
 }) {
   return (
-    <Card radius="md" shadow="xs" padding="lg" withBorder bg="white">
+    <Card radius="md" shadow="xs" padding="lg" withBorder bg="var(--ls-surface)">
       <Group
         gap="sm"
         mb="md"
         pb="sm"
         style={{ borderBottom: "1px solid var(--mantine-color-gray-1)" }}
       >
-        <Box c="navy.7">{icon}</Box>
+        <Box c="var(--ls-text-strong)">{icon}</Box>
         <Text size="md" fw={800}>
           {title}
         </Text>

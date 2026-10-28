@@ -7,7 +7,6 @@ import {
   FileInput,
   Group,
   Modal,
-  Select,
   Stack,
   TagsInput,
   Textarea,
@@ -27,6 +26,7 @@ import {
 } from "@/lib/validations/groups";
 import { createClient } from "@/supabase/client";
 import type { CreateGroupAvatarUploadUrlAction } from "./ls-group-layout.types";
+import { LSPrivacyPicker } from "./ls-privacy-picker";
 
 type EditGroupFormInput = z.input<typeof editGroupFormSchema>;
 
@@ -244,15 +244,9 @@ export function LSEditGroupModal({
             name="privacy"
             control={control}
             render={({ field }) => (
-              <Select
-                label="Privacy"
-                description="Private groups are hidden from Discover"
-                data={[
-                  { value: "public", label: "Public" },
-                  { value: "private", label: "Private" },
-                ]}
-                value={field.value}
-                onChange={(v) => field.onChange(v ?? "public")}
+              <LSPrivacyPicker
+                value={field.value === "private" ? "private" : "public"}
+                onChange={field.onChange}
                 error={errors.privacy?.message}
               />
             )}

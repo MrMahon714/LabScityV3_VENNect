@@ -24,7 +24,6 @@ import classes from './ls-profile-hero.module.css'
 import { LSAddSkillsModal } from "./ls-add-skills-modal";
 import { LSAddTagsModal } from "./ls-add-tags-modal";
 import { LSCollaborationIntentModal } from "./ls-collab-modal";
-import { LSGrantsModal } from "./ls-grants-modal";
 
 const PROFILE_BANNER_HEIGHT = 150;
 
@@ -113,7 +112,6 @@ export default function LSProfileHero({
 
   const [resumeModalOpened, { open: openResumeModal, close: closeResumeModal }] = useDisclosure(false);
 
-  const [grantsModalOpened, { open: openGrantsModal, close: closeGrantsModal }] = useDisclosure(false);
   const [collabModalOpened, { open: openCollabModal, close: closeCollabModal }] = useDisclosure(false);
   
   const lastList = useRef<"followers" | "following">("followers");
@@ -143,16 +141,26 @@ export default function LSProfileHero({
     .join("");
 
   const avatar = (
-    <Avatar
-      src={profilePicURL || undefined}
-      size={80}
-      color="navy.6"
-      bg={profilePicURL ? undefined : "navy.1"}
-      bd="2px solid white"
-      style={{ position: "relative", zIndex: 2 }}
+    <Box
+      style={{
+        position: "relative",
+        zIndex: 2,
+        display: "inline-block",
+        lineHeight: 0,
+        borderRadius: "50%",
+        background: "var(--ls-surface)",
+      }}
     >
-      {avatarInitials}
-    </Avatar>
+      <Avatar
+        src={profilePicURL || undefined}
+        size={80}
+        color="navy.6"
+        bg={profilePicURL ? undefined : "var(--ls-navy-tint)"}
+        bd="2px solid var(--ls-surface)"
+      >
+        {avatarInitials}
+      </Avatar>
+    </Box>
   );
 
   const profileBanner = profileHeaderImageURL ? (
@@ -356,7 +364,7 @@ export default function LSProfileHero({
 
         {/* Profile Name + Workplace/Occupation */}
         <Stack gap="4" mt={-15}>
-          <Text c="navy.7" fz={30} fw={700} lh='1'>{profileName}</Text>
+          <Text c="var(--ls-text-strong)" fz={30} fw={700} lh='1'>{profileName}</Text>
           {(occupation ?? workplace) ? (
             <Text c="navy.6" size="sm">
               {[occupation, workplace].filter(Boolean).join(", ")}
@@ -366,12 +374,12 @@ export default function LSProfileHero({
         
         <Group gap="xs">
           <UnstyledButton onClick={() => setListModal("followers")} className={classes.followCounts}>
-            <Text c="navy.7" size="sm">
+            <Text c="var(--ls-text-strong)" size="sm">
               <b>{followers.length}</b> Followers
             </Text>
           </UnstyledButton>
           <UnstyledButton onClick={() => setListModal("following")} className={classes.followCounts}>
-            <Text c="navy.7" size="sm">
+            <Text c="var(--ls-text-strong)" size="sm">
               <b>{following.length}</b> Following
             </Text>
           </UnstyledButton>
@@ -426,7 +434,7 @@ export default function LSProfileHero({
         </Stack>
 
         {profileAbout &&
-          <Text c="navy.7" fw='400' fz='sm' maw='800' my='6'>{profileAbout}</Text>
+          <Text c="var(--ls-text-strong)" fw='400' fz='sm' maw='800' my='6'>{profileAbout}</Text>
         }
 
         {
@@ -506,7 +514,7 @@ export default function LSProfileHero({
                     key={skill.id ?? `${skill.name}${i}`} 
                     bg='gray.2' 
                     bd='1px solid gray.4' 
-                    c='navy.7' 
+                    c="var(--ls-text-strong)" 
                     tt='none'
                     size='md'
                     fw='600'
@@ -559,31 +567,6 @@ export default function LSProfileHero({
             </Stack>
           </Stack>
         }
-              {/* Grants & Funding */}
-        <Stack gap='xs'>
-          <Text fz='xs' c='dimmed' fw='bold'>GRANTS & FUNDING</Text>
-          <Stack gap='4'>
-            {/*<Text size='xs' c='dimmed'>
-              List grants and funding you have received or contributed to.
-            </Text>*/}
-            {isOwnProfile && (
-              <>
-              <Button
-                variant='outline'
-                rightSection={<IconPencil size='1rem'/>}
-                onClick={openGrantsModal}
-                c='dimmed'
-                bd='1px dashed dimmed'
-                bdrs='100'
-                size='xs'
-                w='fit-content'
-              >
-                Edit Grants/Funding
-              </Button>
-              <LSGrantsModal opened={grantsModalOpened} onClose={closeGrantsModal} /> </>
-            )}
-          </Stack>
-        </Stack>
 
         {/* Collaboration Intent */}
         <Stack gap='xs'>

@@ -1,0 +1,1 @@
+ALTER TABLE public.publications ALTER COLUMN doi DROP NOT NULL;

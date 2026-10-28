@@ -46,7 +46,7 @@ export default function NewChatButton() {
         New Chat
       </Button>
 
-      <Modal opened={opened} onClose={handleClose} title={<Title order={4} c="navy.7">New Conversation</Title>} centered>
+      <Modal opened={opened} onClose={handleClose} title={<Title order={4} c="var(--ls-text-strong)">New Conversation</Title>} centered>
         <Stack gap="md">
           <TextInput
             placeholder="Search by name"
@@ -63,7 +63,7 @@ export default function NewChatButton() {
                 return (
                   <NavLink
                     key={user.user_id}
-                    label={<Text fw={600} c="navy.7">{user.first_name} {user.last_name}</Text>}
+                    label={<Text fw={600} c="var(--ls-text-strong)">{user.first_name} {user.last_name}</Text>}
                     leftSection={<Avatar radius="xl" size="md" color="navy.7" bg="navy.7" src={user.avatar_url} />}
                     active={isSelected}
                     styles={{ root: { '--nav-active-bg': 'var(--mantine-color-navy-3)' } }}
