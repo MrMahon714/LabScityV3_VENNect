@@ -55,6 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint-and-test
     name: Deploy to Vercel
+    environment: env
     steps:
       - uses: actions/checkout@v4
 
