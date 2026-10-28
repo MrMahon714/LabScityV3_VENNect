@@ -37,11 +37,15 @@ export const RECENT_PUBLICATION_YEARS = [1, 3, 5] as const;
 export const MAX_FILTER_CHIPS = 20;
 export const MAX_FILTER_TEXT_LENGTH = 60;
 export const EXPLAINED_RESULTS = 10;
-export const MATCH_PERCENT_ANCHORS: Record<
-  MatchTier,
-  { floor: number; ceiling: number }
-> = {
-  bidirectional: { floor: 0.6, ceiling: 0.85 },
-  offers_only: { floor: 0.6, ceiling: 0.85 },
-  legacy: { floor: 0.5, ceiling: 0.9 },
+
+export const MATCH_PERCENT_FLOORS: Record<MatchTier, number> = {
+  bidirectional: 0.64,
+  offers_only: 0.64,
+  legacy: 0.5,
 };
+
+export const MATCH_PERCENT_TOP = 95;
+
+export const MATCH_PERCENT_MIN_CEILING = 0.72;
+
+export const MAX_SEARCH_HISTORY = 10;
