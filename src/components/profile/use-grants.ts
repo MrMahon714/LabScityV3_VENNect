@@ -96,3 +96,30 @@ export function useSaveGrants() {
     },
   });
 }
+
+
+//Deletes grants
+export function useDeleteGrant() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (grantId: number) => {
+      const res = await fetch(`/api/profile/grants?id=${grantId}`, { method: "DELETE" });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.success) throw new Error(json.error ?? "Failed to delete grant");
+      return grantId;
+    },
+    onSuccess: () => {
+      notifications.show({ color: "green", message: "Grant successfully deleted!" });
+    },
+    onError: (err) =>
+      notifications.show({
+        title: "Couldn't delete grant",
+        message: err instanceof Error ? err.message : "Something went wrong",
+        color: "red",
+      }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: grantKeys.all });
+    },
+  });
+}
