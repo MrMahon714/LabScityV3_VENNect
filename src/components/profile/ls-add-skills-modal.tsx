@@ -223,7 +223,7 @@ export function LSSkillsInput({ value, onChange }: LSSkillsInputProps) {
                   // onClick={() => beginEdit(i)}
                   // style={{ cursor: skill.id === null ? "pointer" : undefined }}
                   bg={skill.id === null ? "gray.2" : "blue.0"}
-                  c={skill.id === null ? "navy.7" : "indigo.9"}
+                  c={skill.id === null ? "var(--ls-text-strong)" : "indigo.9"}
                 >
                   <Group gap={4} wrap="nowrap">
                     {skill.id === null && <IconSparklesFilled size='1rem' opacity={0.6} />}

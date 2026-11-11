@@ -1,14 +1,19 @@
 import type { NextConfig } from "next";
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL)
+  : null;
+
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
-    remotePatterns: process.env.NEXT_PUBLIC_SUPABASE_URL
+    remotePatterns: supabaseUrl
       ? [
           {
-            protocol: "https",
-            hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname,
+            protocol: supabaseUrl.protocol === "http:" ? "http" : "https",
+            hostname: supabaseUrl.hostname,
+            port: supabaseUrl.port,
             pathname: "/**",
           },
         ]

@@ -141,7 +141,7 @@ function LSDeclaredTagsInput({ value, onChange }: LSDeclaredTagsInputProps) {
                   withRemoveButton
                   onRemove={() => remove(tag)}
                   bg={tag.id === null ? "gray.2" : "blue.0"}
-                  c={tag.id === null ? "navy.7" : "indigo.9"}
+                  c={tag.id === null ? "var(--ls-text-strong)" : "indigo.9"}
                 >
                   <Group gap={4} wrap="nowrap">
                     {tag.id === null && <IconSparklesFilled size='1rem' opacity={0.6} />}

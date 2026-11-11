@@ -35,18 +35,32 @@ export function LandingContent() {
     <Box h="100vh">
       <Flex justify="space-between" align="center" p={16}>
         {/* navbar logo */}
-        <Image src="/logo-sm.png" alt="LabScity logo" h={50} w="auto" />
+        <Image
+          src="/logo-sm.png"
+          alt="LabScity logo"
+          h={50}
+          w="auto"
+          className="ls-invert-in-dark"
+        />
 
         {/* login signup buttons */}
         <Flex gap={8}>
           <Link href="/login">
-            <Button variant="outline" color="navy.8" radius="xl">
+            <Button
+              variant="outline"
+              color="navy.8"
+              radius="xl"
+              style={{
+                "--button-color": "var(--ls-text-strong)",
+                "--button-bd": "1px solid var(--ls-text-strong)",
+              }}
+            >
               Sign in
             </Button>
           </Link>
 
           <Link href="/signup">
-            <Button variant="filled" color="navy.8" radius="xl">
+            <Button variant="filled" radius="xl">
               Join now
             </Button>
           </Link>
@@ -55,7 +69,7 @@ export function LandingContent() {
 
       {/* big title */}
       <Box pt={32} pb={16}>
-        <Text size="2rem" ta="center" c="navy.8">
+        <Text size="2rem" ta="center" c="var(--ls-text-strong)">
           Share your work,
           <br />
           <Text span fw="800">
@@ -66,7 +80,13 @@ export function LandingContent() {
 
       {/* navbar logo */}
       <Flex justify="center" pb={32}>
-        <Image src="/landing.png" alt="LabScity logo" h={300} w="auto" />
+        <Image
+          src="/landing.png"
+          alt="LabScity logo"
+          h={300}
+          w="auto"
+          className="ls-landing-art"
+        />
       </Flex>
 
       {/* presentation cards */}

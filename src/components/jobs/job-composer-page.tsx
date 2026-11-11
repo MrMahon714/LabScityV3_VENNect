@@ -776,17 +776,25 @@ export function JobComposerPage({
               shadow="xs"
               padding="md"
               withBorder
-              bg={allPostingTipsSatisfied ? "green.0" : "red.0"}
+              bg={
+                allPostingTipsSatisfied
+                  ? "var(--mantine-color-green-light)"
+                  : "var(--mantine-color-red-light)"
+              }
               style={{
-                borderColor: allPostingTipsSatisfied
-                  ? "var(--mantine-color-green-2)"
-                  : "var(--mantine-color-red-2)",
+                borderColor: `color-mix(in srgb, var(--mantine-color-${
+                  allPostingTipsSatisfied ? "green" : "red"
+                }-light-color) 40%, transparent)`,
               }}
             >
               <Text
                 size="sm"
                 fw={800}
-                c={allPostingTipsSatisfied ? "green.8" : "red.8"}
+                c={
+                  allPostingTipsSatisfied
+                    ? "var(--mantine-color-green-light-color)"
+                    : "var(--mantine-color-red-light-color)"
+                }
                 mb="sm"
               >
                 Posting Tips
@@ -810,7 +818,14 @@ export function JobComposerPage({
                         }
                         style={{ flexShrink: 0, marginTop: 2 }}
                       />
-                      <Text size="xs" c={tip.satisfied ? "green.8" : "red.8"}>
+                      <Text
+                        size="xs"
+                        c={
+                          tip.satisfied
+                            ? "var(--mantine-color-green-light-color)"
+                            : "var(--mantine-color-red-light-color)"
+                        }
+                      >
                         {tip.label}
                       </Text>
                     </Group>

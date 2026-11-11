@@ -310,10 +310,17 @@ export function JobDetailsPage({
               shadow="xs"
               padding="md"
               withBorder
-              bg={isOwner ? "yellow.0" : "blue.0"}
+              bg={
+                isOwner
+                  ? "var(--mantine-color-yellow-light)"
+                  : "var(--mantine-color-blue-light)"
+              }
               style={
                 isOwner
-                  ? { borderColor: "var(--mantine-color-yellow-2)" }
+                  ? {
+                      borderColor:
+                        "color-mix(in srgb, var(--mantine-color-yellow-light-color) 40%, transparent)",
+                    }
                   : undefined
               }
             >
