@@ -77,7 +77,7 @@ export function LSProfileGroupsWidget({
           <Box
             w={22}
             h={22}
-            bg="navy.3"
+            bg="var(--ls-icon-badge-bg)"
             style={{
               borderRadius: "50%",
               display: "flex",
@@ -85,9 +85,9 @@ export function LSProfileGroupsWidget({
               justifyContent: "center",
             }}
           >
-            <IconUsersGroup size="1rem" />
+            <IconUsersGroup size="1rem" color="var(--ls-icon-badge-color)" />
           </Box>
-          <Text c="navy.7" fw={900} size="sm">
+          <Text c="var(--ls-text-strong)" fw={900} size="sm">
             Groups
           </Text>
         </Group>        
@@ -120,7 +120,7 @@ export function LSProfileGroupsWidget({
                 </Avatar>
                 <Box style={{ flex: 1, minWidth: 0 }}>
                   <Group wrap="nowrap" gap={6} align="center">
-                    <Text fw={600} c="navy.7" size="sm" lineClamp={1}>
+                    <Text fw={600} c="var(--ls-text-strong)" size="sm" lineClamp={1}>
                       {g.name}
                     </Text>
                     {isOwnProfile && g.privacy === "private" && (

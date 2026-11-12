@@ -51,6 +51,7 @@ import { useGetUser } from "@/components/data/use-data";
 import classes from './app-topbar.module.css';
 import { initials } from "@/components/feed/post-detail-card.utils";
 import { parsePostContent } from "@/lib/utils/post-content";
+import { LSThemeToggle } from "@/components/ui/ls-theme-toggle";
 
 type NotificationType =
   | "post_like"
@@ -72,6 +73,14 @@ const notificationOptions: Array<{ key: NotificationType; label: string }> = [
   { key: "new_message", label: "Messages" },
   { key: "group_invite", label: "Group Invites" },
 ];
+
+const searchStyles = {
+  input: {
+    background: "var(--ls-search-bg)",
+    "--input-bd": "var(--ls-search-border)",
+    "--input-bd-focus": "var(--ls-search-focus)",
+  },
+};
 
 const LAST_VISITED_NOTIFICATIONS_KEY = "labscity:last-visited-notifications-at";
 
@@ -272,9 +281,11 @@ export default function LSAppTopBar({ userId, isModerator }: LSAppTopBarProps) {
         component="header"
         pos="sticky"
         top={0}
-        bg="navy.7"
+        bg="var(--ls-topbar)"
         style={{
-          borderBottom: "1px solid var(--mantine-color-gray-3)",
+          borderBottom: "1px solid var(--ls-topbar-border)",
+          boxShadow: "var(--ls-topbar-shadow)",
+          backdropFilter: "blur(18px)",
           zIndex: 30,
         }}
       >
@@ -311,12 +322,7 @@ export default function LSAppTopBar({ userId, isModerator }: LSAppTopBarProps) {
                 leftSection={<IconSearch size={16} />}
                 placeholder="Search people, publications, posts, groups..."
                 radius="md"
-                styles={{
-                  input: {
-                    background: "var(--mantine-color-gray-1)",
-                    borderColor: "transparent",
-                  },
-                }}
+                styles={searchStyles}
               />
               {showDropdown && (
                 <SearchResultsDropdown
@@ -342,10 +348,11 @@ export default function LSAppTopBar({ userId, isModerator }: LSAppTopBarProps) {
                     component={Link}
                     href={href}
                     radius="0"
+                    variant="transparent"
                     size="compact-sm"
                     leftSection={<item.icon size={18} />}
                     fw={active ? 700 : 500}
-                    c={active ? "white" : "gray.4"}
+                    c={active ? "white" : "#C1C9D1"}
                     styles={{
                       root: {
                         backgroundColor: active
@@ -381,6 +388,8 @@ export default function LSAppTopBar({ userId, isModerator }: LSAppTopBarProps) {
               </ActionIcon>
             )}
 
+            <LSThemeToggle />
+
             <ActionIcon
               component={Link}
               href="/notifications"
@@ -390,7 +399,7 @@ export default function LSAppTopBar({ userId, isModerator }: LSAppTopBarProps) {
                   ? "indigo.4"
                   : inNotificationsPage
                     ? "white"
-                    : "gray.4"
+                    : "#C1C9D1"
               }
               radius={100}
               className={classes.navItems}
@@ -422,7 +431,7 @@ export default function LSAppTopBar({ userId, isModerator }: LSAppTopBarProps) {
               <Menu.Target>
                 <ActionIcon
                   variant="subtle"
-                  color={settingsOpen ? "white" : "gray.4"}
+                  color={settingsOpen ? "white" : "#C1C9D1"}
                   aria-label="Settings"
                   radius="100"
                   className={classes.navItems}
@@ -455,7 +464,7 @@ export default function LSAppTopBar({ userId, isModerator }: LSAppTopBarProps) {
 
             {!isMobile && (
               <UnstyledButton component={Link} href={`/profile/${userId}`}>
-                <Avatar size={34} radius="xl" bg="navy.1" color="navy.6" src={profile?.avatar_url}>
+                <Avatar size={34} radius="xl" bg="var(--ls-navy-tint)" color="navy.6" src={profile?.avatar_url}>
                   {initials([profile?.first_name, profile?.last_name].filter(Boolean).join(" "))}
                 </Avatar> 
               </UnstyledButton>
@@ -492,6 +501,7 @@ export default function LSAppTopBar({ userId, isModerator }: LSAppTopBarProps) {
               }
               placeholder="Search LabScity..."
               radius="md"
+              styles={searchStyles}
             />
             {showDropdown && (
               <SearchResultsDropdown
@@ -671,7 +681,7 @@ function ResultGroup({
                   {(row.names || postTitle|| title).slice(0, 1)}
                 </Avatar>
                 <Box miw={0}>
-                  <Text size="sm" fw={500} c="navy.7" truncate>
+                  <Text size="sm" fw={500} c="var(--ls-text-strong)" truncate>
                     {row.names || postTitle}
                   </Text>
                   {postTitle && row.names && (

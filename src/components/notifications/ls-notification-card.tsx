@@ -51,7 +51,7 @@ function getNotificationIcon(type: string) {
 function getNotificationIconColor(type: string) {
   return type === "post_like"
     ? "var(--mantine-color-red-6)"
-    : "var(--mantine-color-navy-7)";
+    : "var(--ls-text-strong)";
 }
 
 function formatRelativeTime(dateString: string): string {
@@ -103,10 +103,10 @@ export function LSNotificationCard({
       p="md"
       pr={64}
       pos="relative"
-      bg="white"
+      bg="var(--ls-surface)"
       style={
         isNew
-          ? { borderColor: "var(--mantine-color-navy-7)", borderWidth: 1.5 }
+          ? { borderColor: "var(--ls-text-strong)", borderWidth: 1.5 }
           : undefined
       }
     >
@@ -140,7 +140,7 @@ export function LSNotificationCard({
               pos="absolute"
               bottom={-2}
               right={-2}
-              bg="white"
+              bg="var(--ls-surface)"
               p={2}
               style={{ borderRadius: "50%", lineHeight: 0 }}
             >
@@ -155,7 +155,7 @@ export function LSNotificationCard({
                   component={Link}
                   href={actorProfileLink}
                   fw={600}
-                  c="navy.7"
+                  c="var(--ls-text-strong)"
                 >
                   {actorName}
                 </Anchor>,
@@ -192,7 +192,7 @@ export function LSNotificationCard({
                   inherit
                   style={{ textDecoration: "none", cursor: "pointer" }}
                 >
-                  <Text span fw={600} c="navy.7">
+                  <Text span fw={600} c="var(--ls-text-strong)">
                     {notification.title}
                     {notification.bundleCount &&
                       notification.bundleCount > 1 && (
@@ -205,7 +205,7 @@ export function LSNotificationCard({
                   {notification.content}
                 </Text>
               ) : (
-                <Text span fw={600} c="navy.7">
+                <Text span fw={600} c="var(--ls-text-strong)">
                   {notification.title} <Text span>{notification.content}</Text>
                 </Text>
               )}
@@ -219,8 +219,8 @@ export function LSNotificationCard({
 
       {isNew && (
         <Group gap={4} mt={6}>
-          <IconCircleFilled size={8} color="var(--mantine-color-navy-7)" />
-          <Text size="xs" c="navy.7" fw={600}>
+          <IconCircleFilled size={8} color="var(--ls-text-strong)" />
+          <Text size="xs" c="var(--ls-text-strong)" fw={600}>
             New
           </Text>
         </Group>

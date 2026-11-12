@@ -192,29 +192,29 @@ export function LSPostCard({
               component={Link}
               href={`/profile/${userId}`}
               underline="hover"
-              c="navy.7"
+              c="var(--ls-text-strong)"
               onClick={noPropagate()}
             >
               <Text
                 component="span"
                 fw={700}
-                c="navy.7"
+                c="var(--ls-text-strong)"
                 lh={1.1}
                 style={{ cursor: "pointer" }}
               >
                 {userName}
                 {audienceLabel ? (
-                  <Text component="span" ml="xs" size="xs" fw={600} c="navy.7">
+                  <Text component="span" ml="xs" size="xs" fw={600} c="var(--ls-text-strong)">
                     {audienceLabel}
                   </Text>
                 ) : null}
               </Text>
             </Anchor>
           ) : (
-            <Text fw={600} c="navy.7" lh={1.1}>
+            <Text fw={600} c="var(--ls-text-strong)" lh={1.1}>
               {userName}
               {audienceLabel ? (
-                <Text component="span" ml="xs" size="xs" fw={600} c="navy.7">
+                <Text component="span" ml="xs" size="xs" fw={600} c="var(--ls-text-strong)">
                   {audienceLabel}
                 </Text>
               ) : null}
@@ -222,7 +222,7 @@ export function LSPostCard({
           )}
           {nameRightSection}
         </Group>
-        <Text c="navy.7" size="sm" mt={-4}>
+        <Text c="var(--ls-text-strong)" size="sm" mt={-4}>
           {field}
         </Text>
       </Stack>
@@ -316,7 +316,7 @@ export function LSPostCard({
                       item: {
                         borderRadius: "var(--mantine-radius-md)",
                         fontWeight: 600,
-                        color: "var(--mantine-color-navy-7)",
+                        color: "var(--ls-text-strong)",
                       },
                     }}
                     id={menuId}
@@ -368,7 +368,7 @@ export function LSPostCard({
             <Spoiler
               controlRef={spoilerControlRef}
               fz="sm"
-              c="navy.7"
+              c="var(--ls-text-strong)"
               maxHeight={176} // Enough for about 8 lines worth of content
               showLabel='Show more'
               hideLabel='Hide'
@@ -402,7 +402,7 @@ export function LSPostCard({
                 src={mediaUrl}
                 alt="Post attachment"
                 bdrs="lg"
-                bg='navy.0'
+                bg="var(--ls-navy-tint-0)"
                 fill
                 mah={600}
                 style={{ objectFit: "contain" }}
@@ -476,7 +476,7 @@ export function LSPostCard({
                   item: {
                     borderRadius: "var(--mantine-radius-md)",
                     fontWeight: 600,
-                    color: "var(--mantine-color-navy-7)",
+                    color: "var(--ls-text-strong)",
                   },
                 }}
               >

@@ -2,7 +2,8 @@
     border: none; 
 }
 .list {
-    background: var(--mantine-color-white);
+    background: var(--ls-surface);
+    border: 1px solid var(--ls-border);
 }
 .tab:hover {
     background: var(--mantine-color-gray-2);

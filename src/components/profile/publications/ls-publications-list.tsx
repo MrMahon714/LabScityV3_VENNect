@@ -177,12 +177,12 @@ export default function LSPublicationsList({
                   <Group align='flex-start' justify='space-between' w='100%'>
                     <Modal.Title>
                       <Group>
-                        <Box bg='navy.3' bdrs='md' p='8'>
+                        <Box bg="var(--ls-icon-badge-bg)" c="var(--ls-icon-badge-color)" bdrs="md" p="8">
                           <IconLink />
                         </Box>
                         <Stack gap='0'>
                           <Text fw='700'>Add Research via DOI</Text>
-                          <Text fz='xs' c='dimmed'>Fetch publiation metadata from OpenAlex</Text>
+                          <Text fz='xs' c='dimmed'>Fetch publication metadata from OpenAlex</Text>
                         </Stack>                 
                       </Group>
                     </Modal.Title>

@@ -56,13 +56,13 @@ export function LSPostCommentCard({
     .join("");
 
   const nameNode = comment.userId ? (
-    <Anchor onClick={noPropagate()} component={Link} href={`/profile/${comment.userId}`} underline="hover" c="navy.7">
-      <Text component="span" fw="bold" c="navy.7" size="sm" style={{ cursor: "pointer" }}>
+    <Anchor onClick={noPropagate()} component={Link} href={`/profile/${comment.userId}`} underline="hover" c="var(--ls-text-strong)">
+      <Text component="span" fw="bold" c="var(--ls-text-strong)" size="sm" style={{ cursor: "pointer" }}>
         {comment.userName}
       </Text>
     </Anchor>
   ) : (
-    <Text component="span" fw="bold" c="navy.7" size="sm">{comment.userName}</Text>
+    <Text component="span" fw="bold" c="var(--ls-text-strong)" size="sm">{comment.userName}</Text>
   );
 
   return (
@@ -128,7 +128,7 @@ export function LSPostCommentCard({
               position="bottom-end"
               styles={{
                 dropdown: { padding: "6px" },
-                item: { borderRadius: "var(--mantine-radius-md)", fontWeight: 600, color: "var(--mantine-color-navy-7)" },
+                item: { borderRadius: "var(--mantine-radius-md)", fontWeight: 600, color: "var(--ls-text-strong)" },
               }}
               id={menuId}
             >

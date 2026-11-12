@@ -23,7 +23,7 @@ function formatRelativeTime(dateString: string): string {
   return date.toLocaleDateString();
 }
 
-const iconColor = "var(--mantine-color-navy-7)";
+const iconColor = "var(--ls-text-strong)";
 
 export function LSGroupInviteNotificationCard({
   notification,
@@ -74,10 +74,10 @@ export function LSGroupInviteNotificationCard({
       p="md"
       pr={64}
       pos="relative"
-      bg="white"
+      bg="var(--ls-surface)"
       style={
         isNew
-          ? { borderColor: "var(--mantine-color-navy-7)", borderWidth: 1.5 }
+          ? { borderColor: "var(--ls-text-strong)", borderWidth: 1.5 }
           : undefined
       }
     >
@@ -98,7 +98,7 @@ export function LSGroupInviteNotificationCard({
         <IconUsers size={24} color={iconColor} />
         <Stack gap="sm" style={{ flex: 1, minWidth: 0 }}>
           <Text size="sm">
-            <Text span fw={600} c="navy.7">
+            <Text span fw={600} c="var(--ls-text-strong)">
               {notification.title}
             </Text>{" "}
             {notification.content}
@@ -108,8 +108,8 @@ export function LSGroupInviteNotificationCard({
           </Text>
           {isNew && (
             <Group gap={4}>
-              <IconCircleFilled size={8} color="var(--mantine-color-navy-7)" />
-              <Text size="xs" c="navy.7" fw={600}>
+              <IconCircleFilled size={8} color="var(--ls-text-strong)" />
+              <Text size="xs" c="var(--ls-text-strong)" fw={600}>
                 New
               </Text>
             </Group>

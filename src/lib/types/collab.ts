@@ -1,6 +1,7 @@
 // bidirectional = both have offers + "looking for"
 // offers_only   = compared what both offer (someone has no "looking for")
 // legacy        = older tag/skill embeddings
+import type { MatchFilters } from "@/lib/validations/matching";
 export type MatchTier = "bidirectional" | "offers_only" | "legacy";
 
 export interface GetCollaboratorsResult {
@@ -24,3 +25,9 @@ export type RawCollaboratorMatch = Omit<
   GetCollaboratorsResult,
   "match_percent" | "match_explanation"
 >;
+
+export interface MatchSearchHistoryItem {
+  id: number;
+  filters: MatchFilters;
+  created_at: string;
+}

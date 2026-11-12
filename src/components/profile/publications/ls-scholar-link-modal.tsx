@@ -45,12 +45,12 @@ export default function LSScholarLinker({ userId }: LSScholarLinkerProps) {
         <Modal.Overlay />
         <Modal.Content>
           <Modal.Header
-            style={{ borderBottom: "1px solid var(--mantine-color-gray-4)" }}
+            style={{ borderBottom: "1px solid var(--mantine-color-default-border)" }}
           >
             <Group align="flex-start" justify="space-between" w="100%">
               <Modal.Title>
                 <Group>
-                  <Box bg="navy.3" bdrs="md" p="8">
+                  <Box bg="var(--ls-icon-badge-bg)" c="var(--ls-icon-badge-color)" bdrs="md" p="8">
                     <IconBrandGoogle />
                   </Box>
                   <Stack gap="0">
@@ -69,7 +69,7 @@ export default function LSScholarLinker({ userId }: LSScholarLinkerProps) {
             <Stack gap="sm">
               <form onSubmit={handleSubmit}>
                 <Stack>
-                  <Card bg="navy.1" shadow="none" bd="none" bdrs={0}>
+                  <Card bg="var(--ls-navy-tint)" shadow="none" bd="none" bdrs={0}>
                     <Group wrap="nowrap">
                       <Text fz="sm" flex="1">
                         Enter your Scholar ID to import publications via Google Scholar. You can review each publication before adding it your profile.
@@ -101,7 +101,7 @@ export default function LSScholarLinker({ userId }: LSScholarLinkerProps) {
                 </Stack>
               </form>
 
-              <Divider color="gray.4" />
+              <Divider color="var(--mantine-color-default-border)" />
 
               <Center py="100">
                 <Text size="sm" c="dimmed" ta="center">

@@ -113,7 +113,7 @@ export default function LSPublication(
         borderTop: pub.is_featured ? '1px solid var(--mantine-color-blue-3)' : '1px solid var(--mantine-color-gray-3)',
       }}
       shadow={pub.is_featured ? '0 2px 12px 0 rgba(37, 99, 235, 0.08)' : 'xs'}
-      bg={pub.is_featured ? '#F8FBFF' : undefined}
+      bg={pub.is_featured ? 'var(--ls-surface-alt)' : undefined}
     >
       {/* Is Featured? top strip */}
       { pub.is_featured && 
@@ -216,7 +216,7 @@ export default function LSPublication(
             underline={!doiUrl ? 'never' : undefined} 
             target='_blank'
             rel='noopener noreferrer'
-            c='navy.7' 
+            c="var(--ls-text-strong)" 
             fz='lg' 
             fw='600' 
             lh='1.625rem'
@@ -270,7 +270,7 @@ export default function LSPublication(
                   </Popover.Target>
                   <Popover.Dropdown
                     bdrs='md' 
-                    bd='1px solid navy.2'
+                    bd='1px solid var(--ls-border)'
                   >
                     <Stack gap='2'>
                       {
@@ -398,7 +398,7 @@ export default function LSPublication(
             <Menu position="top-end" shadow="md">
               <Menu.Target>
                 <ActionIcon bdrs='md' variant='subtle' size='lg'>
-                  <IconDots size='1.25rem' color='var(--mantine-color-navy-7)' />
+                  <IconDots size='1.25rem' color='var(--ls-text-strong)' />
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>

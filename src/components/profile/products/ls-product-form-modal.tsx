@@ -259,7 +259,7 @@ export default function LSProductFormModal({
             <Group align='flex-start' justify='space-between' w='100%'>
               <Modal.Title>
                 <Group>
-                  <Box bg='navy.3' bdrs='md' p='8'>
+                  <Box bg="var(--ls-icon-badge-bg)" c="var(--ls-icon-badge-color)" bdrs="md" p="8">
                     <IconBox />
                   </Box>
                   <Stack gap='0'>
@@ -334,10 +334,10 @@ export default function LSProductFormModal({
                               leftSection={
                                 <IconUpload
                                   size='1rem'
-                                  color={uploadPreviewsBtnDisabled ? 'var(--mantine-color-gray-5)' : 'var(--mantine-color-navy-7)'}
+                                  color={uploadPreviewsBtnDisabled ? 'var(--mantine-color-gray-5)' : 'var(--ls-text-strong)'}
                                 />}
-                              bg={uploadPreviewsBtnDisabled ? 'gray.2' : 'navy.1'}
-                              c={uploadPreviewsBtnDisabled ? 'gray.5' : 'navy.7'}
+                              bg={uploadPreviewsBtnDisabled ? 'gray.2' : 'var(--ls-navy-tint)'}
+                              c={uploadPreviewsBtnDisabled ? 'gray.5' : 'var(--ls-text-strong)'}
                               bd={uploadPreviewsBtnDisabled ? undefined : '1px solid gray.4'}
                               fw='normal'
                               disabled={uploadPreviewsBtnDisabled}
@@ -435,7 +435,8 @@ export default function LSProductFormModal({
                     fw='normal'
                     w='fit-content'
                     bd={addLinksBtnDisabled ? undefined : '1px solid gray.4'}
-                    bg={addLinksBtnDisabled ? undefined : 'navy.1'}
+                    bg={addLinksBtnDisabled ? undefined : 'var(--ls-navy-tint)'}
+                    c={addLinksBtnDisabled ? undefined : 'var(--ls-text-strong)'}
                   >
                     Add Additional Link
                   </Button>

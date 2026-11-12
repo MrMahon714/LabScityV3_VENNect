@@ -123,7 +123,7 @@ export function LSManageMembersModal({
             <Tabs.Panel value="email" pt="md">
               <form onSubmit={form.onSubmit(handleAddMember)}>
                 <Stack gap="xs">
-                  <Text fw={600} size="sm" c="navy.7">
+                  <Text fw={600} size="sm" c="var(--ls-text-strong)">
                     Add a member directly
                   </Text>
                   <Group gap="xs" align="flex-start">
@@ -146,7 +146,7 @@ export function LSManageMembersModal({
           </Tabs>
 
           <Box>
-            <Text fw={600} size="sm" c="navy.7" mb="xs">
+            <Text fw={600} size="sm" c="var(--ls-text-strong)" mb="xs">
               Members ({members.length})
             </Text>
             <ScrollArea.Autosize mah={320}>

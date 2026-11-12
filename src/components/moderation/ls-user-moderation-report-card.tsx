@@ -106,7 +106,7 @@ export function LSUserModerationReportCard({
 								flex={1}
 								leftSection={<IconX width={18} />}
 								color={"red"}
-								c="gray.0"
+								c="white"
 								p={4}
 								onClick={handleBanUser}
 							>
@@ -117,7 +117,7 @@ export function LSUserModerationReportCard({
 							flex={1}
 							variant={"filled"}
 							color={"gray.6"}
-							c="gray.0"
+							c="white"
 							p={4}
 							onClick={handleDismiss}
 						>

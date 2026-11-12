@@ -143,7 +143,7 @@ export default function CollabProfile (
           </UnstyledButton>
         </Stack>
       </Group>
-      { !last && <Divider mr='1rem' color='gray.2'/> }
+      { !last && <Divider mr='1rem' color="var(--ls-border)"/> }
     </>
   )
 };

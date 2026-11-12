@@ -62,7 +62,7 @@ export function LSBookmarksTab({userId}: {userId: string}) {
                 <UnstyledButton
                   w='100%'
                   style={{
-                    borderLeft: isActive ? '2px solid var(--mantine-color-navy-7)' : '2px solid transparent',
+                    borderLeft: isActive ? '2px solid var(--ls-text-strong)' : '2px solid transparent',
                     borderRadius: isActive ? "0 var(--mantine-radius-md) var(--mantine-radius-md) 0" : "var(--mantine-radius-md)"
                   }}
                   className={classes.tab}

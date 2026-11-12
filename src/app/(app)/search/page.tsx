@@ -160,7 +160,7 @@ export default function SearchPage() {
   return (
     <Stack maw={900} mx="auto" px="md" py="xl" gap="lg">
       <Stack gap={4}>
-        <Text size="xl" fw={700} c="navy.7">
+        <Text size="xl" fw={700} c="var(--ls-text-strong)">
           Search
         </Text>
         <Text c="dimmed">
@@ -224,7 +224,7 @@ export default function SearchPage() {
                         {result.names?.[0]}
                       </Avatar>
                       <Stack gap={0}>
-                        <Text fw={600} c="navy.7">
+                        <Text fw={600} c="var(--ls-text-strong)">
                           {result.names}
                         </Text>
                         <Text size="sm" c="dimmed">
@@ -267,7 +267,7 @@ export default function SearchPage() {
                     >
                       <Paper withBorder radius="md" p="md">
                         <Stack gap={6}>
-                          <Text fw={600} c="navy.7">
+                          <Text fw={600} c="var(--ls-text-strong)">
                             {result.names}
                           </Text>
                           {result.content && (

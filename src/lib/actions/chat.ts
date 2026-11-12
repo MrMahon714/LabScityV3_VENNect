@@ -136,14 +136,58 @@ export async function getChatsWithPreview(): Promise<
 
   if (error) return { success: false, error: error.message };
 
-  const chatsWithUrls = (data as ChatPreview[]).map((chat) => ({
-    ...chat,
-    profile_pic_url: chat.profile_pic_url
-      ? supabase.storage
-          .from("profile_pictures")
-          .getPublicUrl(chat.profile_pic_url).data.publicUrl
-      : undefined,
-  }));
+  /*DMs are now named after the person they are with*/
+  const { data: authData } = await supabase.auth.getUser();
+  const me = authData.user?.id;
+
+  const unnamedIds = (data as ChatPreview[])
+    .filter((chat) => !chat.name)
+    .map((chat) => chat.conversation_id);
+
+  const directNames = new Map<number, { name: string; avatar: string | null }>();
+
+  if (unnamedIds.length > 0 && me) {
+    const { data: members } = await supabase
+      .from("conversation_participants")
+      .select(
+        "conversation_id, user_id, user:users (first_name, last_name, profile_pic_path)",
+      )
+      .in("conversation_id", unnamedIds);
+
+    const byConversation = new Map<number, any[]>();
+    for (const member of (members ?? []) as any[]) {
+      const list = byConversation.get(member.conversation_id) ?? [];
+      list.push(member);
+      byConversation.set(member.conversation_id, list);
+    }
+
+    for (const [conversationId, list] of byConversation) {
+      if (list.length !== 2) continue;
+      const other = list.find((member) => member.user_id !== me);
+      if (!other?.user) continue;
+      const fullName =
+        `${other.user.first_name ?? ""} ${other.user.last_name ?? ""}`.trim();
+      if (!fullName) continue;
+      directNames.set(conversationId, {
+        name: fullName,
+        avatar: other.user.profile_pic_path ?? null,
+      });
+    }
+  }
+
+  const chatsWithUrls = (data as ChatPreview[]).map((chat) => {
+    const direct = directNames.get(chat.conversation_id);
+    const picturePath = chat.profile_pic_url || direct?.avatar || null;
+    return {
+      ...chat,
+      name: chat.name || direct?.name || chat.name,
+      profile_pic_url: picturePath
+        ? supabase.storage
+            .from("profile_pictures")
+            .getPublicUrl(picturePath).data.publicUrl
+        : undefined,
+    };
+  });
 
   return { success: true, data: chatsWithUrls };
 }
@@ -171,6 +215,19 @@ export async function leaveConversation(
 
   if (!authData.user) {
     return { success: false };
+  }
+
+  const { data: linkedGroup } = await supabase
+    .from("groups")
+    .select("group_id")
+    .eq("conversation_id", conversation_id)
+    .maybeSingle();
+
+  if (linkedGroup) {
+    return {
+      success: false,
+      error: "Leave the group to leave its chat",
+    };
   }
 
   const { error } = await supabase
@@ -337,6 +394,7 @@ export async function editMessage(
     .from("messages")
     .update({ content: newContent })
     .eq("id", message_id)
+    .eq("sender_id", authData.user.id)
     .select()
     .single();
 
@@ -351,6 +409,36 @@ export async function editMessage(
   }
 
   return { success: true, data: editedMessage as Message };
+}
+
+/*deletes a message, only the sender can delete their own message*/
+export async function deleteMessage(
+  message_id: number,
+): Promise<DataResponse<null>> {
+  const supabase = await createClient();
+  const { data: authData } = await supabase.auth.getUser();
+
+  if (!authData.user) {
+    return { success: false, error: "Auth req" };
+  }
+
+  const { data, error } = await supabase
+    .from("messages")
+    .delete()
+    .eq("id", message_id)
+    .eq("sender_id", authData.user.id)
+    .select("id");
+
+  if (error) {
+    console.log("error in deleteMessage: ", error);
+    return { success: false, error: error.message };
+  }
+
+  if (!data || data.length === 0) {
+    return { success: false, error: "Message not found or not yours" };
+  }
+
+  return { success: true, data: null };
 }
 
 /**
@@ -412,6 +500,10 @@ export async function getConversationParticipants(
       email: string;
       first_name: string | null;
       last_name: string | null;
+      avatar_url: string | null;
+      occupation: string | null;
+      workplace: string | null;
+      about: string | null;
     }[]
   >
 > {
@@ -424,7 +516,8 @@ export async function getConversationParticipants(
       user:users (
         email,
         first_name,
-        last_name
+        last_name,
+        profile_pic_path
       )
     `)
     .eq("conversation_id", conversation_id);
@@ -434,12 +527,100 @@ export async function getConversationParticipants(
     return { success: false, error: error.message };
   }
 
-  const participants = (data ?? []).map((p: any) => ({
-    user_id: p.user_id,
-    email: p.user?.email ?? "",
-    first_name: p.user?.first_name ?? null,
-    last_name: p.user?.last_name ?? null,
-  }));
+  const userIds = (data ?? []).map((p: any) => p.user_id as string);
+  const { data: profileRows } = userIds.length
+    ? await supabase
+        .from("profile")
+        .select("user_id, about, workplace, occupation")
+        .in("user_id", userIds)
+    : { data: [] as any[] };
+
+  const profileById = new Map<string, any>(
+    (profileRows ?? []).map((row: any) => [row.user_id, row]),
+  );
+
+  const participants = (data ?? []).map((p: any) => {
+    const profile = profileById.get(p.user_id);
+    return {
+      user_id: p.user_id,
+      email: p.user?.email ?? "",
+      first_name: p.user?.first_name ?? null,
+      last_name: p.user?.last_name ?? null,
+      avatar_url: p.user?.profile_pic_path
+        ? supabase.storage
+            .from("profile_pictures")
+            .getPublicUrl(p.user.profile_pic_path).data.publicUrl
+        : null,
+      occupation: profile?.occupation ?? null,
+      workplace: profile?.workplace ?? null,
+      about: profile?.about ?? null,
+    };
+  });
 
   return { success: true, data: participants };
+}
+
+export async function findOrCreateDirectChat(
+  otherUserId: string,
+): Promise<DataResponse<createChatResponse>> {
+  const supabase = await createClient();
+  const { data: authData } = await supabase.auth.getUser();
+
+  if (!authData.user) {
+    return { success: false, error: "Auth req" };
+  }
+
+  const me = authData.user.id;
+  if (me === otherUserId) {
+    return { success: false, error: "You cannot message yourself" };
+  }
+
+  const { data: mine } = await supabase
+    .from("conversation_participants")
+    .select("conversation_id")
+    .eq("user_id", me);
+
+  const myConversationIds = (mine ?? []).map((row) => row.conversation_id);
+
+  if (myConversationIds.length > 0) {
+    const { data: shared } = await supabase
+      .from("conversation_participants")
+      .select("conversation_id")
+      .eq("user_id", otherUserId)
+      .in("conversation_id", myConversationIds);
+
+    const sharedIds = (shared ?? []).map((row) => row.conversation_id);
+
+    if (sharedIds.length > 0) {
+      const { data: directConversations } = await supabase
+        .from("conversations")
+        .select("id")
+        .in("id", sharedIds)
+        .eq("is_group", false);
+
+      const directIds = (directConversations ?? []).map((row) => row.id);
+
+      if (directIds.length > 0) {
+        const { data: members } = await supabase
+          .from("conversation_participants")
+          .select("conversation_id")
+          .in("conversation_id", directIds);
+
+        const counts = new Map<number, number>();
+        for (const member of members ?? []) {
+          counts.set(
+            member.conversation_id,
+            (counts.get(member.conversation_id) ?? 0) + 1,
+          );
+        }
+
+        const existing = directIds.find((id) => counts.get(id) === 2);
+        if (existing) {
+          return { success: true, data: { conversation_id: existing } };
+        }
+      }
+    }
+  }
+
+  return createChat([otherUserId]);
 }

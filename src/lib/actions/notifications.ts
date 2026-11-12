@@ -1,6 +1,6 @@
 "use server";
 
-// TODO: remove the console.logs (MOVE THEM TO CONSOLE.ERRORS PRO)
+ // TODO: remove the console.logs (MOVE THEM TO CONSOLE.ERRORS PRO)
 
 import { createClient } from "@/supabase/server";
 
@@ -274,7 +274,7 @@ export async function muteItem(
   });
 
   if (error) {
-    console.error(`Failed to mute ${itemType}:`, error.message);
+    console.error("Failed to mute %s:", itemType, error.message);
     return { success: false, error: error.message };
   }
 
@@ -317,7 +317,7 @@ export async function unmuteItem(
     .eq("item_type", itemType);
 
   if (error) {
-    console.error(`Failed to unmute ${itemType}:`, error.message);
+    console.error("Failed to unmute %s:", itemType, error.message);
     return { success: false, error: error.message };
   }
 

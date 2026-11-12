@@ -12,7 +12,7 @@ export default function LSViewSelector() {
         width: "100%",
       }}
     >
-      <Button variant="transparent" c="navy.7" size="md">Posts</Button>
+      <Button variant="transparent" c="var(--ls-text-strong)" size="md">Posts</Button>
       <Button variant="transparent" c="navy.5" size="md">Publications</Button>
       <Button variant="transparent" c="navy.5" size="md">Projects</Button>
     </Box>

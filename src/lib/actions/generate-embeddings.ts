@@ -8,7 +8,7 @@ type TaskType = "RETRIEVAL_DOCUMENT" | "RETRIEVAL_QUERY";
 export async function generateEmbedding(
   text: string,
   taskType: TaskType,
-  dimensions: number = 1024
+  dimensions: number = 1024,
 ): Promise<number[] | null> {
   if (!text.trim()) return null;
 
@@ -28,7 +28,10 @@ export async function generateEmbedding(
   }
 }
 
-export async function buildOffersText(userId: string, supabase: any): Promise<string> {
+export async function buildOffersText(
+  userId: string,
+  supabase: any,
+): Promise<string> {
   const parts: string[] = [];
 
   // Bio
@@ -39,7 +42,7 @@ export async function buildOffersText(userId: string, supabase: any): Promise<st
     .maybeSingle();
   if (profile?.about) parts.push(`Bio: ${profile.about}`);
 
-  // Skills 
+  // Skills
   const { data: skills } = await supabase
     .from("profile_skills_view")
     .select("name")
@@ -57,7 +60,7 @@ export async function buildOffersText(userId: string, supabase: any): Promise<st
     parts.push(`Research Areas: ${tags.map((t: any) => t.name).join(", ")}`);
   }
 
-  // Recent publications ai_topics 
+  // Recent publications ai_topics
   const { data: pubs, error: pubsError } = await supabase
     .from("user_publications")
     .select("publications(ai_topics, date_published)")
@@ -72,11 +75,13 @@ export async function buildOffersText(userId: string, supabase: any): Promise<st
     .sort((a: any, b: any) => {
       const dateA = a.publications.date_published ?? "";
       const dateB = b.publications.date_published ?? "";
-      return dateB.localeCompare(dateA); 
+      return dateB.localeCompare(dateA);
     })
     .slice(0, 15);
 
-  const allTopics = sortedPubs.flatMap((row: any) => row.publications.ai_topics ?? []);
+  const allTopics = sortedPubs.flatMap(
+    (row: any) => row.publications.ai_topics ?? [],
+  );
   const uniqueTopics = [...new Set(allTopics)];
   if (uniqueTopics.length) {
     parts.push(`Publication Topics: ${uniqueTopics.join(", ")}`);
@@ -102,7 +107,10 @@ export async function buildOffersText(userId: string, supabase: any): Promise<st
   return parts.join("\n");
 }
 
-export async function buildSeeksText(userId: string, supabase: any): Promise<string> {
+export async function buildSeeksText(
+  userId: string,
+  supabase: any,
+): Promise<string> {
   const { data: profile, error } = await supabase
     .from("profile")
     .select("seeking_description")
@@ -126,11 +134,21 @@ const DELAY_MS = Math.ceil(60000 / REQUESTS_PER_MINUTE);
 
 export async function generateProfileEmbeddings(
   userId: string,
-  supabaseOverride?: any
-): Promise<{ success: boolean; hasOffers: boolean; hasSeeks: boolean; error?: string }> {
+  supabaseOverride?: any,
+): Promise<{
+  success: boolean;
+  hasOffers: boolean;
+  hasSeeks: boolean;
+  error?: string;
+}> {
   const supabase = supabaseOverride;
   if (!supabase) {
-    return { success: false, hasOffers: false, hasSeeks: false, error: "No Supabase client provided" };
+    return {
+      success: false,
+      hasOffers: false,
+      hasSeeks: false,
+      error: "No Supabase client provided",
+    };
   }
 
   const offersText = await buildOffersText(userId, supabase);
@@ -138,7 +156,7 @@ export async function generateProfileEmbeddings(
     ? await generateEmbedding(offersText, "RETRIEVAL_DOCUMENT")
     : null;
 
-  await sleep(DELAY_MS); 
+  await sleep(DELAY_MS);
 
   const seeksText = await buildSeeksText(userId, supabase);
   const seeksEmbedding = seeksText
@@ -149,14 +167,23 @@ export async function generateProfileEmbeddings(
     .from("profile")
     .update({
       offers_embedding: offersEmbedding,
-      seeks_embedding: seeksEmbedding,
+      ...(seeksText && { seeks_embedding: seeksEmbedding }),
     })
     .eq("user_id", userId);
 
   if (error) {
     console.error("Failed to save embeddings:", error);
-    return { success: false, hasOffers: !!offersEmbedding, hasSeeks: !!seeksEmbedding, error: error.message };
+    return {
+      success: false,
+      hasOffers: !!offersEmbedding,
+      hasSeeks: !!seeksEmbedding,
+      error: error.message,
+    };
   }
 
-  return { success: true, hasOffers: !!offersEmbedding, hasSeeks: !!seeksEmbedding };
+  return {
+    success: true,
+    hasOffers: !!offersEmbedding,
+    hasSeeks: !!seeksEmbedding,
+  };
 }

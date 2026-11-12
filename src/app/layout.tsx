@@ -10,6 +10,7 @@ import { Notifications } from "@mantine/notifications";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import '@mantine/carousel/styles.css';
+import "./dark-theme.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { cssVariablesResolver, theme } from "@/lib/constants/theme";
 
@@ -35,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <ColorSchemeScript defaultColorScheme="light" />
+        <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body className={inter.className}>
         <QueryProvider>
@@ -43,7 +44,7 @@ export default function RootLayout({
             <MantineProvider
               theme={theme}
               cssVariablesResolver={cssVariablesResolver}
-              defaultColorScheme="light"
+              defaultColorScheme="auto"
             >
               <ReactQueryDevtools initialIsOpen={false} position="right" />
               <Notifications />

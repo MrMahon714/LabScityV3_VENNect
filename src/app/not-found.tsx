@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <Flex align="center" justify="center" direction="column" w="100vw" h="100vh" c="navy.7">
+    <Flex align="center" justify="center" direction="column" w="100vw" h="100vh" c="var(--ls-text-strong)">
       <Text ta="center">Oh no! That's a</Text>
       <Text fz="h1" fw="bolder">404</Text>
 

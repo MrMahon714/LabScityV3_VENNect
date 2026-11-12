@@ -63,3 +63,16 @@ export interface GroupDiscoverItem {
   privacy: GroupPrivacy;
   avatar_url?: string | null;
 }
+
+/**
+ * New posts in one of your groups since you last opened it.
+ */
+export interface GroupActivityItem {
+  group_id: number;
+  newPostCount: number;
+  latestPost: {
+    text: string;
+    created_at: string;
+    author_name: string;
+  } | null;
+}

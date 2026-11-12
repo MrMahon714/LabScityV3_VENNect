@@ -120,7 +120,7 @@ function CommentThreadItem({
           mt="sm"
           pl={18}
           style={{
-            borderLeft: "2px solid #E2E8F0",
+            borderLeft: "2px solid var(--ls-border)",
           }}
         >
           <Stack gap="sm">

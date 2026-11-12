@@ -166,11 +166,11 @@ export function LSModerationReportCard({ report, resolved = false }: LSModeratio
       {/* actions */}
     {!resolved && (
       <Flex direction={"row"} gap={2} mt={8}>
-        <Button flex={1} leftSection={<IconTrash width={18} />} color={"red"} c="gray.0" p={4} onClick={handleDeletePost}>{isCommentReport ? "Delete Comment" : "Delete Post"}</Button>
+        <Button flex={1} leftSection={<IconTrash width={18} />} color={"red"} c="white" p={4} onClick={handleDeletePost}>{isCommentReport ? "Delete Comment" : "Delete Post"}</Button>
         {report.reportedUserId &&
-          <Button flex={1} leftSection={<IconX width={18} />} color={"red"} c="gray.0" p={4} onClick={handleBanUser}>Ban User</Button>
+          <Button flex={1} leftSection={<IconX width={18} />} color={"red"} c="white" p={4} onClick={handleBanUser}>Ban User</Button>
         }
-        <Button flex={1} variant={"filled"} color={"gray.6"} c="gray.0" p={4} onClick={handleDismiss}>Dismiss</Button>
+        <Button flex={1} variant={"filled"} color={"gray.6"} c="white" p={4} onClick={handleDismiss}>Dismiss</Button>
       </Flex>
     )}
     </Card >

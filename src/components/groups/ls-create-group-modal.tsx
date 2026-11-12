@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
   Modal,
-  Select,
   Stack,
   TagsInput,
   Textarea,
@@ -15,6 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import type { z } from "zod";
 import { createGroupSchema } from "@/lib/validations/groups";
 import type { CreateGroupAction } from "./ls-group-layout.types";
+import { LSPrivacyPicker } from "./ls-privacy-picker";
 
 type CreateGroupFormValues = z.input<typeof createGroupSchema>;
 
@@ -137,15 +137,9 @@ export function LSCreateGroupModal({
             name="privacy"
             control={control}
             render={({ field }) => (
-              <Select
-                label="Privacy"
-                description="Private groups are hidden from discovery"
-                data={[
-                  { value: "public", label: "Public" },
-                  { value: "private", label: "Private" },
-                ]}
-                value={field.value}
-                onChange={(v) => field.onChange(v ?? "public")}
+              <LSPrivacyPicker
+                value={field.value === "private" ? "private" : "public"}
+                onChange={field.onChange}
                 error={errors.privacy?.message}
               />
             )}

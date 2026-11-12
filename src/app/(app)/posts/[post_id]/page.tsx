@@ -297,7 +297,7 @@ export default function PostDetailPage() {
   if (!post) {
     return (
       <Flex justify="center" align="center" h="calc(100vh - 120px)">
-        <Text c="navy.7">Post not found.</Text>
+        <Text c="var(--ls-text-strong)">Post not found.</Text>
       </Flex>
     );
   }
@@ -359,8 +359,8 @@ export default function PostDetailPage() {
         onReportClick={() => setReportTarget({ type: "post", postId: post.id })}
       >
         <Stack gap="md" w="100%" ref={commentsRef}>
-          <Divider color="#E5E7EB" />
-          <Text size="sm" fw={800} c="#1F2937">
+          <Divider color="var(--ls-border)" />
+          <Text size="sm" fw={800} c="var(--ls-text-strong)">
             Discussion
           </Text>
 
@@ -368,8 +368,8 @@ export default function PostDetailPage() {
             radius="xl"
             withBorder
             p="md"
-            bg="#F8FAFC"
-            style={{ borderColor: "#E2E8F0" }}
+            bg="var(--ls-surface-alt)"
+            style={{ borderColor: "var(--ls-border)" }}
           >
             <LSCommentComposer
               postId={post.id}
@@ -383,8 +383,8 @@ export default function PostDetailPage() {
               radius="xl"
               withBorder
               p="md"
-            bg="white"
-            style={{ borderColor: "#E5E7EB" }}
+            bg="var(--ls-surface)"
+            style={{ borderColor: "var(--ls-border)" }}
           >
               <PostCommentThread
                 comments={post.comments}
@@ -402,7 +402,7 @@ export default function PostDetailPage() {
               />
             </Card>
           ) : (
-            <Text size="sm" c="#64748B">
+            <Text size="sm" c="var(--ls-text-muted)">
               No comments yet. Start the discussion.
             </Text>
           )}

@@ -5,17 +5,17 @@ import { IconMessageCircle, IconMessages } from "@tabler/icons-react";
 export default async function ChatIndexPage() {
   return (
     <Center
-      h='50%'
-      bg="gray.0"
+      h='100%'
       style={{
-        background: "linear-gradient(180deg, #F8FAFC 0%, #EEF3F9 100%)",
+        background: "var(--ls-chat-bg)",
       }}
     >
       <Paper
-        radius="0"
+        radius="md"
         p="xl"
         withBorder
-        bg="navy.3"
+        bg="var(--ls-empty-bg)"
+        style={{ borderColor: "var(--ls-border)" }}
         maw={420}
       >
         <Stack align="center" gap="sm">
@@ -24,15 +24,16 @@ export default async function ChatIndexPage() {
             radius="xl"
             variant="outline"
             color='navy.7'
+            style={{ color: "var(--ls-text-strong)", borderColor: "var(--ls-text-strong)" }}
           >
             <IconMessages size={30} />
           </ThemeIcon>
-          <Text size="xl" fw={700}>
+          <Text size="xl" fw={700} c="var(--ls-text-strong)">
             Select a conversation
           </Text>
           <Text size="sm" c="gray.7" ta="center">
-            Choose a chat from the sidebar to continue a discussion or start a
-            new one.
+            Pick a contact, a group, or an existing message from the sidebar, or
+            start a new message.
           </Text>
         </Stack>
       </Paper>

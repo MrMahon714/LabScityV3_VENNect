@@ -36,7 +36,7 @@ export default function LSProfileListModal({
       size="md"
       title={
         <Group gap="xs" align="baseline">
-          <Text fw={700} c="navy.7">{title}</Text>
+          <Text fw={700} c="var(--ls-text-strong)">{title}</Text>
           <Text c="dimmed" size="sm">{profiles.length}</Text>
         </Group>
       }
@@ -59,7 +59,7 @@ export default function LSProfileListModal({
                 p="sm"
                 style={{
                   borderRadius: "var(--mantine-radius-md)",
-                  border: "1px solid var(--mantine-color-navy-1)",
+                  border: "1px solid var(--ls-navy-tint)",
                 }}
               >
                 <LSMiniProfile

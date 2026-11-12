@@ -115,7 +115,7 @@ export function LSPopularGroupsHomeStrip({
 
   if (popularQuery.isLoading) {
     return (
-      <Card withBorder shadow="sm" radius="md" p="md" bg="white">
+      <Card withBorder shadow="sm" radius="md" p="md" bg="var(--ls-surface)">
         <Center py="sm">
           <Loader />
         </Center>
@@ -130,13 +130,13 @@ export function LSPopularGroupsHomeStrip({
   const groups = popularQuery.data.slice(0, POPULAR_LIMIT);
 
   return (
-    <Card shadow="sm" radius="md" p="md" bg="white" withBorder>
+    <Card shadow="sm" radius="md" p="md" bg="var(--ls-surface)" withBorder>
       <Group justify="space-between" align="center" mb={8}>
         <Group>
           <Box
             w={22}
             h={22}
-            bg="navy.3"
+            bg="var(--ls-icon-badge-bg)"
             style={{
               borderRadius: "50%",
               display: "flex",
@@ -144,9 +144,9 @@ export function LSPopularGroupsHomeStrip({
               justifyContent: "center",
             }}
           >
-            <IconUsersGroup size='1rem'/>
+            <IconUsersGroup size='1rem' color="var(--ls-icon-badge-color)" />
           </Box>
-          <Text c="navy.7" fw={700} size="sm">
+          <Text c="var(--ls-text-strong)" fw={700} size="sm">
             Popular Groups
           </Text>
         </Group>
@@ -176,7 +176,7 @@ export function LSPopularGroupsHomeStrip({
                 {stripInitials(g.name)}
               </Avatar>
               <Box style={{ flex: 1, minWidth: 0 }}>
-                <Text fw={600} c="navy.7" size="sm" lineClamp={1}>
+                <Text fw={600} c="var(--ls-text-strong)" size="sm" lineClamp={1}>
                   {g.name}
                 </Text>
                 {g.topics.length > 0 ? (
@@ -188,7 +188,6 @@ export function LSPopularGroupsHomeStrip({
               {member ? (
                 <Button
                   size="compact-xs"
-                  variant="light"
                   color="navy"
                   component={Link}
                   href={groupsPath({ tab: "mine", groupId: g.group_id })}

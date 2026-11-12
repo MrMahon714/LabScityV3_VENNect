@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabaseClient() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!url || !key) {
+        throw new Error(
+            'Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
+        );
+    }
+
+    return createClient(url, key);
+}
 
 export async function POST(request: Request) {
     try {
@@ -17,6 +25,8 @@ export async function POST(request: Request) {
             );
         }
 
+        const supabase = getSupabaseClient();
+
         const apiKey = process.env.SCRAPINGDOG_API_KEY;
         if (!apiKey) {
             return NextResponse.json(
@@ -25,7 +35,6 @@ export async function POST(request: Request) {
             );
         }
 
-        //Fetch from Scrapingdog Author API
         const url = `https://api.scrapingdog.com/google_scholar/author?api_key=${apiKey}&author_id=${scholar_id}`;
         const response = await fetch(url);
 
@@ -44,10 +53,8 @@ export async function POST(request: Request) {
             throw new Error("Scrapingdog returned non-JSON data (see terminal console)");
         }
 
-        //Extract articles from the parsed data
         const articles = data.articles || [];
 
-        //Find or create the author record for this user
         let { data: authorData, error: authorError } = await supabase
             .from('authors')
             .select('id')
@@ -55,8 +62,6 @@ export async function POST(request: Request) {
             .single();
 
         if (!authorData) {
-
-            //Create author record if it does not exist yet with google_scholar_id
             const { data: newAuthor, error: createError } = await supabase
                 .from('authors')
                 .insert({
@@ -72,10 +77,7 @@ export async function POST(request: Request) {
             authorData = newAuthor;
         }
 
-        //Process each article
         for (const article of articles) {
-
-            //Insert publication metadata into publications table
             const { data: pubData, error: pubError } = await supabase
                 .from('publications')
                 .insert({
@@ -92,14 +94,12 @@ export async function POST(request: Request) {
 
             const publication_id = pubData.publication_id;
 
-            //Link in user_publications
             await supabase.from('user_publications').insert({
                 user_id: user_id,
                 publication_id: publication_id,
                 is_featured: false,
             });
 
-            //Link in authors_publications
             await supabase.from('authors_publications').insert({
                 author_id: authorData.id,
                 publication_id: publication_id,

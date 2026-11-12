@@ -103,7 +103,7 @@ export function LSDiscoverGroupsPanel({
       queryClient.invalidateQueries({ queryKey: groupKeys.all });
       notifications.show({
         title: "Joined group",
-        message: "You can open it from My groups.",
+        message: "You can open it from Your groups.",
         color: "green",
       });
       router.push(groupsPath({ tab: "mine", groupId }));
@@ -118,23 +118,23 @@ export function LSDiscoverGroupsPanel({
   });
 
   return (
-    <Stack gap="lg" w="100%" px={{ base: "md" }}>
+    <Stack gap="lg" w="100%">
       <Paper
-        radius="xl"
+        radius="md"
         p="lg"
         withBorder
-        bg="white"
+        bg="var(--ls-surface)"
         style={{
-          borderColor: "#E5E7EB",
+          borderColor: "var(--ls-border)",
           boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
         }}
       >
         <Stack gap="md">
           <Box>
-            <Title order={4} c="#123257">
-              Find a group
+            <Title order={3} c="var(--ls-text-strong)">
+              Discover groups
             </Title>
-            <Text size="sm" c="#64748B">
+            <Text size="sm" c="var(--ls-text-muted)">
               Search by name, description, or narrow things down with topic
               tags.
             </Text>
@@ -147,21 +147,21 @@ export function LSDiscoverGroupsPanel({
             radius="xl"
             styles={{
               input: {
-                borderColor: "#E5E7EB",
+                borderColor: "var(--ls-border)",
               },
             }}
           />
           <TagsInput
             label="Filter by topics"
             placeholder="Type a topic and press Enter"
-            description="Groups must include all listed topics"
+            description="Matches part of a topic, ignoring capitalization. Groups must match every topic listed"
             value={topicInput}
             onChange={setTopicInput}
             maxTags={5}
             radius="xl"
             styles={{
               input: {
-                borderColor: "#E5E7EB",
+                borderColor: "var(--ls-border)",
               },
             }}
           />
@@ -180,19 +180,19 @@ export function LSDiscoverGroupsPanel({
         </Text>
       ) : discoverQuery.data?.length === 0 ? (
         <Paper
-          radius="xl"
+          radius="md"
           p="lg"
           withBorder
-          bg="white"
-          style={{ borderColor: "#E5E7EB" }}
+          bg="var(--ls-surface)"
+          style={{ borderColor: "var(--ls-border)" }}
         >
-          <Text c="#64748B" size="sm">
+          <Text c="var(--ls-text-muted)" size="sm">
             No public groups match your filters. Try different keywords or
             topics.
           </Text>
         </Paper>
       ) : (
-        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+        <SimpleGrid cols={{ base: 1, sm: 2, xl: 3 }} spacing="md">
           {discoverQuery.data?.map((g) => (
             <LSGroupCard
               key={g.group_id}

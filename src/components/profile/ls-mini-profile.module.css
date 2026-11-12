@@ -6,7 +6,7 @@
   transition: background-color 120ms ease;
 }
 .row:hover {
-  background-color: var(--mantine-color-navy-0);
+  background-color: var(--ls-navy-tint-0);
 }
 .rowStatic {
   display: block;
