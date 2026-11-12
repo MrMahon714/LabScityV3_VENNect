@@ -133,3 +133,17 @@ export const updateDeclaredTagsSchema = z.object({
 
 export type DeclaredTagValue = z.infer<typeof declaredTagSchema>;
 export type UpdateDeclaredTagsValues = z.infer<typeof updateDeclaredTagsSchema>;
+
+export const MAX_COLLAB_INTENT_LENGTH = 1000;
+
+export const updateCollaborationIntentSchema = z.object({
+  seekingDescription: z
+    .string()
+    .trim()
+    .max(MAX_COLLAB_INTENT_LENGTH, {
+      message: `Collaboration intent must be at most ${MAX_COLLAB_INTENT_LENGTH} characters`,
+    }),
+  seekingVisible: z.boolean(),
+});
+
+export type UpdateCollaborationIntentValues = z.infer<typeof updateCollaborationIntentSchema>;

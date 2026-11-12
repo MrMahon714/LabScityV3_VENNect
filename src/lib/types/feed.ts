@@ -26,6 +26,8 @@ export interface User {
   lab_department?: string | null;
   location?: string | null;
   career_stage?: CareerStage | null;
+  seeking_description?: string | null;
+  seeking_visible?: boolean;
 }
 
 /**

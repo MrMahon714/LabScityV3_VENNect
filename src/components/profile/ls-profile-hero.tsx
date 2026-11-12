@@ -12,7 +12,7 @@ import {
   Loader,
   UnstyledButton,
 } from "@mantine/core";
-import { IconBuildings, IconCamera, IconClock, IconFileText, IconMapPin, IconMessageCircle, IconPencil, IconPlus, IconSchool, IconUserPlus } from "@tabler/icons-react";
+import { IconBuildings, IconCamera, IconClock, IconEyeOff, IconFileText, IconMapPin, IconMessageCircle, IconPencil, IconPlus, IconSchool, IconUserPlus } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import { LSEditProfileModal } from "./ls-edit-profile-modal";
 import { useDisclosure } from "@mantine/hooks";
@@ -132,6 +132,8 @@ export default function LSProfileHero({
   const labDepartment = profile.lab_department ?? undefined;
   const location = profile.location ?? undefined;
   const timezone = profile.timezone ?? undefined;
+  const seekingDescription = profile.seeking_description ?? undefined;
+  const seekingVisible = profile.seeking_visible ?? true;
 
   const avatarInitials = profileName
     .split(" ")
@@ -569,31 +571,55 @@ export default function LSProfileHero({
         }
 
         {/* Collaboration Intent */}
-        <Stack gap='xs'>
-          <Text fz='xs' c='dimmed' fw='bold'>COLLABORATION INTENT</Text>
-          <Stack gap='4'>
-            {/*<Text size='xs' c='dimmed'>
-              Describe what you are currently working on and what kind of collaborator you are looking for.
-            </Text>*/}
-            {isOwnProfile && (
-              <>
-              <Button
-                variant='outline'
-                rightSection={<IconPencil size='1rem'/>}
-                onClick={openCollabModal}
-                c='dimmed'
-                bd='1px dashed dimmed'
-                bdrs='100'
-                size='xs'
-                w='fit-content'
-              >
-                Edit Collaboration Intent
-              </Button>
-              <LSCollaborationIntentModal opened={collabModalOpened} onClose={closeCollabModal} /> </>
-            )}
+        {(isOwnProfile || seekingDescription) && (
+          <Stack gap='xs'>
+            <Group gap='xs'>
+              <Text fz='xs' c='dimmed' fw='bold'>COLLABORATION INTENT</Text>
+              {isOwnProfile && seekingDescription && !seekingVisible && (
+                <Badge size='xs' variant='light' color='gray' leftSection={<IconEyeOff size={10} />}>
+                  Only visible to you
+                </Badge>
+              )}
+            </Group>
+            <Stack gap='4'>
+              {seekingDescription ? (
+                <Text c="var(--ls-text-strong)" fz='sm' maw='800' style={{ whiteSpace: "pre-wrap" }}>
+                  {seekingDescription}
+                </Text>
+              ) : (
+                isOwnProfile && (
+                  <Text size='xs' c='dimmed'>
+                    Describe what kind of collaborator you are looking for.
+                  </Text>
+                )
+              )}
+              {isOwnProfile && (
+                <>
+                  <Button
+                    variant='outline'
+                    rightSection={seekingDescription ? <IconPencil size='1rem'/> : <IconPlus size='1rem'/>}
+                    onClick={openCollabModal}
+                    c='dimmed'
+                    bd='1px dashed dimmed'
+                    bdrs='100'
+                    size='xs'
+                    w='fit-content'
+                  >
+                    {seekingDescription ? "Edit Collaboration Intent" : "Add Collaboration Intent"}
+                  </Button>
+                  <LSCollaborationIntentModal
+                    opened={collabModalOpened}
+                    onClose={closeCollabModal}
+                    userId={profile.user_id}
+                    initialDescription={seekingDescription ?? ""}
+                    initialVisible={seekingVisible}
+                  />
+                </>
+              )}
             </Stack>
           </Stack>
-        </Stack>
+        )}
+      </Stack>
     </Card >
   );
 };

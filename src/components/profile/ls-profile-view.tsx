@@ -19,8 +19,9 @@ import { LSPostCard } from "@/components/feed/ls-post-card";
 import { LSPostCommentCard } from "@/components/feed/ls-post-comment-card";
 import LSMiniProfileList from "@/components/profile/ls-mini-profile-list";
 import { LSProfileGroupsWidget } from "@/components/profile/ls-profile-groups-widget";
-import LSProfileHero from "@/components/profile/ls-profile-hero";
 import { LSUserReportOverlay } from "@/components/profile/ls-user-report-overlay";
+import { LSScrollToTopButton } from "@/components/profile/ls-scroll-to-top-button";
+import LSProfileHero from "@/components/profile/ls-profile-hero";
 import { LSSpinner } from "@/components/ui/ls-spinner";
 import type { createUserReport } from "@/lib/actions/profile";
 import classes from "./ls-profile-view.module.css"
@@ -632,7 +633,7 @@ export function LSProfileView(props: LSProfileViewProps) {
         });
       };
 
-  return (
+    return (
     <Box mih="calc(100vh - 56px)">
       {!props.isOwnProfile && (
         <LSUserReportOverlay
@@ -668,6 +669,7 @@ export function LSProfileView(props: LSProfileViewProps) {
           profileAction={props.profileAction}
         />
       )}
+      <LSScrollToTopButton />
     </Box>
   );
 }

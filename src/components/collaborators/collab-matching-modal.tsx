@@ -119,7 +119,7 @@ export default function CollabMatchingModal({
           >
             <Stack gap="2">
               <Text fw="600" fz="lg" lh="1.5rem">
-                Recommended Collaborators
+                Find a Collaborator
               </Text>
               <Text c="dimmed" fz="sm" lh="1rem">
                 Matching Algorithm
