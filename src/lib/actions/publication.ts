@@ -34,7 +34,12 @@ export async function addPublicationByDoi(
 
     const parsedDoi = doiSchema.parse(doi);
     const res = await fetch(`https://api.openalex.org/works/doi:${parsedDoi}`);
-    if(!res.ok) throw new Error(`OpenAlex Error: ${res.status}`);
+    if(!res.ok) {
+        if (res.status === 429) {
+            throw new Error("OpenAlex is rate-limiting requests right now. Please wait a few seconds and try again.");
+        }
+        throw new Error(`OpenAlex Error: ${res.status}`);
+    }
     const data: OpenAlexWork = await res.json();
 
     const parsed: ParsedOpenAlexWork = parseOpenAlexWork(data);
