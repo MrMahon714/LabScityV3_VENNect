@@ -1,5 +1,13 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { notifications } from "@mantine/notifications";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useAuth } from "@/components/auth/use-auth";
+import { mergeWithExisting } from "@/components/profile/extract-resume-utils";
+import { updateCollaborationIntent } from "@/lib/actions/collaboration";
 import { getUser, getUserPosts } from "@/lib/actions/data";
 import { getProfileVisibleGroups } from "@/lib/actions/groups";
 import {
@@ -9,11 +17,12 @@ import {
   updateDeclaredTagsAction,
   updateProfileSkills,
 } from "@/lib/actions/profile";
-import { profileKeys } from "@/lib/query-keys";
-import { UpdateDeclaredTagsValues, UpdateSkillsValues } from "@/lib/validations/profile";
-import { notifications } from "@mantine/notifications";
 import { MAX_PROFILE_SKILLS, MAX_PROFILE_TAGS } from "@/lib/constants/profile";
-import { mergeWithExisting } from "@/components/profile/extract-resume-utils";
+import { profileKeys } from "@/lib/query-keys";
+import type {
+  UpdateDeclaredTagsValues,
+  UpdateSkillsValues,
+} from "@/lib/validations/profile";
 
 // NOTE: Profile hooks now return the full React Query result objects
 // so server prefetch and client usage share the same data shape.
@@ -177,7 +186,8 @@ export function useUpdateDeclaredTags(userId: string, onSuccess?: () => void) {
   return useMutation({
     mutationFn: async (values: UpdateDeclaredTagsValues) => {
       const res = await updateDeclaredTagsAction(values);
-      if (!res.success) throw new Error(res.error ?? "Failed to update research areas");
+      if (!res.success)
+        throw new Error(res.error ?? "Failed to update research areas");
       return res;
     },
     onSuccess: () => {
@@ -223,7 +233,9 @@ export function useConfirmExtractedData(userId: string) {
     mutationFn: async (data: { skills: string[]; researchAreas: string[] }) => {
       const profile = await getUser(userId);
       if (!profile.success || !profile.data) {
-        throw new Error("Couldn't load your current profile. Please try again.");
+        throw new Error(
+          "Couldn't load your current profile. Please try again.",
+        );
       }
 
       const skills = mergeWithExisting(profile.data.skills ?? [], data.skills, {
@@ -231,11 +243,15 @@ export function useConfirmExtractedData(userId: string) {
         max: 60,
         maxCount: MAX_PROFILE_SKILLS,
       });
-      const areas = mergeWithExisting(profile.data.declared_tags ?? [], data.researchAreas, {
-        min: 1,
-        max: 200,
-        maxCount: MAX_PROFILE_TAGS,
-      });
+      const areas = mergeWithExisting(
+        profile.data.declared_tags ?? [],
+        data.researchAreas,
+        {
+          min: 1,
+          max: 200,
+          maxCount: MAX_PROFILE_TAGS,
+        },
+      );
 
       const errors: string[] = [];
 
@@ -280,13 +296,41 @@ export function useConfirmExtractedData(userId: string) {
         message:
           `Added ${skills.added} skill${skills.added === 1 ? "" : "s"} and ` +
           `${areas.added} research area${areas.added === 1 ? "" : "s"}.` +
-          (leftOut > 0 ? ` ${leftOut} item${leftOut === 1 ? " was" : "s were"} left out (profile limit reached).` : ""),
+          (leftOut > 0
+            ? ` ${leftOut} item${leftOut === 1 ? " was" : "s were"} left out (profile limit reached).`
+            : ""),
         color: "green",
       });
     },
     onError: (err) =>
       notifications.show({
         title: "Could not update profile",
+        message: err instanceof Error ? err.message : "Something went wrong",
+        color: "red",
+      }),
+  });
+}
+
+export function useUpdateCollaborationIntent(
+  userId: string,
+  onSuccess?: () => void,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (intent: string) => {
+      const res = await updateCollaborationIntent(intent);
+      if (!res.success) {
+        throw new Error(res.error ?? "Failed to save collaboration intent");
+      }
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: profileKeys.user(userId) });
+      onSuccess?.();
+    },
+    onError: (err) =>
+      notifications.show({
+        title: "Could not save collaboration intent",
         message: err instanceof Error ? err.message : "Something went wrong",
         color: "red",
       }),

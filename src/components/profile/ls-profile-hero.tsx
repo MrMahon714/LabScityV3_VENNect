@@ -571,26 +571,39 @@ export default function LSProfileHero({
         {/* Collaboration Intent */}
         <Stack gap='xs'>
           <Text fz='xs' c='dimmed' fw='bold'>COLLABORATION INTENT</Text>
-          <Stack gap='4'>
-            {/*<Text size='xs' c='dimmed'>
-              Describe what you are currently working on and what kind of collaborator you are looking for.
-            </Text>*/}
-            {isOwnProfile && (
-              <>
-              <Button
-                variant='outline'
-                rightSection={<IconPencil size='1rem'/>}
-                onClick={openCollabModal}
-                c='dimmed'
-                bd='1px dashed dimmed'
-                bdrs='100'
-                size='xs'
-                w='fit-content'
-              >
-                Edit Collaboration Intent
-              </Button>
-              <LSCollaborationIntentModal opened={collabModalOpened} onClose={closeCollabModal} /> </>
-            )}
+            <Stack gap='4'>
+              {profile.seeking_description ? (
+                <Text fz='sm' style={{ whiteSpace: "pre-wrap" }}>
+                  {profile.seeking_description}
+                </Text>
+              ) : (
+                <Text fz='xs' c='dimmed'>
+                  {isOwnProfile
+                    ? "Describe what you are working on and what kind of collaborator you are looking for."
+                    : "This researcher has not described what they are looking for yet."}
+                </Text>
+              )}
+              {isOwnProfile && (
+                <>
+                  <Button
+                    variant='outline'
+                    rightSection={<IconPencil size='1rem'/>}
+                    onClick={openCollabModal}
+                    c='dimmed'
+                    bd='1px dashed dimmed'
+                    bdrs='100'
+                    size='xs'
+                    w='fit-content'
+                  >
+                    {profile.seeking_description ? "Edit" : "Add"} Collaboration Intent
+                  </Button>
+                  <LSCollaborationIntentModal
+                    userId={profile.user_id}
+                    opened={collabModalOpened}
+                    onClose={closeCollabModal}
+                  />
+                </>
+              )}
             </Stack>
           </Stack>
         </Stack>
