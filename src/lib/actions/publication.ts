@@ -102,8 +102,9 @@ export async function addPublicationByDoi(
     if (err instanceof z.ZodError) {
       return { success: false, error: err.issues[0]?.message ?? "Malformed publication shape"};
     }
-    return { success: false, error: 'Failed to add publication'};
-  }
+    console.error("[addPublicationByDoi] unexpected error:", err);
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to add publication'};
+ }
 }
 
 export interface BulkInsertPublicationsResponse {
