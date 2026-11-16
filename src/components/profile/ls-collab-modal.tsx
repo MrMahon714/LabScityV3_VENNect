@@ -82,7 +82,12 @@ export function LSCollaborationIntentModal({
           <Group align="flex-start" justify="space-between" w="100%">
             <Modal.Title>
               <Group>
-                <Box bg="var(--ls-icon-badge-bg)" c="var(--ls-icon-badge-color)" bdrs="md" p="8">
+                <Box
+                  bg="var(--ls-icon-badge-bg)"
+                  c="var(--ls-icon-badge-color)"
+                  bdrs="md"
+                  p="8"
+                >
                   <IconUsers />
                 </Box>
                 <Stack gap="0">
@@ -105,6 +110,8 @@ export function LSCollaborationIntentModal({
               minRows={4}
               autosize
               maxLength={MAX_COLLAB_INTENT_LENGTH}
+              description={`${value.length} / ${MAX_COLLAB_INTENT_LENGTH}`}
+              inputWrapperOrder={["label", "input", "description", "error"]}
               value={value}
               onChange={(e) => setValue(e.currentTarget.value)}
             />

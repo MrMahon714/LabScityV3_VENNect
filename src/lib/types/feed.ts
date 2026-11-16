@@ -4,9 +4,14 @@
  */
 
 import type { CareerStage } from "../constants/matching";
-import { DeclaredTagValue, Skill } from "../validations/profile";
+import type { DeclaredTagValue, Skill } from "../validations/profile";
 
-export type PostCategory = "formal" | "natural" | "social" | "applied" | "general";
+export type PostCategory =
+  | "formal"
+  | "natural"
+  | "social"
+  | "applied"
+  | "general";
 
 export interface User {
   user_id: string;

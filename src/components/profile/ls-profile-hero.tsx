@@ -113,7 +113,7 @@ export default function LSProfileHero({
   const [resumeModalOpened, { open: openResumeModal, close: closeResumeModal }] = useDisclosure(false);
 
   const [collabModalOpened, { open: openCollabModal, close: closeCollabModal }] = useDisclosure(false);
-  
+
   const lastList = useRef<"followers" | "following">("followers");
   if (listModal) lastList.current = listModal;
 
@@ -172,7 +172,7 @@ export default function LSProfileHero({
       h={PROFILE_BANNER_HEIGHT}
       src={profileHeaderImageURL}
     />
-  ) : ( 
+  ) : (
     <Box
       w="100%"
       h={PROFILE_BANNER_HEIGHT}
@@ -373,7 +373,7 @@ export default function LSProfileHero({
             </Text>
           ) : null}
         </Stack>
-        
+
         <Group gap="xs">
           <UnstyledButton onClick={() => setListModal("followers")} className={classes.followCounts}>
             <Text c="var(--ls-text-strong)" size="sm">
@@ -406,7 +406,7 @@ export default function LSProfileHero({
             }
             {/* Department/Lab */}
             {
-              labDepartment && 
+              labDepartment &&
               <Group gap='4'>
                 <IconSchool size='1.25rem' stroke={1.5} color="var(--mantine-color-dimmed)"/>
                 <Text fz='sm' c='dimmed'>{labDepartment}</Text>
@@ -414,21 +414,21 @@ export default function LSProfileHero({
             }
             {/* Location + Time Zone */}
             {
-              (location || timezone) && 
+              (location || timezone) &&
               <Group gap='xs'>
                 {
                   location &&
                   <Group gap='4'>
                     <IconMapPin size='1rem' stroke={1.5} color="var(--mantine-color-dimmed)"/>
                     <Text fz='xs' c='dimmed'>{location}</Text>
-                  </Group> 
+                  </Group>
                 }
                 {
-                  timezone && 
+                  timezone &&
                   <Group gap='4'>
                     <IconClock size='1rem' stroke={1.5} color="var(--mantine-color-dimmed)"/>
                     <Text fz='xs' c='dimmed'>Local Time {formatLocalTime(timezone)}</Text>
-                  </Group> 
+                  </Group>
                 }
               </Group>
             }
@@ -440,16 +440,16 @@ export default function LSProfileHero({
         }
 
         {
-          (profileTags && profileTags.length > 0) 
+          (profileTags && profileTags.length > 0)
           ?
           <Stack gap='xs'>
             <Text fz='xs' c='dimmed' fw='bold'>RESEARCH AREAS</Text>
             <Group gap='xs'>
             {
-              profileTags.map((tag, i) => 
-                <Badge 
+              profileTags.map((tag, i) =>
+                <Badge
                   key={tag.id || `${tag.name}${i}`}
-                  bg='blue.0' 
+                  bg='blue.0'
                   bd='1px solid blue.3'
                   c='indigo.9'
                   size='md'
@@ -463,10 +463,10 @@ export default function LSProfileHero({
             }
             </Group>
             {
-              isOwnProfile && 
+              isOwnProfile &&
               <>
-                <Button 
-                  variant='outline' 
+                <Button
+                  variant='outline'
                   rightSection={<IconPencil size='1rem'/>}
                   onClick={openResearchAreasModal}
                   c='dimmed'
@@ -487,8 +487,8 @@ export default function LSProfileHero({
             <Text fz='xs' c='dimmed' fw='bold'>RESEARCH AREAS</Text>
             <Stack gap='4'>
               <Text size='xs' c='dimmed'>Add your research areas to your profile to get collaboration recommendations</Text>
-              <Button 
-                variant='outline' 
+              <Button
+                variant='outline'
                 rightSection={<IconPlus size='1rem'/>}
                 onClick={openResearchAreasModal}
                 c='dimmed'
@@ -505,18 +505,18 @@ export default function LSProfileHero({
         }
 
         {
-          (profileSkills && profileSkills.length > 0) 
+          (profileSkills && profileSkills.length > 0)
           ?
           <Stack gap='xs'>
             <Text c="dimmed" fw='bold' fz='xs'>SKILLS</Text>
             <Group gap={8}>
-              { 
-                profileSkills.map((skill, i) => 
-                  <Badge 
-                    key={skill.id ?? `${skill.name}${i}`} 
-                    bg='gray.2' 
-                    bd='1px solid gray.4' 
-                    c="var(--ls-text-strong)" 
+              {
+                profileSkills.map((skill, i) =>
+                  <Badge
+                    key={skill.id ?? `${skill.name}${i}`}
+                    bg='gray.2'
+                    bd='1px solid gray.4'
+                    c="var(--ls-text-strong)"
                     tt='none'
                     size='md'
                     fw='600'
@@ -529,10 +529,10 @@ export default function LSProfileHero({
               }
             </Group>
             {
-              isOwnProfile && 
+              isOwnProfile &&
               <>
-              <Button 
-                variant='outline' 
+              <Button
+                variant='outline'
                 rightSection={<IconPencil size='1rem'/>}
                 onClick={openSkillsModal}
                 c='dimmed'
@@ -553,8 +553,8 @@ export default function LSProfileHero({
             <Text c="dimmed" fw='bold' fz='xs'>SKILLS</Text>
             <Stack gap='4'>
               <Text size='xs' c='dimmed'>Add skills to your profile to get collaboration recommendations</Text>
-              <Button 
-                variant='outline' 
+              <Button
+                variant='outline'
                 rightSection={<IconPlus size='1rem'/>}
                 onClick={openSkillsModal}
                 c='dimmed'
@@ -623,4 +623,3 @@ export default function LSProfileHero({
     </Card >
   );
 };
-

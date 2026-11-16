@@ -736,7 +736,7 @@ export async function getUser(user_id: string, supabaseClient?: SupabaseClient):
 
     const { data: careerRow, error: careerError } = await supabase
       .from("profile")
-      .select("career_stage")
+      .select("career_stage, seeking_description")
       .eq("user_id", user_id)
       .maybeSingle();
     if (careerError) {
@@ -759,6 +759,7 @@ export async function getUser(user_id: string, supabaseClient?: SupabaseClient):
         lab_department: profileData?.lab_department ?? null,
         location: profileData?.location ?? null,
         career_stage: careerRow?.career_stage ?? null,
+        seeking_description: careerRow?.seeking_description ?? null,
       },
     }
 

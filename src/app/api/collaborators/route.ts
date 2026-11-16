@@ -84,18 +84,9 @@ export async function POST(request: NextRequest) {
   const searchText = buildFilterSearchText(filters);
   let filterEmbedding: number[] | null = null;
   if (searchText) {
-    filterEmbedding = await generateEmbedding(searchText, "RETRIEVAL_QUERY");
-    if (!filterEmbedding) {
-      console.warn("Filter embedding failed; ranking without it");
-    } else {
-      // Remember the latest search as the user's seeks vector, so the sidebar can use it
-      const { error: seeksError } = await supabase
-        .from("profile")
-        .update({ seeks_embedding: filterEmbedding })
-        .eq("user_id", user.id);
-      if (seeksError) {
-        console.warn("Failed to save last search:", seeksError.message);
-      }
+      filterEmbedding = await generateEmbedding(searchText, "RETRIEVAL_QUERY");
+      if (!filterEmbedding) {
+        console.warn("Filter embedding failed; ranking without it");
     }
   }
 

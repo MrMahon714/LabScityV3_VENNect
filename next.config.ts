@@ -1,17 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
-  images: {
+    images: {
     remotePatterns: process.env.NEXT_PUBLIC_SUPABASE_URL
-      ? [
-          {
-            protocol: "https",
-            hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname,
-            pathname: "/**",
-          },
-        ]
+      ? (() => {
+          const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL);
+          return [
+            {
+              protocol: url.protocol.replace(":", "") as "http" | "https",
+              hostname: url.hostname,
+              port: url.port || undefined,
+              pathname: "/**",
+            },
+          ];
+        })()
       : [],
     dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
   },
