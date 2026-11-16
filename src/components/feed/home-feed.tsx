@@ -1598,7 +1598,7 @@ export function RecommendedCollabsCard({ currentUserId }: { currentUserId: strin
   <>
       <CollabMatchingModal opened={matchingOpened} onClose={closeMatching} />
       <SectionCard
-        title="Recommended Collaborators"
+        title="Find a Collaborator"
         icon={<IconUsers size={18} />}
         headerAction={
           <ActionIcon

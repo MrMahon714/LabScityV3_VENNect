@@ -14,6 +14,7 @@ overrides:
   esbuild: '>=0.28.1'
   '@testing-library/jest-dom@>=6.9.1 <7.0.0-0': 6.9.1
   launch-editor: '>=2.14.2'
+  seroval: '>=1.6.11'
 
 importers:
 
@@ -3390,11 +3391,11 @@ packages:
     resolution: {integrity: sha512-kiDK/Tb8IWZ61WEU8pA2PDmAuw37gKph9Y77OZlD56mg0Y2g0Bg7gZ1HeHhs5d40w+nRoUq/wj08V26ilbez9g==}
     engines: {node: '>=10'}
     peerDependencies:
-      seroval: ^1.0
+      seroval: '>=1.6.11'
 
-  seroval@1.6.9:
-    resolution: {integrity: sha512-UeEzHwAK+yl0YLbsvROV1t5yMYEwZZ0CfKYxDvUgS2fO9Vxdf8djqVIB+OuVpuawRNPqw68LE1Du/GMsW2ZPqA==}
-    engines: {node: '>=10'}
+  seroval@1.8.1:
+    resolution: {integrity: sha512-7z9x1flFYfZBz+LfDkXNfm5UIhZJ/97ASaV8Q1wctoVkeqVfv+tLPsWebeMXBNw6XprvwxDE5wC5Ylqmr+iSrA==}
+    engines: {node: '>=20'}
 
   set-cookie-parser@3.1.4:
     resolution: {integrity: sha512-iEmdEew+Tn1BwMGMP8LzGBEPC7Mf1sySjglCeEPb/Vchm9bnGezePvacYcId+fGprQzIng+TBkzqfJ/qS7AsBg==}
@@ -7160,11 +7161,11 @@ snapshots:
 
   semver@7.8.5: {}
 
-  seroval-plugins@1.6.9(seroval@1.6.9):
+  seroval-plugins@1.6.9(seroval@1.8.1):
     dependencies:
-      seroval: 1.6.9
+      seroval: 1.8.1
 
-  seroval@1.6.9: {}
+  seroval@1.8.1: {}
 
   set-cookie-parser@3.1.4: {}
 
@@ -7264,8 +7265,8 @@ snapshots:
   solid-js@1.9.17:
     dependencies:
       csstype: 3.2.3
-      seroval: 1.6.9
-      seroval-plugins: 1.6.9(seroval@1.6.9)
+      seroval: 1.8.1
+      seroval-plugins: 1.6.9(seroval@1.8.1)
 
   solid-presence@0.2.0(solid-js@1.9.17):
     dependencies:

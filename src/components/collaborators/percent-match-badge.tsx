@@ -10,21 +10,19 @@ export default function PercentMatchBadge({percentMatch, text}: {percentMatch: n
 
   return (
     <Badge
-      bg={`${similarityColor}.1`}
+      variant='light'
+      color={similarityColor}
       mt='4px'
-      bd={`1px solid ${similarityColor}.3`}
+      bd={`1px solid color-mix(in srgb, var(--mantine-color-${similarityColor}-light-color) 45%, transparent)`}
       p='2px 6px'
       tt='none'
     >
       <Group wrap='nowrap' gap='2'>
-        <IconStarFilled 
-          color={`var(--mantine-color-${similarityColor}-8)`}
-          size='12'
-        />
+        <IconStarFilled size='12' />
         <Text
           fz='0.625rem'
           fw='600'
-          c={`${similarityColor}.8`}
+          c='inherit'
         >
           {percentMatch}% {text}
         </Text>

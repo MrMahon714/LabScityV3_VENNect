@@ -1,0 +1,15 @@
+.button {
+  opacity: 0.4;
+  transition: opacity 150ms ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}

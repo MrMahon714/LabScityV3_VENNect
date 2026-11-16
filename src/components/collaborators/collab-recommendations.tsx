@@ -106,7 +106,7 @@ export default function CollabRecommendations() {
                   lh='1.2rem'
                   style={{ wordBreak: 'break-word' }}
                 >
-                  Recommended Collaborators
+                  Find a Collaborator
                 </Text>
                 <Text
                   c='dimmed'
@@ -204,7 +204,7 @@ export default function CollabRecommendations() {
               lh='1.2rem'
               style={{ wordBreak: 'break-word' }}
             >
-              Recommended Collaborators
+              Find a Collaborator
             </Text>
             <Text
               c='dimmed'

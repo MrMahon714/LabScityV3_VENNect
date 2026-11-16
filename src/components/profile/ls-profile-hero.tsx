@@ -12,7 +12,7 @@ import {
   Loader,
   UnstyledButton,
 } from "@mantine/core";
-import { IconBuildings, IconCamera, IconClock, IconFileText, IconMapPin, IconMessageCircle, IconPencil, IconPlus, IconSchool, IconUserPlus } from "@tabler/icons-react";
+import { IconBuildings, IconCamera, IconClock, IconEyeOff, IconFileText, IconMapPin, IconMessageCircle, IconPencil, IconPlus, IconSchool, IconUserPlus } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import { LSEditProfileModal } from "./ls-edit-profile-modal";
 import { useDisclosure } from "@mantine/hooks";
@@ -113,7 +113,7 @@ export default function LSProfileHero({
   const [resumeModalOpened, { open: openResumeModal, close: closeResumeModal }] = useDisclosure(false);
 
   const [collabModalOpened, { open: openCollabModal, close: closeCollabModal }] = useDisclosure(false);
-  
+
   const lastList = useRef<"followers" | "following">("followers");
   if (listModal) lastList.current = listModal;
 
@@ -132,6 +132,8 @@ export default function LSProfileHero({
   const labDepartment = profile.lab_department ?? undefined;
   const location = profile.location ?? undefined;
   const timezone = profile.timezone ?? undefined;
+  const seekingDescription = profile.seeking_description ?? undefined;
+  const seekingVisible = profile.seeking_visible ?? true;
 
   const avatarInitials = profileName
     .split(" ")
@@ -170,7 +172,7 @@ export default function LSProfileHero({
       h={PROFILE_BANNER_HEIGHT}
       src={profileHeaderImageURL}
     />
-  ) : ( 
+  ) : (
     <Box
       w="100%"
       h={PROFILE_BANNER_HEIGHT}
@@ -371,7 +373,7 @@ export default function LSProfileHero({
             </Text>
           ) : null}
         </Stack>
-        
+
         <Group gap="xs">
           <UnstyledButton onClick={() => setListModal("followers")} className={classes.followCounts}>
             <Text c="var(--ls-text-strong)" size="sm">
@@ -404,7 +406,7 @@ export default function LSProfileHero({
             }
             {/* Department/Lab */}
             {
-              labDepartment && 
+              labDepartment &&
               <Group gap='4'>
                 <IconSchool size='1.25rem' stroke={1.5} color="var(--mantine-color-dimmed)"/>
                 <Text fz='sm' c='dimmed'>{labDepartment}</Text>
@@ -412,21 +414,21 @@ export default function LSProfileHero({
             }
             {/* Location + Time Zone */}
             {
-              (location || timezone) && 
+              (location || timezone) &&
               <Group gap='xs'>
                 {
                   location &&
                   <Group gap='4'>
                     <IconMapPin size='1rem' stroke={1.5} color="var(--mantine-color-dimmed)"/>
                     <Text fz='xs' c='dimmed'>{location}</Text>
-                  </Group> 
+                  </Group>
                 }
                 {
-                  timezone && 
+                  timezone &&
                   <Group gap='4'>
                     <IconClock size='1rem' stroke={1.5} color="var(--mantine-color-dimmed)"/>
                     <Text fz='xs' c='dimmed'>Local Time {formatLocalTime(timezone)}</Text>
-                  </Group> 
+                  </Group>
                 }
               </Group>
             }
@@ -438,16 +440,16 @@ export default function LSProfileHero({
         }
 
         {
-          (profileTags && profileTags.length > 0) 
+          (profileTags && profileTags.length > 0)
           ?
           <Stack gap='xs'>
             <Text fz='xs' c='dimmed' fw='bold'>RESEARCH AREAS</Text>
             <Group gap='xs'>
             {
-              profileTags.map((tag, i) => 
-                <Badge 
+              profileTags.map((tag, i) =>
+                <Badge
                   key={tag.id || `${tag.name}${i}`}
-                  bg='blue.0' 
+                  bg='blue.0'
                   bd='1px solid blue.3'
                   c='indigo.9'
                   size='md'
@@ -461,10 +463,10 @@ export default function LSProfileHero({
             }
             </Group>
             {
-              isOwnProfile && 
+              isOwnProfile &&
               <>
-                <Button 
-                  variant='outline' 
+                <Button
+                  variant='outline'
                   rightSection={<IconPencil size='1rem'/>}
                   onClick={openResearchAreasModal}
                   c='dimmed'
@@ -485,8 +487,8 @@ export default function LSProfileHero({
             <Text fz='xs' c='dimmed' fw='bold'>RESEARCH AREAS</Text>
             <Stack gap='4'>
               <Text size='xs' c='dimmed'>Add your research areas to your profile to get collaboration recommendations</Text>
-              <Button 
-                variant='outline' 
+              <Button
+                variant='outline'
                 rightSection={<IconPlus size='1rem'/>}
                 onClick={openResearchAreasModal}
                 c='dimmed'
@@ -503,18 +505,18 @@ export default function LSProfileHero({
         }
 
         {
-          (profileSkills && profileSkills.length > 0) 
+          (profileSkills && profileSkills.length > 0)
           ?
           <Stack gap='xs'>
             <Text c="dimmed" fw='bold' fz='xs'>SKILLS</Text>
             <Group gap={8}>
-              { 
-                profileSkills.map((skill, i) => 
-                  <Badge 
-                    key={skill.id ?? `${skill.name}${i}`} 
-                    bg='gray.2' 
-                    bd='1px solid gray.4' 
-                    c="var(--ls-text-strong)" 
+              {
+                profileSkills.map((skill, i) =>
+                  <Badge
+                    key={skill.id ?? `${skill.name}${i}`}
+                    bg='gray.2'
+                    bd='1px solid gray.4'
+                    c="var(--ls-text-strong)"
                     tt='none'
                     size='md'
                     fw='600'
@@ -527,10 +529,10 @@ export default function LSProfileHero({
               }
             </Group>
             {
-              isOwnProfile && 
+              isOwnProfile &&
               <>
-              <Button 
-                variant='outline' 
+              <Button
+                variant='outline'
                 rightSection={<IconPencil size='1rem'/>}
                 onClick={openSkillsModal}
                 c='dimmed'
@@ -551,8 +553,8 @@ export default function LSProfileHero({
             <Text c="dimmed" fw='bold' fz='xs'>SKILLS</Text>
             <Stack gap='4'>
               <Text size='xs' c='dimmed'>Add skills to your profile to get collaboration recommendations</Text>
-              <Button 
-                variant='outline' 
+              <Button
+                variant='outline'
                 rightSection={<IconPlus size='1rem'/>}
                 onClick={openSkillsModal}
                 c='dimmed'
@@ -569,32 +571,55 @@ export default function LSProfileHero({
         }
 
         {/* Collaboration Intent */}
-        <Stack gap='xs'>
-          <Text fz='xs' c='dimmed' fw='bold'>COLLABORATION INTENT</Text>
-          <Stack gap='4'>
-            {/*<Text size='xs' c='dimmed'>
-              Describe what you are currently working on and what kind of collaborator you are looking for.
-            </Text>*/}
-            {isOwnProfile && (
-              <>
-              <Button
-                variant='outline'
-                rightSection={<IconPencil size='1rem'/>}
-                onClick={openCollabModal}
-                c='dimmed'
-                bd='1px dashed dimmed'
-                bdrs='100'
-                size='xs'
-                w='fit-content'
-              >
-                Edit Collaboration Intent
-              </Button>
-              <LSCollaborationIntentModal opened={collabModalOpened} onClose={closeCollabModal} /> </>
-            )}
+        {(isOwnProfile || seekingDescription) && (
+          <Stack gap='xs'>
+            <Group gap='xs'>
+              <Text fz='xs' c='dimmed' fw='bold'>COLLABORATION INTENT</Text>
+              {isOwnProfile && seekingDescription && !seekingVisible && (
+                <Badge size='xs' variant='light' color='gray' leftSection={<IconEyeOff size={10} />}>
+                  Only visible to you
+                </Badge>
+              )}
+            </Group>
+            <Stack gap='4'>
+              {seekingDescription ? (
+                <Text c="var(--ls-text-strong)" fz='sm' maw='800' style={{ whiteSpace: "pre-wrap" }}>
+                  {seekingDescription}
+                </Text>
+              ) : (
+                isOwnProfile && (
+                  <Text size='xs' c='dimmed'>
+                    Describe what kind of collaborator you are looking for.
+                  </Text>
+                )
+              )}
+              {isOwnProfile && (
+                <>
+                  <Button
+                    variant='outline'
+                    rightSection={seekingDescription ? <IconPencil size='1rem'/> : <IconPlus size='1rem'/>}
+                    onClick={openCollabModal}
+                    c='dimmed'
+                    bd='1px dashed dimmed'
+                    bdrs='100'
+                    size='xs'
+                    w='fit-content'
+                  >
+                    {seekingDescription ? "Edit Collaboration Intent" : "Add Collaboration Intent"}
+                  </Button>
+                  <LSCollaborationIntentModal
+                    opened={collabModalOpened}
+                    onClose={closeCollabModal}
+                    userId={profile.user_id}
+                    initialDescription={seekingDescription ?? ""}
+                    initialVisible={seekingVisible}
+                  />
+                </>
+              )}
             </Stack>
           </Stack>
-        </Stack>
+        )}
+      </Stack>
     </Card >
   );
 };
-

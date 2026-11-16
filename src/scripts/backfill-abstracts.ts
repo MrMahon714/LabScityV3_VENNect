@@ -91,15 +91,24 @@ async function main() {
     checked += valid.length;
 
     let abstracts = new Map<string, string>();
+    const dois = [
+      ...new Set(valid.map((row) => normalizeDoi(row.doi as string))),
+    ];
     try {
-      abstracts = await fetchAbstracts([
-        ...new Set(valid.map((row) => normalizeDoi(row.doi as string))),
-      ]);
-    } catch (err) {
-      console.warn(`Batch ending at publication ${lastId} failed:`, err);
-      failed += valid.length;
-      await sleep(DELAY_MS);
-      continue;
+      abstracts = await fetchAbstracts(dois);
+    } catch {
+      console.warn(
+        `Batch ending at publication ${lastId} failed; retrying one by one`,
+      );
+      for (const doi of dois) {
+        try {
+          const one = await fetchAbstracts([doi]);
+          for (const [key, value] of one) abstracts.set(key, value);
+        } catch {
+          failed++;
+        }
+        await sleep(DELAY_MS);
+      }
     }
 
     for (const row of valid) {

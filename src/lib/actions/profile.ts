@@ -9,6 +9,8 @@ import {
   updateProfileSchema,
   toggleFollowSchema,
   createUserReportSchema,
+  updateCollaborationIntentSchema,
+  type UpdateCollaborationIntentValues,
   type UpdateProfileValues,
   type ToggleFollowValues,
   type CreateUserReportValues,
@@ -485,6 +487,41 @@ export async function updateDeclaredTagsAction(
     return {
       success: false,
       error: err instanceof Error ? err.message : "Failed to update research areas",
+    };
+  }
+}
+
+export async function updateCollaborationIntentAction(
+  input: UpdateCollaborationIntentValues,
+  supabaseClient?: SupabaseClient,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const validated = updateCollaborationIntentSchema.parse(input);
+    const supabase = supabaseClient ?? (await createClient());
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) return { success: false, error: "Authentication required" };
+
+    const { error } = await supabase
+      .from("profile")
+      .update({
+        seeking_description: validated.seekingDescription || null,
+        seeking_visible: validated.seekingVisible,
+      })
+      .eq("user_id", authData.user.id);
+    if (error) return { success: false, error: error.message };
+
+    generateProfileEmbeddings(authData.user.id, supabase).catch((err) =>
+      console.error("Background embedding generation failed:", err)
+    );
+
+    return { success: true };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return { success: false, error: err.issues[0]?.message ?? "Validation failed" };
+    }
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to update collaboration intent",
     };
   }
 }

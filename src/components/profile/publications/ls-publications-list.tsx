@@ -104,9 +104,10 @@ export default function LSPublicationsList({
     },
   });
     
-  const handleDoiSubmit = doiForm.onSubmit((vals) => {
-    if (!vals.doi.trim()) return;
-    addPubByDoi.mutate(vals.doi);
+  const handleDoiSubmit = doiForm.onSubmit(() => {
+    const currentDoi = doiForm.getValues().doi;
+    if (!currentDoi.trim()) return;
+    addPubByDoi.mutate(currentDoi);
   });
   
   const deletePub = useDeletePublication(userId);

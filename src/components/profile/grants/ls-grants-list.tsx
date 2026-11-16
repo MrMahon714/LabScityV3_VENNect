@@ -5,7 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconPlus, IconReceiptOff } from "@tabler/icons-react";
 import { useAuthContext } from "@/components/auth/auth-provider";
 import { useUserProfile } from "../use-profile";
-import { useMyGrants } from "../use-grants";
+import { useDeleteGrant, useMyGrants } from "../use-grants";
 import { LSGrantsModal } from "../ls-grants-modal";
 import LSGrantCard from "./ls-grant-card";
 
@@ -15,7 +15,7 @@ export default function LSGrantsList({ userId }: { userId: string }) {
 
   const { data: profile } = useUserProfile(userId);
   const { data: grants = [], isLoading, isError } = useMyGrants({ enabled: isOwner });
-
+  const deleteGrant = useDeleteGrant();
   const [addOpened, { open: openAdd, close: closeAdd }] = useDisclosure(false);
 
   if (userLoading || (isOwner && isLoading)) {
@@ -60,7 +60,15 @@ export default function LSGrantsList({ userId }: { userId: string }) {
 
       <Stack>
         {shown.length > 0 ? (
-          shown.map((grant) => <LSGrantCard key={grant.id} grant={grant} />)
+          shown.map((grant) => (
+            <LSGrantCard
+              key={grant.id}
+              grant={grant}
+              isOwner={isOwner}
+              onDeleteClick={() => deleteGrant.mutate(grant.id)}
+              isDeleting={deleteGrant.isPending && deleteGrant.variables === grant.id}
+            />
+          ))
         ) : (
           <Stack justify="center" align="center">
             <IconReceiptOff color="var(--mantine-color-dimmed)" size={64} stroke={1} />

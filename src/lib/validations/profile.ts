@@ -101,11 +101,13 @@ export const createUserReportSchema = z.object({
 export type CreateUserReportValues = z.infer<typeof createUserReportSchema>;
 
 
-export const skillValueSchema = z.object({
-  // null means custom skill
-  id: z.number().int().positive().nullable(),
-  name: z.string().trim().min(1).max(60)
-});
+export const skillValueSchema = z.union([
+  z.object({
+      id: z.number().int().positive().nullable(),
+      name: z.string().trim().min(1).max(60),
+  }),
+  z.string().trim().min(1).max(60).transform((name) => ({ id: null, name })),
+]);
 
 export const updateSkillsSchema = z.object({
   skills: z.array(skillValueSchema).max(MAX_PROFILE_SKILLS, `Up to ${MAX_PROFILE_SKILLS} skills`),
@@ -133,3 +135,17 @@ export const updateDeclaredTagsSchema = z.object({
 
 export type DeclaredTagValue = z.infer<typeof declaredTagSchema>;
 export type UpdateDeclaredTagsValues = z.infer<typeof updateDeclaredTagsSchema>;
+
+export const MAX_COLLAB_INTENT_LENGTH = 1000;
+
+export const updateCollaborationIntentSchema = z.object({
+  seekingDescription: z
+    .string()
+    .trim()
+    .max(MAX_COLLAB_INTENT_LENGTH, {
+      message: `Collaboration intent must be at most ${MAX_COLLAB_INTENT_LENGTH} characters`,
+    }),
+  seekingVisible: z.boolean(),
+});
+
+export type UpdateCollaborationIntentValues = z.infer<typeof updateCollaborationIntentSchema>;
