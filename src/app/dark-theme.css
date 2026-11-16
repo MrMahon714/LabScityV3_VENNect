@@ -67,3 +67,12 @@
 :root[data-mantine-color-scheme="dark"] .mantine-Tooltip-tooltip {
   border: 1px solid rgba(150, 185, 255, 0.35);
 }
+
+:root[data-mantine-color-scheme="dark"] .ls-invert-in-dark {
+  filter: brightness(0) invert(0.85); /* landing logo: dark flask turned light gray */
+}
+
+:root[data-mantine-color-scheme="dark"] .ls-landing-art {
+  filter: invert(1) hue-rotate(180deg); /* landing illustration: white background turned dark */
+  mix-blend-mode: lighten; /* lets the dark background show through */
+}

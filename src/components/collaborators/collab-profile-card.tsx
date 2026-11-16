@@ -46,7 +46,6 @@ export default function CollabProfileCard(
           <Avatar
             size="48"
             radius="xl"
-            bg="navy.7"
             src={avatarUrl || undefined}
           >
             {initials}
@@ -54,8 +53,8 @@ export default function CollabProfileCard(
           {
             openToCollab &&
             <Badge
-              color='green.2'
-              c='green.9'
+              variant='light'
+              color='green'
               tt='none'
               p='2px 6px'
             >
