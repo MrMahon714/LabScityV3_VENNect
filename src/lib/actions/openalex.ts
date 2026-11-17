@@ -37,8 +37,8 @@ export async function syncOpenAlexTopics(
     }
 
     const response = await fetch(
-        `https://api.openalex.org/authors?filter=orcid:${cleanOrcid}`
-    )
+       `https://api.openalex.org/authors?filter=orcid:${cleanOrcid}&mailto=noreply@mail.labscity.org&api_key=${process.env.OPENALEX_API_KEY}`
+)
 
     if (!response.ok){
         return {success: false, error: "OpenAlex request failed"};

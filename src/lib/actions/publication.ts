@@ -33,7 +33,9 @@ export async function addPublicationByDoi(
     }
 
     const parsedDoi = doiSchema.parse(doi);
-    const res = await fetch(`https://api.openalex.org/works/doi:${parsedDoi}?mailto=noreply@mail.labscity.org`);
+    const res = await fetch(
+  `https://api.openalex.org/works/doi:${parsedDoi}?mailto=noreply@mail.labscity.org&api_key=${process.env.OPENALEX_API_KEY}`
+);
     if(!res.ok) {
         if (res.status === 429) {
             throw new Error("OpenAlex is rate-limiting requests right now. Please wait a few seconds and try again.");
