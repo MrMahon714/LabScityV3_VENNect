@@ -17,3 +17,5 @@ overrides:
   "@testing-library/jest-dom@>=6.9.1 <7.0.0-0": "6.9.1"
   launch-editor: ">=2.14.2"
   seroval: ">=1.6.11"
+  minimatch: ">=11.0.1"
+  
